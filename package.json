@@ -1,0 +1,35 @@
+{
+  "name": "shipeasy",
+  "version": "0.0.1",
+  "private": true,
+  "description": "ShipEasy SaaS Template - A comprehensive monorepo for building subscription-based web applications",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@8.6.0",
+  "scripts": {
+    "dev:next": "turbo run dev --filter=@shipeasy/next-app",
+    "dev:nuxt": "turbo run dev --filter=@shipeasy/nuxt-app",
+    "build:next": "turbo run build --filter=@shipeasy/next-app",
+    "build:nuxt": "turbo run build --filter=@shipeasy/nuxt-app",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "keywords": [
+    "saas",
+    "subscription",
+    "next.js",
+    "nuxt.js",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "turbo": "^1.11.2",
+    "typescript": "^5.3.3"
+  }
+}

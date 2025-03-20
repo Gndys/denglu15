@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# 基本规则
+
+- [arch.md](mdc:docs/arch.md) 注意使用这里面的项目架构信息
