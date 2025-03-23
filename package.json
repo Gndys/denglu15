@@ -13,7 +13,11 @@
     "build:next": "turbo run build --filter=@shipeasy/next-app",
     "build:nuxt": "turbo run build --filter=@shipeasy/nuxt-app",
     "lint": "turbo run lint",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:check": "node libs/database/scripts.js check",
+    "db:push": "node libs/database/scripts.js push",
+    "db:generate": "node libs/database/scripts.js generate",
+    "db:seed": "node libs/database/scripts.js seed"
   },
   "keywords": [
     "saas",
@@ -25,11 +29,19 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "9.22.0",
     "@types/node": "^20.10.5",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "eslint": "^8.56.0",
+    "drizzle-kit": "0.30.5",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "10.1.1",
     "turbo": "^1.11.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "8.27.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.40.1",
+    "pg": "^8.14.1",
+    "tsx": "^4.19.3"
   }
 }

@@ -3,6 +3,7 @@ packages:
   - 'apps/*'
   # 所有 packages 目录下的共享包
   - 'packages/*'
-  # 排除所有 packages 目录下的包中的 node_modules 和 dist 目录
+  # 排除所有目录下的 node_modules 和 dist 目录
   - '!**/node_modules'
-  - '!**/dist' 
+  - '!**/dist'
+  # 注意: libs 目录不作为工作空间包，而是直接引用 
