@@ -1,9 +1,12 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { genericOAuth, phoneNumber } from "better-auth/plugins"
+import { validator, StandardAdapter} from "validation-better-auth"
+
 
 import { db, user, account, session, verification } from '@libs/database'
 import { sendSMSByAliyun } from '@libs/sms/aliyun'
+import { emailSignInSchema, emailSignUpSchema } from '@libs/validators/user'
 
 interface WeChatProfile {
   unionid?: string;
@@ -18,6 +21,7 @@ interface WeChatTokens {
 }
 
 export const auth = betterAuth({
+  appName: 'shipeasy',
   database: drizzleAdapter(db, {
     provider: "pg", // or "mysql", "sqlite"
     schema: {
@@ -28,7 +32,7 @@ export const auth = betterAuth({
     }
   }),
   emailAndPassword: {
-    enabled: true,
+    enabled: true
   },
   socialProviders: {
     google: {
@@ -92,6 +96,14 @@ export const auth = betterAuth({
             return `${phoneNumber}@test.com`
         },
       }
-    }) 
+    }),
+    // https://github.com/Daanish2003/validation-better-auth
+    validator(
+      [
+        {path: "/sign-up/email", adapter: StandardAdapter(emailSignUpSchema)},
+        {path: "/sign-in/email", adapter: StandardAdapter(emailSignInSchema)},
+      ]
+    ),
+
   ]
 })
