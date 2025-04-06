@@ -141,6 +141,11 @@ export default function Header({ className }: HeaderProps) {
                     Sign up
                   </Button>
                 </Link>
+                <Link href="/cellphone">
+                  <Button variant="ghost" className="text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
+                    Sign in with phone
+                  </Button>
+                </Link>
               </>
             )}
           </div>

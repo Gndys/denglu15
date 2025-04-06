@@ -1,31 +1,15 @@
-'use client';
+import { headers } from 'next/headers'
+import { auth } from "@libs/auth";
+import { userRoles } from "@libs/database/constants";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { authClientReact } from "@libs/auth/authClient";
-import { userRoles } from "@libs/database/schema/user";
+export default async function AdminDashboard ()  {
 
-const AdminDashboard = () => {
-  const router = useRouter();
-  const { data: session, isPending } = authClientReact.useSession();
-  console.log(session?.user.role)
-  useEffect(() => {
-    if (!isPending && (!session?.user || session.user.role !== userRoles.ADMIN)) {
-      router.push('/'); // 如果不是管理员，重定向到首页
-    }
-  }, [session, isPending, router]);
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
 
   // 如果正在加载或没有用户信息，显示加载状态
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  // 如果不是管理员，不显示内容（会被 useEffect 重定向）
-  if (!session?.user || session.user.role !== userRoles.ADMIN) {
+  if (!session || session.user.role !== userRoles.ADMIN) {
     return null;
   }
 
@@ -69,5 +53,3 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
-export default AdminDashboard; 

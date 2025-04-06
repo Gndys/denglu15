@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import * as React from "react"
-
+import { authClientReact } from '@libs/auth/authClient'
 // 以组件方式导入SVG
 import GoogleIcon from "@libs/ui/icons/google.svg"
 import GithubIcon from "@libs/ui/icons/github.svg"
@@ -36,6 +36,11 @@ export function SocialButton({ provider, className, ...props }: SocialButtonProp
         className
       )}
       {...props}
+      onClick={() => {
+        authClientReact.signIn.social({
+          provider,
+        })
+      }}
     >
       <Icon className="mr-2 h-4 w-4" />
       {providerNames[provider]}

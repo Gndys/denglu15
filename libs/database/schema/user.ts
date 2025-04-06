@@ -1,11 +1,6 @@
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
 import { pgTable, text, boolean, timestamp, numeric } from "drizzle-orm/pg-core";
-
-// 用户角色枚举
-export const userRoles = {
-  ADMIN: "admin",
-  USER: "user",
-} as const;
+import { userRoles } from "../constants";
 
 // 用户表
 export const user = pgTable("user", {

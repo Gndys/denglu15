@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { genericOAuth, phoneNumber, admin } from "better-auth/plugins"
+
 import { validator, StandardAdapter} from "validation-better-auth"
 
 
@@ -32,9 +33,24 @@ export const auth = betterAuth({
       verification
     }
   }),
+  // https://www.better-auth.com/docs/concepts/email
   emailAndPassword: {
-    enabled: true
+    enabled: true,
+    autoSignIn: false, //defaults to true
+    requireEmailVerification: true,
   },
+  emailVerification: {
+    sendVerificationEmail: async ( { user, url, token }, request) => {
+      // await sendEmail({
+      //   to: user.email,
+      //   subject: "Verify your email address",
+      //   text: `Click the link to verify your email: ${url}`,
+      // });
+      console.log(`Click the link to verify your email${user.email}: ${url}`,)
+    },
+    autoSignInAfterVerification: true
+  },
+
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -43,6 +59,12 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }
+  },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"] 
     }
   },
   plugins: [
@@ -81,8 +103,10 @@ export const auth = betterAuth({
         }
       ]
     }),
+
     // https://www.better-auth.com/docs/plugins/phone-number
-    phoneNumber({  
+    phoneNumber({
+      otpLength: 4,
       sendOTP: async ({ phoneNumber, code }, request) => { 
         try {
           // Implement sending OTP code via SMS
@@ -102,6 +126,10 @@ export const auth = betterAuth({
         getTempEmail: (phoneNumber) => {
             return `${phoneNumber}@test.com`
         },
+        //optionally, you can also pass `getTempName` function to generate a temporary name for the user
+        getTempName: (phoneNumber) => {
+          return phoneNumber //by default, it will use the phone number as the name
+        }
       }
     }),
     // https://github.com/Daanish2003/validation-better-auth

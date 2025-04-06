@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userRoles } from '../database/schema/user';
+import { userRoles } from '../database/constants';
 
 // 基础用户验证器
 export const userSchema = z.object({
@@ -40,7 +40,18 @@ export const loginFormSchema = emailSignInSchema.extend({
 // 手机号注册验证器 手机号登录验证器
 export const phoneSignUpSchema = z.object({
   phoneNumber: z.string().min(11).max(11),
-  code: z.string().length(6),
+  code: z.string().length(4),
+});
+
+// 手机号登录第一步验证器（发送验证码）
+export const phoneLoginSchema = z.object({
+  phone: z.string().min(11).max(11),
+});
+
+// 手机号登录第二步验证器（验证验证码）
+export const phoneVerifySchema = z.object({
+  phone: z.string().min(11).max(11),
+  code: z.string().length(4),
 });
 
 // 更新用户验证器 - 所有字段都是可选的

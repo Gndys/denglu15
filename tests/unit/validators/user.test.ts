@@ -8,7 +8,7 @@ import {
   loginFormSchema,
   signupFormSchema,
 } from '@libs/validators/user';
-import { userRoles } from '@libs/database/schema/user';
+import { userRoles } from '@libs/database/constants';
 
 describe('User Validators', () => {
   describe('userSchema', () => {
