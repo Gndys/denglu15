@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight'
 import { useChat } from '@ai-sdk/react';
+import { Send } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -11,11 +14,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import '@/app/highlight.css'
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat()
-  const [provider, setProvider] = useState('openai');
+  const initialMessages: any[] = [
+    { id: '1', content: '你好，我是Grok，一个AI助手。', role: 'user' },
+    { id: '2', content: `# Hello, Markdown!
+This is a **bold** text with some *italic* content.
+
+- Item 1  
+- Item 2
+
+\`\`\`javascript
+console.log("Code block");
+\`\`\`
+`, role: 'assistant' },
+  ];
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    initialMessages
+  });
+  const [provider, setProvider] = useState<keyof typeof providerModels>('openai');
   const [model, setModel] = useState('gpt-4o');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const providerModels = {
     openai: ['gpt-4o', 'gpt-3.5', 'gpt-3'],
@@ -23,48 +44,106 @@ export default function Chat() {
     deepseek: ['deepseek-chat', 'deepseek-coder'],
   };
 
+  // Auto-scroll to the latest message
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Trigger scroll when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-      <Select onValueChange={(value) => {
-        const [selectedProvider, selectedModel] = value.split(':');
-        setProvider(selectedProvider);
-        setModel(selectedModel);
-      }}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select a provider and model" />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.entries(providerModels).map(([prov, models]) => (
-            <SelectGroup key={prov}>
-              <SelectLabel>{prov.charAt(0).toUpperCase() + prov.slice(1)}</SelectLabel>
-              {models.map((mod) => (
-                <SelectItem key={mod} value={`${prov}:${mod}`}>{mod}</SelectItem>
-              ))}
-            </SelectGroup>
+    <>
+    <div className="flex flex-col h-screen">
+      {/* Scrollable messages area */}
+      <div className="flex-1 overflow-y-auto pb-24">
+        <div className="max-w-3xl mx-auto py-6 px-4 space-y-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`px-2 py-1 rounded-sm shadow-sm border ${
+                  message.role === 'user'
+                    ? 'bg-white text-black border-gray-300'
+                    : 'bg-gray-100 text-black border-gray-200'
+                }`}
+              >
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case 'text':
+                      return <div className="prose prose-headings:my-2 prose-li:my-0 prose-ul:my-1 prose-p:my-2 
+                prose-pre:p-0 prose-pre:my-1 
+            dark:prose-invert dark:prose-pre:bg-gray-900 dark:prose-pre:text-gray-200" key={`${message.id}-${i}`}>
+                          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{part.text}</ReactMarkdown>
+                        </div>;
+                    default:
+                      return null;
+                  }
+                })}
+              </div>
+            </div>
           ))}
-        </SelectContent>
-      </Select>
-
-      {messages.map((message) => (
-        <div key={message.id} className="whitespace-pre-wrap">
-          {message.role === 'user' ? 'User: ' : 'AI: '}
-          {message.parts.map((part, i) => {
-            switch (part.type) {
-              case 'text':
-                return <div key={`${message.id}-${i}`}>{part.text}</div>;
-            }
-          })}
+          {/* Empty div for scrolling reference */}
+          <div ref={messagesEndRef} />
         </div>
-      ))}
+      </div>
 
-      <form onSubmit={(e) => handleSubmit(e, { body: { provider, model } })} className="mt-4">
-        <input
-          className="fixed dark:bg-zinc-900 bottom-0 w-full max-w-md p-2 mb-8 border border-zinc-300 dark:border-zinc-800 rounded shadow-xl"
-          value={input}
-          placeholder="Say something..."
-          onChange={handleInputChange}
-        />
-      </form>
+      {/* Fixed form at the bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm">
+        <form onSubmit={(e) => handleSubmit(e, { body: { provider, model } })} className="max-w-3xl mx-auto py-4 px-4">
+          <div className="border border-gray-300 dark:border-gray-700 rounded-lg shadow-md">
+            {/* Input field */}
+            <div className="p-3 pb-2">
+              <input
+                className="w-full bg-transparent outline-none"
+                value={input}
+                placeholder="需要Grok帮什么忙?"
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            {/* Toolbar */}
+            <div className="flex items-center justify-between p-2 border-t border-gray-200">
+              {/* Model selector */}
+              <div className="flex items-center">
+                <Select onValueChange={(value) => {
+                  const [selectedProvider, selectedModel] = value.split(':');
+                  setProvider(selectedProvider as keyof typeof providerModels);
+                  setModel(selectedModel);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(providerModels).map(([prov, models]) => (
+                      <SelectGroup key={prov}>
+                        <SelectLabel>{prov.charAt(0).toUpperCase() + prov.slice(1)}</SelectLabel>
+                        {models.map((mod: string) => (
+                          <SelectItem key={mod} value={`${prov}:${mod}`}>{mod}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Submit button */}
+              <Button 
+                type="submit"
+                size="icon"
+                variant="outline"
+                className="size-8"
+              >
+                <Send/>
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+    </>
   );
 } 

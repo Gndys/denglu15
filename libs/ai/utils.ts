@@ -12,13 +12,11 @@ interface StreamOptions {
 
 export function streamResponse({ messages, provider, model }: StreamOptions) {
   const config = getProviderConfig(provider || 'openai');
-  console.log('config', config);
   const aiProvider = createProvider(provider || 'openai', config);
   
   const result = streamText({
     model: aiProvider(model as any),
     messages,
   });
-  console.log('result', result);
   return result.toDataStreamResponse();
-} 
+}

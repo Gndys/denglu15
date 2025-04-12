@@ -43,8 +43,9 @@ libs/
 
 ## Usage Examples
 
-### Basic Usage
+### Backend Usage
 ```typescript
+// File: apps/next-app/src/app/api/chat/route.ts
 import { createAIHandler } from '@libs/ai';
 
 // Use default provider from env
@@ -55,6 +56,61 @@ const openaiHandler = createAIHandler({ provider: 'openai' });
 const qwenHandler = createAIHandler({ provider: 'qwen' });
 const deepseekHandler = createAIHandler({ provider: 'deepseek' });
 ```
+
+### Frontend Usage
+```typescript
+// File: apps/next-app/src/app/[lang]/(root)/ai/page.tsx
+import { useChat } from '@ai-sdk/react';
+import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+
+// In your React component
+export default function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  
+  return (
+    <div>
+      {/* Messages display */}
+      {messages.map(message => (
+        <div key={message.id}>
+          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+            {message.content}
+          </ReactMarkdown>
+        </div>
+      ))}
+      
+      {/* Chat input */}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Type your message..."
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+### Implementation Notes
+
+This is a basic implementation that provides core chat functionality. The current features include:
+- Basic chat interface with message history
+- Markdown rendering with code highlighting
+- Multiple AI provider support (OpenAI, Qwen, DeepSeek)
+- Streaming responses
+
+For additional features, you can extend this implementation using Vercel AI SDK's capabilities:
+- Function calling
+- Tools integration
+- Custom model parameters
+- Response formatting
+- Error handling
+- Rate limiting
+- Custom streaming handlers
+
+See [Vercel AI SDK Documentation](https://sdk.vercel.ai/) for detailed implementation guides.
 
 ## Adding New Models
 
