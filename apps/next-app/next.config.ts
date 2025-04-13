@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
+import type { NextConfig } from 'next'
+
 import { config } from 'dotenv';
 
 // 获取当前文件的目录
@@ -12,7 +14,7 @@ const rootDir = resolve(__dirname, '../..');
 const libsDir = resolve(rootDir, 'libs');
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig= {
   webpack(config: any) {
     // 修改 webpack 配置以处理 SVG 文件
     config.module.rules.push({
@@ -39,6 +41,7 @@ const nextConfig = {
   experimental: {
     // 允许导入外部目录
     externalDir: true,
+    nodeMiddleware: true,
     turbo: {
       rules: {
         '*.svg': {
