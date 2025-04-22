@@ -23,6 +23,7 @@ function getLocale(request: NextRequest): string {
 
 export function localeMiddleware(request: NextRequest): NextResponse | undefined {
   const pathname = request.nextUrl.pathname;
+  const search = request.nextUrl.search; // Get search params
 
   // --- Skip API routes in locale middleware ---
   if (pathname.startsWith('/api/')) {
@@ -38,11 +39,11 @@ export function localeMiddleware(request: NextRequest): NextResponse | undefined
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
 
-    // e.g. incoming request is /products
-    // The new URL is now /en/products
+    // e.g. incoming request is /products?token=123
+    // The new URL is now /en/products?token=123
     return NextResponse.redirect(
       new URL(
-        `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
+        `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}${search}`,
         request.url
       )
     );

@@ -109,6 +109,47 @@ export const en: Locale = {
         invalidCode: "Please enter a valid verification code",
         requiredCode: "Verification code is required"
       }
+    },
+    forgetPassword: {
+      title: "Reset your password",
+      description: "Enter your email address and we'll send you a link to reset your password",
+      email: "Email",
+      emailPlaceholder: "m@example.com",
+      submit: "Send reset link",
+      submitting: "Sending...",
+      termsNotice: "By clicking continue, you agree to our",
+      termsOfService: "Terms of Service",
+      privacyPolicy: "Privacy Policy",
+      verification: {
+        title: "Check your email",
+        sent: "We've sent a password reset link to",
+        checkSpam: "Can't find the email? Please check your spam folder."
+      },
+      errors: {
+        invalidEmail: "Please enter a valid email",
+        requiredEmail: "Email is required"
+      }
+    },
+    resetPassword: {
+      title: "Reset your password",
+      description: "Please enter your new password below",
+      password: "New Password",
+      passwordPlaceholder: "Enter your new password",
+      confirmPassword: "Confirm Password",
+      confirmPasswordPlaceholder: "Confirm your new password",
+      submit: "Reset Password",
+      submitting: "Resetting...",
+      success: {
+        title: "Password Reset Successful",
+        description: "Your password has been successfully reset.",
+        backToSignin: "Back to Sign In"
+      },
+      errors: {
+        invalidPassword: "Password must be at least 8 characters",
+        requiredPassword: "Password is required",
+        passwordsDontMatch: "Passwords don't match",
+        invalidToken: "Invalid or expired reset link. Please try again."
+      }
     }
   }
 } 

@@ -108,6 +108,47 @@ export type Locale = {
         requiredCode: string
       }
     }
+    forgetPassword: {
+      title: string
+      description: string
+      email: string
+      emailPlaceholder: string
+      submit: string
+      submitting: string
+      termsNotice: string
+      termsOfService: string
+      privacyPolicy: string
+      verification: {
+        title: string
+        sent: string
+        checkSpam: string
+      }
+      errors: {
+        invalidEmail: string
+        requiredEmail: string
+      }
+    }
+    resetPassword: {
+      title: string
+      description: string
+      password: string
+      passwordPlaceholder: string
+      confirmPassword: string
+      confirmPasswordPlaceholder: string
+      submit: string
+      submitting: string
+      success: {
+        title: string
+        description: string
+        backToSignin: string
+      }
+      errors: {
+        invalidPassword: string
+        requiredPassword: string
+        passwordsDontMatch: string
+        invalidToken: string
+      }
+    }
   }
 } 
  

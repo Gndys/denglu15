@@ -109,6 +109,47 @@ export const zhCN: Locale = {
         invalidCode: "请输入有效的验证码",
         requiredCode: "请输入验证码"
       }
+    },
+    forgetPassword: {
+      title: "重置密码",
+      description: "输入您的邮箱地址，我们将向您发送重置密码的链接",
+      email: "邮箱",
+      emailPlaceholder: "m@example.com",
+      submit: "发送重置链接",
+      submitting: "发送中...",
+      termsNotice: "点击继续即表示您同意我们的",
+      termsOfService: "服务条款",
+      privacyPolicy: "隐私政策",
+      verification: {
+        title: "检查您的邮箱",
+        sent: "我们已经发送重置密码链接到",
+        checkSpam: "找不到邮件？请检查垃圾邮件文件夹。"
+      },
+      errors: {
+        invalidEmail: "请输入有效的邮箱地址",
+        requiredEmail: "请输入邮箱"
+      }
+    },
+    resetPassword: {
+      title: "重置密码",
+      description: "请输入您的新密码",
+      password: "新密码",
+      passwordPlaceholder: "请输入新密码",
+      confirmPassword: "确认密码",
+      confirmPasswordPlaceholder: "请再次输入新密码",
+      submit: "重置密码",
+      submitting: "重置中...",
+      success: {
+        title: "密码重置成功",
+        description: "您的密码已经成功重置。",
+        backToSignin: "返回登录"
+      },
+      errors: {
+        invalidPassword: "密码长度至少为8个字符",
+        requiredPassword: "请输入密码",
+        passwordsDontMatch: "两次输入的密码不一致",
+        invalidToken: "重置链接无效或已过期，请重试。"
+      }
     }
   }
 } 

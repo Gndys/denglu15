@@ -60,4 +60,18 @@ export const updateUserSchema = userSchema.partial();
 // 用户ID验证器
 export const userIdSchema = z.object({
   id: z.string().min(1),
+});
+
+// 忘记密码验证器
+export const forgetPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+// 重置密码验证器
+export const resetPasswordSchema = z.object({
+  password: z.string().min(8).max(100),
+  confirmPassword: z.string().min(8).max(100),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 }); 
