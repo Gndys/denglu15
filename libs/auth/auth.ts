@@ -1,9 +1,8 @@
-import { betterAuth } from "better-auth";
+import { Account, betterAuth, User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { genericOAuth, phoneNumber, admin } from "better-auth/plugins"
-
-import { validator, StandardAdapter} from "validation-better-auth"
-
+import { validator, StandardAdapter } from "validation-better-auth"
+import { createAuthMiddleware, APIError } from "better-auth/api"
 
 import { db, user, account, session, verification } from '@libs/database'
 // import { sendSMSByAliyun } from '@libs/sms/aliyun'
@@ -20,12 +19,187 @@ interface WeChatProfile {
 interface WeChatTokens {
   access_token: string;
   openid: string;
+  refresh_token: string;
+  scope: string;
+  errcode?: number;
+  errmsg?: string;
 }
 
 export const auth = betterAuth({
   appName: 'shipeasy',
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      
+      // 从请求 URL 中获取实际的 provider
+      if (!ctx.request?.url) {
+        throw new APIError("BAD_REQUEST", {
+          message: "Invalid request URL",
+        });
+      }
+
+      const url = new URL(ctx.request.url);
+      const pathParts = url.pathname.split('/');
+      const providerId = pathParts[pathParts.length - 1];
+
+      // 拦截微信登录回调
+      if (ctx.path === "/oauth2/callback/:providerId" && providerId === "wechat") {
+        try {
+          const code = ctx.query?.code;
+          if (!code || Array.isArray(code)) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Missing or invalid authorization code",
+            });
+          }
+
+          // 获取访问令牌
+          const tokenResponse = await fetch(
+            `https://api.weixin.qq.com/sns/oauth2/access_token?` +
+            `appid=${process.env.WECHAT_APP_ID}&` +
+            `secret=${process.env.WECHAT_APP_SECRET}&` +
+            `code=${code}&grant_type=authorization_code`
+          );
+
+          const tokenData: WeChatTokens = await tokenResponse.json();
+          
+          if (tokenData.errcode) {
+            throw new APIError("BAD_REQUEST", {
+              message: `WeChat API error: ${tokenData.errmsg}`,
+            });
+          }
+
+          // 获取用户信息
+          const userInfoResponse = await fetch(
+            `https://api.weixin.qq.com/sns/userinfo?` +
+            `access_token=${tokenData.access_token}&` +
+            `openid=${tokenData.openid}&lang=zh_CN`
+          );
+          // https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Authorized_Interface_Calling_UnionID.html
+          // {
+          //   "openid":"OPENID",
+          //   "nickname":"NICKNAME",
+          //   "sex":1,
+          //   "province":"PROVINCE",
+          //   "city":"CITY",
+          //   "country":"COUNTRY",
+          //   "headimgurl": "https://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0",
+          //   "privilege":[
+          //   "PRIVILEGE1",
+          //   "PRIVILEGE2"
+          //   ],
+          //   "unionid": " o6_bmasdasdsad6_2sgVt7hMZOPfL"
+            
+          //   }
+            
+          const profile: WeChatProfile = await userInfoResponse.json();
+          
+          if (!profile || !profile.openid) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Failed to get WeChat user info",
+            });
+          }
+          
+          // 先查找是否存在关联的账户
+          const existingAccount = await ctx.context.adapter.findOne({
+            model: "account",
+            where: [
+              {
+                field: "providerId",
+                value: "wechat",
+                operator: "eq"
+              },
+              {
+                field: "accountId",
+                value: profile.unionid || profile.openid,
+                operator: "eq"
+              }
+            ]
+          }) as Account;
+
+          let user: null | User;
+          
+          if (existingAccount) {
+            // 如果账户存在，获取关联的用户
+            user = await ctx.context.adapter.findOne({
+              model: "user",
+              where: [
+                {
+                  field: "id",
+                  value: existingAccount.userId,
+                  operator: "eq"
+                }
+              ]
+            });
+            
+            if (!user) {
+              throw new APIError("INTERNAL_SERVER_ERROR", {
+                message: "Associated user not found",
+              });
+            }
+
+            // 更新用户信息
+            // user = await ctx.context.internalAdapter.updateUser({
+            //   id: user.id,
+            //   name: profile.nickname,
+            //   image: profile.headimgurl,
+            // });
+          } else {
+            // 创建新用户
+            user = await ctx.context.internalAdapter.createUser({
+              name: profile.nickname,
+              email: `${profile.openid}@wechat.com`,
+              emailVerified: true,
+              image: profile.headimgurl,
+            });
+
+            // 创建账户关联
+            await ctx.context.internalAdapter.createAccount({
+              providerId: "wechat",
+              accountId: profile.unionid || profile.openid,
+              userId: user.id,
+              scope: "snsapi_login",
+              accessToken: tokenData.access_token,
+              tokenType: "bearer",
+            });
+          }
+
+          // 创建会话
+          const newSession = await ctx.context.internalAdapter.createSession(
+            user.id,
+            ctx.request
+          );
+          console.log('new session', newSession)
+          // 设置会话 cookie
+          await ctx.setSignedCookie(
+            ctx.context.authCookies.sessionToken.name,
+            newSession.token,
+            ctx.context.secret,
+            {
+              ...ctx.context.authCookies.sessionToken.options,
+              path: "/",
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+            }
+          );
+
+          // 重定向到成功页面
+          // const callbackUrl = ctx.query?.state || "/";
+          // const redirectUrl = Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl;
+          // console.log('redirectUrl', redirectUrl)
+          throw ctx.redirect("/");
+        } catch (error) {
+          if (error instanceof APIError) {
+            throw error;
+          }
+          console.error("WeChat login error:", error);
+          throw new APIError("INTERNAL_SERVER_ERROR", {
+            message: "Failed to process WeChat login",
+          });
+        }
+      }
+    }),
+  },
   database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
+    provider: "pg",
     schema: {
       user,
       account,

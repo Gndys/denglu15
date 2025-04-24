@@ -150,6 +150,17 @@ export const zhCN: Locale = {
         passwordsDontMatch: "两次输入的密码不一致",
         invalidToken: "重置链接无效或已过期，请重试。"
       }
+    },
+    wechat: {
+      title: "微信登录",
+      description: "使用微信扫码登录",
+      scanQRCode: "请使用微信扫描二维码",
+      orUseOtherMethods: "或使用其他登录方式",
+      loadingQRCode: "正在加载二维码...",
+      errors: {
+        loadingFailed: "微信二维码加载失败",
+        networkError: "网络错误，请重试"
+      }
     }
   }
 } 

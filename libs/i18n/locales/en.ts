@@ -150,6 +150,17 @@ export const en: Locale = {
         passwordsDontMatch: "Passwords don't match",
         invalidToken: "Invalid or expired reset link. Please try again."
       }
+    },
+    wechat: {
+      title: "WeChat Login",
+      description: "Scan with WeChat to log in",
+      scanQRCode: "Please scan the QR code with WeChat",
+      orUseOtherMethods: "Or use other login methods",
+      loadingQRCode: "Loading QR code...",
+      errors: {
+        loadingFailed: "Failed to load WeChat QR code",
+        networkError: "Network error, please try again"
+      }
     }
   }
 } 

@@ -7,7 +7,6 @@ export default async function AdminDashboard ()  {
   const session = await auth.api.getSession({
     headers: await headers()
   })
-
   // 如果正在加载或没有用户信息，显示加载状态
   if (!session || session.user.role !== userRoles.ADMIN) {
     return null;

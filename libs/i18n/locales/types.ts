@@ -90,6 +90,17 @@ export type Locale = {
         invalidImage: string
       }
     }
+    wechat: {
+      title: string
+      description: string
+      scanQRCode: string
+      orUseOtherMethods: string
+      loadingQRCode: string
+      errors: {
+        loadingFailed: string
+        networkError: string
+      }
+    }
     phone: {
       title: string
       description: string
