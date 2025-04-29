@@ -19,7 +19,7 @@ type FormData = z.infer<typeof forgetPasswordSchema>;
 
 export default function ForgetPasswordPage() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -42,7 +42,12 @@ export default function ForgetPasswordPage() {
       setError(null);
       await authClientReact.forgetPassword({
         email: data.email,
-        redirectTo: '/reset-password'
+        redirectTo: '/reset-password',
+        fetchOptions: {
+          headers: {
+            'X-Locale': locale
+          }
+        }
       });
       setEmailSent(true);
       setSentEmail(data.email);

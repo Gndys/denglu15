@@ -34,6 +34,32 @@ export const zhCN: Locale = {
     createUser: "创建用户",
     deleteUser: "删除用户"
   },
+  email: {
+    verification: {
+      subject: "验证您的 ShipEasy 账号",
+      title: "请验证您的邮箱地址",
+      greeting: "您好 {{name}}，",
+      message: "感谢您注册 ShipEasy。要完成注册，请点击下方按钮验证您的电子邮箱地址。",
+      button: "验证邮箱地址",
+      alternativeText: "或者，您可以复制并粘贴以下链接到浏览器中：",
+      expiry: "此链接将在 {{expiry_hours}} 小时后过期。",
+      disclaimer: "如果您没有请求此验证，请忽略此邮件。",
+      signature: "祝您使用愉快，<br>ShipEasy 团队",
+      copyright: "© {{year}} ShipEasy. 保留所有权利。"
+    },
+    resetPassword: {
+      subject: "重置您的 ShipEasy 密码",
+      title: "重置您的密码",
+      greeting: "您好 {{name}}，",
+      message: "我们收到了重置您密码的请求。请点击下方按钮创建新密码。如果您没有提出此请求，可以安全地忽略此邮件。",
+      button: "重置密码",
+      alternativeText: "或者，您可以复制并粘贴以下链接到浏览器中：",
+      expiry: "此链接将在 {{expiry_hours}} 小时后过期。",
+      disclaimer: "如果您没有请求重置密码，无需进行任何操作。",
+      signature: "祝您使用愉快，<br>ShipEasy 团队",
+      copyright: "© {{year}} ShipEasy. 保留所有权利。"
+    }
+  },
   auth: {
     signin: {
       title: "登录您的账户",

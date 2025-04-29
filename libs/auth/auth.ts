@@ -7,6 +7,7 @@ import { db, user, account, session, verification } from '@libs/database'
 // import { sendSMSByAliyun } from '@libs/sms/aliyun'
 import { emailSignInSchema, emailSignUpSchema } from '@libs/validators/user'
 import { wechatPlugin } from './plugins/wechat'
+import { sendVerificationEmail, sendResetPasswordEmail } from '@libs/email'
 export { toNextJsHandler } from "better-auth/next-js";
 
 
@@ -26,24 +27,43 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false, //defaults to true
     requireEmailVerification: true,
-    sendResetPassword: async ({user, url, token}) => {
-      // await sendEmail({
-      //   to: user.email,
-      //   subject: "Reset your password",
-      //   text: `Click the link to reset your password: ${url}`,
-      // });
-      console.log('the token', token)
-      console.log(`Click the link to reset your password: ${url}`)
+    sendResetPassword: async ({user, url, token}, request) => {
+      // 从请求头中获取语言信息，默认为英文
+      const locale = request?.headers?.get('X-Locale') || 'en';
+      
+      try {
+        // 使用我们的邮件模块发送重置密码邮件
+        await sendResetPasswordEmail(user.email, {
+          name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
+          reset_url: url,
+          expiry_hours: 24, // 假设链接24小时后过期，可以根据实际情况调整
+          locale: locale as 'en' | 'zh-CN' // 类型转换
+        });
+        
+        console.log(`Reset password email sent to ${user.email} in ${locale} language`);
+      } catch (error) {
+        console.error('Failed to send reset password email:', error);
+      }
     },
   },
   emailVerification: {
     sendVerificationEmail: async ( { user, url, token }, request) => {
-      // await sendEmail({
-      //   to: user.email,
-      //   subject: "Verify your email address",
-      //   text: `Click the link to verify your email: ${url}`,
-      // });
-      console.log(`Click the link to verify your email${user.email}: ${url}`,)
+      // 从请求头中获取语言信息，默认为英文
+      const locale = request?.headers?.get('X-Locale') || 'en';
+      
+      try {
+        // 使用我们的邮件模块发送验证邮件
+        await sendVerificationEmail(user.email, {
+          name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
+          verification_url: url,
+          expiry_hours: 24, // 假设链接24小时后过期，可以根据实际情况调整
+          locale: locale as 'en' | 'zh-CN' // 类型转换
+        });
+        
+        console.log(`Verification email sent to ${user.email} in ${locale} language`);
+      } catch (error) {
+        console.error('Failed to send verification email:', error);
+      }
     },
     autoSignInAfterVerification: true
   },

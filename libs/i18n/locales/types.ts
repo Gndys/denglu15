@@ -32,6 +32,32 @@ export type Locale = {
     createUser: string
     deleteUser: string
   }
+  email: {
+    verification: {
+      subject: string
+      title: string
+      greeting: string
+      message: string
+      button: string
+      alternativeText: string
+      expiry: string
+      disclaimer: string
+      signature: string
+      copyright: string
+    }
+    resetPassword: {
+      subject: string
+      title: string
+      greeting: string
+      message: string
+      button: string
+      alternativeText: string
+      expiry: string
+      disclaimer: string
+      signature: string
+      copyright: string
+    }
+  }
   admin: {
     users: {
       title: string

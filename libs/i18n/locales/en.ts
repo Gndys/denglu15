@@ -34,6 +34,32 @@ export const en: Locale = {
     createUser: "Create User",
     deleteUser: "Delete User"
   },
+  email: {
+    verification: {
+      subject: "Verify your ShipEasy account",
+      title: "Verify your email address",
+      greeting: "Hello {{name}},",
+      message: "Thank you for registering with ShipEasy. To complete your registration, please click the button below to verify your email address.",
+      button: "Verify Email Address",
+      alternativeText: "Or, copy and paste the following link into your browser:",
+      expiry: "This link will expire in {{expiry_hours}} hours.",
+      disclaimer: "If you didn't request this verification, please ignore this email.",
+      signature: "Happy Shipping,<br>The ShipEasy Team",
+      copyright: "© {{year}} ShipEasy. All rights reserved."
+    },
+    resetPassword: {
+      subject: "Reset your ShipEasy password",
+      title: "Reset your password",
+      greeting: "Hello {{name}},",
+      message: "We received a request to reset your password. Please click the button below to create a new password. If you didn't make this request, you can safely ignore this email.",
+      button: "Reset Password",
+      alternativeText: "Or, copy and paste the following link into your browser:",
+      expiry: "This link will expire in {{expiry_hours}} hours.",
+      disclaimer: "If you didn't request a password reset, no action is required.",
+      signature: "Happy Shipping,<br>The ShipEasy Team",
+      copyright: "© {{year}} ShipEasy. All rights reserved."
+    }
+  },
   auth: {
     signin: {
       title: "Sign in to your account",

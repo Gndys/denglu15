@@ -75,7 +75,12 @@ export function SignupForm({
     console.log('Sign up successful', data);
     const { error: verificationError } = await authClientReact.sendVerificationEmail({
       email: formData.email,
-      callbackURL: "/" // The redirect URL after verification
+      callbackURL: "/", // The redirect URL after verification
+      fetchOptions: {
+        headers: {
+          'X-Locale': locale
+        }
+      }
     });
 
     if (verificationError) {
