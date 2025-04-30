@@ -73,30 +73,8 @@ export function SignupForm({
     }
 
     console.log('Sign up successful', data);
-    const { error: verificationError } = await authClientReact.sendVerificationEmail({
-      email: formData.email,
-      callbackURL: "/", // The redirect URL after verification
-      // fetchOptions: {
-      //   headers: {
-      //     'X-Locale': locale
-      //   }
-      // }
-    });
-    console.log('verificationError', verificationError);
-
-    if (verificationError) {
-      if (verificationError.code && verificationError.message) {
-        setErrorMessage(verificationError.message);
-        setErrorCode(verificationError.code);
-      } else {
-        setErrorMessage(t.common.unexpectedError);
-        setErrorCode('UNKNOWN_ERROR');
-      }
-    } else {
-      setVerificationEmail(formData.email);
-      setIsVerificationEmailSent(true);
-    }
-    
+    setVerificationEmail(formData.email);
+    setIsVerificationEmailSent(true);
     setLoading(false);
   };
 
