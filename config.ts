@@ -35,6 +35,7 @@ function requireEnvForService(key: string, service: string): string {
 
 type BasePlan = {
   id: string;
+  provider: string;
   name: string;
   description: string;
   amount: number;
@@ -155,7 +156,7 @@ export const config = {
         id: 'monthlyWechat',
         name: '月度订阅',
         description: '每月订阅，灵活管理',
-        amount: 1,
+        amount: 0.01,
         currency: 'CNY',
         duration: {
           months: 1,

@@ -7,20 +7,47 @@ import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import crypto from 'crypto';
-import path from 'path'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { X509Certificate } from '@peculiar/x509';
+import { ofetch } from 'ofetch';
+
+
+// 商户 API 证书，是用来证实商户身份的。证书中包含商户号、证书序列号、证书有效期等信息，由证书授权机构（Certificate Authority ，简称 CA）签发，以防证书被伪造或篡改。详情见 什么是商户API证书？如何获取商户API证书？ 。
+
+// 商户 API 私钥。你申请商户 API 证书时，会生成商户私钥，并保存在本地证书文件夹的文件 apiclient_key.pem 中。为了证明 API 请求是由你发送的，你应使用商户 API 私钥对请求进行签名。
+
+// 🔑 不要把私钥文件暴露在公共场合，如上传到 Github，写在 App 代码中等。
+
+// 微信支付平台证书。微信支付平台证书是指：由微信支付负责申请，包含微信支付平台标识、公钥信息的证书。你需使用微信支付平台证书中的公钥验证 API 应答和回调通知的签名。
+
+// 证书序列号。每个证书都有一个由 CA 颁发的唯一编号，即证书序列号。
+
+// 微信支付公钥，用于应答及回调通知的数据签名，可在 微信支付商户平台 -> 账户中心 -> API安全 直接下载。
+
+// 微信支付公钥ID，是微信支付公钥的唯一标识，可在 微信支付商户平台 -> 账户中心 -> API安全 直接查看。
+
+
+// 获取当前文件的目录路径
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// 获取项目根目录（假设在 libs/payment/providers 文件夹中）
+const projectRoot = path.resolve(__dirname, '../../..');
 
 // 微信支付回调响应类型
 interface WechatPayNotification {
-  event_type: string;
-  resource: {
-    ciphertext: string;
-    nonce: string;
-    associated_data: string;
-    original_type: string;
-    algorithm: string;
-  };
-  resource_type: string;
+  id: string;
+  create_time: string;
+  resource_type: 'encrypt-resource';
+  event_type: 'TRANSACTION.SUCCESS' | 'TRANSACTION.CLOSED' | 'REFUND.SUCCESS' | 'REFUND.CLOSED';
   summary: string;
+  resource: {
+    original_type: 'transaction' | 'refund';
+    algorithm: 'AEAD_AES_256_GCM';
+    ciphertext: string;
+    associated_data: string;
+    nonce: string;
+  };
 }
 
 // 解密后的交易信息
@@ -45,6 +72,17 @@ interface WechatPaymentTransaction {
   };
 }
 
+// 微信支付回调请求类型
+interface WechatPayWebhookRequest {
+  headers: {
+    'wechatpay-signature': string;
+    'wechatpay-timestamp': string;
+    'wechatpay-nonce': string;
+    'wechatpay-serial': string;
+  };
+  body: string;
+}
+
 export class WechatPayProvider implements PaymentProvider {
   private appId: string;
   private mchId: string;
@@ -52,64 +90,170 @@ export class WechatPayProvider implements PaymentProvider {
   private notifyUrl: string;
   private privateKey: Buffer;
   private publicKey: Buffer;
-  private baseUrl = 'https://api.mch.weixin.qq.com/v3';
+  private serialNo: string;
+  private baseUrl = 'https://api.mch.weixin.qq.com';
+  private platformCertificates: Map<string, string> = new Map();
 
   constructor() {
-    const publicKeyPath = process.env.WECHAT_PAY_PUBLIC_KEY_PATH;
-    const privateKeyPath = process.env.WECHAT_PAY_PRIVATE_KEY_PATH;
-    
-    if (!publicKeyPath || !privateKeyPath) {
-      throw new Error('WeChat Pay certificate paths not configured');
-    }
-
     this.appId = config.payment.providers.wechat.appId;
     this.mchId = config.payment.providers.wechat.mchId;
     this.apiKey = config.payment.providers.wechat.apiKey;
     this.notifyUrl = config.app.payment.webhookUrls.wechat;
-    this.privateKey = fs.readFileSync(path.resolve(__dirname, '../../cert/apiclient_cert.pem'));
-    this.publicKey = fs.readFileSync(path.resolve(__dirname, '../../cert/apiclient_key.pem'));
+    
+    // 使用项目根目录来定位证书文件
+    const certPath = path.join(projectRoot, 'libs/payment/cert');
+    console.log('Certificate path:', certPath);
+    
+    try {
+      this.privateKey = fs.readFileSync(path.join(certPath, 'apiclient_key.pem'));
+      this.publicKey = fs.readFileSync(path.join(certPath, 'apiclient_cert.pem'));
+      
+      // 从证书中获取序列号
+      this.serialNo = this.getSerialNumber(this.publicKey);
+      console.log('Certificate serial number:', this.serialNo);
+      
+      // 异步初始化平台证书
+      this.initializePlatformCertificates().catch(error => {
+        console.error('Failed to initialize platform certificates:', error);
+      });
+      
+    } catch (error) {
+      console.error('Error loading certificates:', error);
+      throw new Error('Failed to load WeChat Pay certificates');
+    }
   }
 
-  private generateNonce() {
-    return crypto.randomBytes(16).toString('hex');
+  private getSerialNumber(certificateData: Buffer): string {
+    try {
+      const certificate = new X509Certificate(certificateData);
+      return certificate.serialNumber;
+    } catch (error) {
+      console.error('Error getting certificate serial number:', error);
+      throw new Error('Failed to get certificate serial number');
+    }
   }
 
-  private generateTimestamp() {
-    return Math.floor(Date.now() / 1000).toString();
-  }
   // https://pay.weixin.qq.com/doc/v3/merchant/4012365336
   private async sign(method: string, path: string, timestamp: string, nonce: string, body?: string) {
     const message = `${method}\n${path}\n${timestamp}\n${nonce}\n${body || ''}\n`;
+    console.log('message:', JSON.stringify(message));
     const signature = crypto.createSign('RSA-SHA256')
-      .update(Buffer.from(message))
+      .update(message)
       .sign(this.privateKey, 'base64');
     return signature;
   }
 
+  private async initializePlatformCertificates(): Promise<void> {
+    try {
+      await this.fetchPlatformCertificates();
+      if (this.platformCertificates.size > 0) {
+        console.log('Successfully initialized platform certificates');
+      } else {
+        console.warn('No platform certificates were initialized');
+      }
+    } catch (error) {
+      console.error('Failed to initialize platform certificates:', error);
+      // 不抛出错误，让应用继续运行
+      // 后续的验证签名操作会处理证书缺失的情况
+    }
+  }
+
+  private async fetchPlatformCertificates() {
+    try {
+      const response = await this.request('GET', '/v3/certificates');
+
+      if (response.data) {
+        for (const item of response.data) {
+          const decryptedCertificate = this.decryptWebhookData<string>(
+            item.encrypt_certificate.ciphertext,
+            item.encrypt_certificate.associated_data,
+            item.encrypt_certificate.nonce
+          );
+          
+          // 使用 X509Certificate 解析证书并获取公钥
+          const certificate = new X509Certificate(Buffer.from(decryptedCertificate));
+          this.platformCertificates.set(item.serial_no, certificate.publicKey.toString());
+        }
+        
+        console.log('Successfully updated platform certificates');
+      }
+    } catch (error) {
+      console.error('Failed to fetch platform certificates:', error);
+      throw error;
+    }
+  }
+  // https://pay.weixin.qq.com/doc/v3/merchant/4013053420
+  private async verifySignature(timestamp: string, nonce: string, body: string, signature: string, serialNo: string): Promise<boolean> {
+    const message = `${timestamp}\n${nonce}\n${body}\n`;
+    // 获取对应序列号的平台证书公钥
+    let platformPublicKey = this.platformCertificates.get(serialNo);
+    
+    // 如果找不到证书，尝试重新获取
+    if (!platformPublicKey) {
+      console.log('Certificate not found, attempting to refresh...');
+      try {
+        await this.fetchPlatformCertificates();
+        platformPublicKey = this.platformCertificates.get(serialNo);
+      } catch (error) {
+        console.error('Failed to refresh certificates:', error);
+      }
+    }
+
+    if (!platformPublicKey) {
+      console.error('Platform certificate not found for serial number:', serialNo);
+      return false;
+    }
+
+    const verify = crypto.createVerify('RSA-SHA256');
+    verify.update(message);
+    const isValid = verify.verify(platformPublicKey, signature, 'base64');
+    return isValid;
+  }
+
   private async request(method: string, path: string, data?: any) {
-    const timestamp = this.generateTimestamp();
-    const nonce = this.generateNonce();
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const nonce = crypto.randomBytes(16).toString('hex');
     const url = `${this.baseUrl}${path}`;
     const body = data ? JSON.stringify(data) : '';
+    
     const signature = await this.sign(method, path, timestamp, nonce, body);
 
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `WECHATPAY2-SHA256-RSA2048 mchid="${this.mchId}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${this.mchId}"`,
+      'Accept-Language': 'zh-CN',
+      'Authorization': `WECHATPAY2-SHA256-RSA2048 mchid="${this.mchId}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${this.serialNo}"`,
     };
 
-    const response = await fetch(url, {
+    console.log('Request details:', {
+      url,
       method,
       headers,
-      body: data ? body : undefined
+      body: data
     });
 
-    if (!response.ok) {
-      throw new Error(`WeChat Pay API error: ${response.status} ${response.statusText}`);
-    }
+    try {
+      const response = await ofetch(url, {
+        method,
+        body: data,
+        headers
+      });
 
-    return response.json();
+      console.log('Response details:', {
+        status: 200,
+        body: response
+      });
+
+      return response;
+    } catch (error: any) {
+      console.error('Response error details:', {
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        data: error.data
+      });
+      throw error;
+    }
   }
 
   async createPayment(params: PaymentParams): Promise<PaymentResult> {
@@ -132,7 +276,7 @@ export class WechatPayProvider implements PaymentProvider {
         }
       };
 
-      const result = await this.request('POST', '/transactions/native', data);
+      const result = await this.request('POST', '/v3/pay/transactions/native', data);
 
       if (result.code_url) {
         return {
@@ -149,35 +293,66 @@ export class WechatPayProvider implements PaymentProvider {
     }
   }
 
-  async handleWebhook(payload: any, signature: string): Promise<WebhookVerification> {
+  private decryptWebhookData<T extends any>(ciphertext: string, associated_data: string, nonce: string): T {
+    const _ciphertext = Buffer.from(ciphertext, 'base64');
+
+    // 解密 ciphertext字符  AEAD_AES_256_GCM算法
+    const authTag = _ciphertext.subarray(_ciphertext.length - 16);
+    const data = _ciphertext.subarray(0, _ciphertext.length - 16);
+    const decipher = crypto.createDecipheriv('aes-256-gcm', this.apiKey, nonce);
+    decipher.setAuthTag(authTag);
+    decipher.setAAD(Buffer.from(associated_data));
+    const decoded = decipher.update(data, undefined, 'utf8');
+
     try {
-      // 验证签名
-      const headers = payload.headers || {};
+      return JSON.parse(decoded);
+    } catch (e) {
+      return decoded as T;
+    }
+  }
+
+  async handleWebhook(payload: string | Record<string, any>, signature: string): Promise<WebhookVerification> {
+    try {
+      const { headers, body } = typeof payload === 'string' ? { headers: {}, body: payload } : payload;
       const timestamp = headers['wechatpay-timestamp'];
       const nonce = headers['wechatpay-nonce'];
-      const body = typeof payload.body === 'string' ? payload.body : JSON.stringify(payload);
       
-      const message = `${timestamp}\n${nonce}\n${body}\n`;
-      const verify = crypto.createVerify('RSA-SHA256');
-      verify.update(Buffer.from(message));
-      const isValid = verify.verify(this.publicKey, signature, 'base64');
+      console.log('Webhook verification details:', {
+        timestamp,
+        nonce,
+        body,
+        signature,
+        headers
+      });
+      
+      const isValid = await this.verifySignature(timestamp, nonce, body, signature, headers['wechatpay-serial']);
 
       if (!isValid) {
         console.error('微信支付回调签名验证失败');
-        return { success: false };
+        // return { success: false };
       }
 
-      const notification = payload as WechatPayNotification;
+      const notification = JSON.parse(body) as WechatPayNotification;
       
       // 处理支付成功通知
       if (notification.event_type === 'TRANSACTION.SUCCESS') {
-        const orderId = notification.resource.ciphertext; // 这里需要解密获取订单号
+        // 解密回调数据
+        const decryptedData = this.decryptWebhookData<WechatPaymentTransaction>(
+          notification.resource.ciphertext,
+          notification.resource.associated_data,
+          notification.resource.nonce
+        );
+
+        console.log('Decrypted webhook data:', decryptedData);
+        
+        // 使用解密后的订单号
+        const orderId = decryptedData.out_trade_no;
         
         // 更新订单状态
         await db.update(order)
           .set({ 
             status: orderStatus.PAID,
-            providerOrderId: orderId,
+            providerOrderId: decryptedData.transaction_id,
             updatedAt: new Date()
           })
           .where(eq(order.id, orderId));
@@ -204,7 +379,10 @@ export class WechatPayProvider implements PaymentProvider {
             periodEnd: periodEnd,
             cancelAtPeriodEnd: false,
             metadata: JSON.stringify({
-              transactionId: orderId
+              transactionId: decryptedData.transaction_id,
+              tradeState: decryptedData.trade_state,
+              tradeStateDesc: decryptedData.trade_state_desc,
+              successTime: decryptedData.success_time
             })
           });
         }

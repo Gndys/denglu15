@@ -7,12 +7,15 @@ import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import { authClientReact } from "@libs/auth/authClient";
+import QRCode from 'qrcode';
 
 export default function PricingPage() {
   const { t, locale: currentLocale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
   const plans = Object.values(config.payment.plans) as unknown as Plan[];
   
   const { data: session, isPending } = authClientReact.useSession();
@@ -21,7 +24,7 @@ export default function PricingPage() {
   const handleSubscribe = async (plan: Plan) => {
     try {
       // 检查用户是否已登录
-    if (!user) {
+      if (!user) {
         // 保存当前页面路径，以便登录后返回
         const returnPath = encodeURIComponent(pathname);
         router.push(`/${currentLocale}/signin?returnTo=${returnPath}`);
@@ -30,6 +33,10 @@ export default function PricingPage() {
 
       setLoading(plan.id);
       
+      // 根据支付方式决定 provider
+      const provider = plan.provider || 'stripe';
+      setCurrentPlan(plan);
+      
       const response = await fetch('/api/payment/initiate', {
         method: 'POST',
         headers: {
@@ -37,7 +44,7 @@ export default function PricingPage() {
         },
         body: JSON.stringify({
           planId: plan.id,
-          provider: 'stripe'
+          provider
         })
       });
 
@@ -47,9 +54,24 @@ export default function PricingPage() {
         throw new Error(data.error || 'Failed to initiate payment');
       }
       console.log('Payment initiation result:', data);
-      // 对于 Stripe，重定向到 Checkout 页面
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+      
+      // 不同支付方式的处理
+      if (provider === 'wechat') {
+        // 微信支付显示二维码
+        if (data.paymentUrl) {
+          try {
+            const qrDataUrl = await QRCode.toDataURL(data.paymentUrl);
+            setQrCodeUrl(qrDataUrl);
+          } catch (err) {
+            console.error('QR code generation error:', err);
+            toast.error(t.common.unexpectedError);
+          }
+        }
+      } else {
+        // Stripe 跳转到 Checkout 页面
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        }
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -57,6 +79,11 @@ export default function PricingPage() {
     } finally {
       setLoading(null);
     }
+  };
+
+  const closeQrCodeModal = () => {
+    setQrCodeUrl(null);
+    setCurrentPlan(null);
   };
 
   return (
@@ -120,6 +147,46 @@ export default function PricingPage() {
           })}
         </div>
       </div>
+
+      {/* QR Code Modal for WeChat payment */}
+      {qrCodeUrl && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-2">
+                微信支付
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {currentPlan && (
+                  <span>
+                    {currentPlan.currency === 'CNY' ? '¥' : '$'}{currentPlan.amount} - 
+                    {currentPlan.i18n && 
+                     currentPlan.i18n[currentLocale] && 
+                     currentPlan.i18n[currentLocale].name || currentPlan.name}
+                  </span>
+                )}
+              </p>
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={qrCodeUrl} 
+                  alt="WeChat Pay QR Code" 
+                  className="w-64 h-64"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                请使用微信扫描二维码完成支付
+              </p>
+              <button
+                type="button"
+                onClick={closeQrCodeModal}
+                className="w-full rounded-md bg-gray-200 px-3 py-2 text-center text-sm font-semibold text-gray-700 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

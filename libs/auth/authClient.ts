@@ -15,6 +15,6 @@ export const authClientVue = createAuthClientVue({
 })
 
 export const authClientReact = createAuthClientReact({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:7001',
   plugins
 })
