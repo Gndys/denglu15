@@ -1,4 +1,4 @@
-# ShipEasy
+# TinyShip
 
 🚀 A modern, full-featured monorepo starter kit for building SaaS applications with support for both domestic (China) and international markets.
 

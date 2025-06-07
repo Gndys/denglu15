@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { authClientReact } from "@libs/auth/authClient";
 import Image from "next/image";
@@ -25,6 +25,7 @@ interface HeaderProps {
 
 export default function Header({ className }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { t, locale: currentLocale } = useTranslation();
@@ -34,6 +35,33 @@ export default function Header({ className }: HeaderProps) {
     isPending
   } = authClientReact.useSession();
   const user = session?.user;
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleSignOut = async () => {
     await authClientReact.signOut();
@@ -52,44 +80,78 @@ export default function Header({ className }: HeaderProps) {
   };
 
   return (
-    <header className={`w-full bg-white/90 backdrop-blur-sm border-b border-indigo-100 sticky top-0 z-40 ${className}`}>
+    <header className={`w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and brand */}
           <div className="flex items-center">
-            <Link href={`/${currentLocale}`} className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">S</div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">ShipEasy</span>
+            <Link href={`/${currentLocale}`} className="flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                T
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                TinyShip
+              </span>
             </Link>
           </div>
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex md:space-x-8">
-            <Link href={`/${currentLocale}/features`} className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-              {t.navigation.home}
+            <Link href={`/${currentLocale}/features`} className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+              功能特性
             </Link>
-            <Link href={`/${currentLocale}/pricing`} className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-              {t.navigation.orders}
+            <Link href={`/${currentLocale}/docs`} className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+              开发文档
             </Link>
-            <Link href={`/${currentLocale}/about`} className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-              {t.navigation.tracking}
+            <Link href={`/${currentLocale}/examples`} className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+              示例项目
+            </Link>
+            <Link href={`/${currentLocale}/community`} className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+              社区
             </Link>
           </nav>
 
           {/* User menu or Auth buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              {isDarkMode ? (
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )}
+            </Button>
+
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-sm">
+                <Button variant="ghost" className="text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                   {currentLocale === 'en' ? 'English' : '中文'}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="dark:bg-slate-800 dark:border-slate-700">
                 {locales.map((locale) => (
                   <DropdownMenuItem
                     key={locale}
                     onClick={() => handleLanguageChange(locale)}
+                    className="dark:text-slate-300 dark:hover:bg-slate-700"
                   >
                     {locale === 'en' ? 'English' : '中文'}
                   </DropdownMenuItem>
@@ -98,80 +160,80 @@ export default function Header({ className }: HeaderProps) {
             </DropdownMenu>
 
             {isPending ? (
-              <div className="h-8 w-8 rounded-full bg-blue-100 animate-pulse"></div>
+              <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-700 animate-pulse"></div>
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 focus:outline-none">
-                    <Avatar className="h-8 w-8 border border-blue-100">
+                    <Avatar className="h-8 w-8 border border-slate-200 dark:border-slate-600">
                       <AvatarImage src={user.image || ""} alt={user.name || user.email || "User"} />
-                      <AvatarFallback className="bg-blue-50 text-blue-700 text-xs">
+                      <AvatarFallback className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs">
                         {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-gray-700">{user.name || user.email}</span>
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.name || user.email}</span>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuContent className="w-56 dark:bg-slate-800 dark:border-slate-700" align="end">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.name || "User"}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <p className="text-sm font-medium dark:text-slate-200">{user.name || "User"}</p>
+                      <p className="text-xs text-muted-foreground dark:text-slate-400">{user.email}</p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="dark:bg-slate-600" />
                   <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
-                      <Link href={`/${currentLocale}/dashboard`} className="flex items-center">
-                        <svg className="mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <Link href={`/${currentLocale}/dashboard`} className="flex items-center dark:text-slate-300 dark:hover:bg-slate-700">
+                        <svg className="mr-2 h-4 w-4 text-slate-500 dark:text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="3" width="7" height="7"></rect>
                           <rect x="14" y="3" width="7" height="7"></rect>
                           <rect x="14" y="14" width="7" height="7"></rect>
                           <rect x="3" y="14" width="7" height="7"></rect>
                         </svg>
-                        {t.navigation.dashboard}
+                        控制台
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href={`/${currentLocale}/profile`} className="flex items-center">
-                        <svg className="mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <Link href={`/${currentLocale}/profile`} className="flex items-center dark:text-slate-300 dark:hover:bg-slate-700">
+                        <svg className="mr-2 h-4 w-4 text-slate-500 dark:text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                           <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        {t.common.profile}
+                        个人资料
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href={`/${currentLocale}/settings`} className="flex items-center">
-                        <svg className="mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <Link href={`/${currentLocale}/settings`} className="flex items-center dark:text-slate-300 dark:hover:bg-slate-700">
+                        <svg className="mr-2 h-4 w-4 text-slate-500 dark:text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
                           <circle cx="12" cy="12" r="3"></circle>
                         </svg>
-                        {t.common.settings}
+                        设置
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600" onClick={handleSignOut}>
+                  <DropdownMenuSeparator className="dark:bg-slate-600" />
+                  <DropdownMenuItem className="text-red-600 dark:text-red-400 dark:hover:bg-slate-700" onClick={handleSignOut}>
                     <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                       <polyline points="16 17 21 12 16 7"></polyline>
                       <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
-                    {t.common.logout}
+                    退出登录
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
                 <Link href={`/${currentLocale}/signin`}>
-                  <Button variant="ghost" className="text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-                    {t.common.login}
+                  <Button variant="ghost" className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                    登录
                   </Button>
                 </Link>
                 <Link href={`/${currentLocale}/signup`}>
-                  <Button variant="default" className="text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 border-0">
-                    {t.common.signup}
+                  <Button variant="default" className="text-sm font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 border-0 rounded-full">
+                    开始使用
                   </Button>
                 </Link>
               </>
@@ -182,7 +244,7 @@ export default function Header({ className }: HeaderProps) {
           <div className="flex md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-50 focus:outline-none transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none transition-colors"
             >
               <span className="sr-only">Open main menu</span>
               {/* Hamburger icon */}
@@ -202,61 +264,64 @@ export default function Header({ className }: HeaderProps) {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-blue-50">
+        <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href={`/${currentLocale}/features`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-              {t.navigation.home}
+            <Link href={`/${currentLocale}/features`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+              功能特性
             </Link>
-            <Link href={`/${currentLocale}/pricing`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-              {t.navigation.orders}
+            <Link href={`/${currentLocale}/docs`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+              开发文档
             </Link>
-            <Link href={`/${currentLocale}/about`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-              {t.navigation.tracking}
+            <Link href={`/${currentLocale}/examples`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+              示例项目
+            </Link>
+            <Link href={`/${currentLocale}/community`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+              社区
             </Link>
           </div>
-          <div className="pt-4 pb-3 border-t border-blue-100">
+          <div className="pt-4 pb-3 border-t border-slate-100 dark:border-slate-700">
             {user ? (
               <div className="px-4 space-y-1">
                 <div className="flex items-center px-3">
                   <div className="flex-shrink-0">
-                    <Avatar className="h-10 w-10 border border-blue-100">
+                    <Avatar className="h-10 w-10 border border-slate-200 dark:border-slate-600">
                       <AvatarImage src={user.image || ""} alt={user.name || user.email || "User"} />
-                      <AvatarFallback className="bg-blue-50 text-blue-700 text-sm">
+                      <AvatarFallback className="bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm">
                         {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user.name || "User"}</div>
-                    <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                    <div className="text-base font-medium text-slate-800 dark:text-slate-200">{user.name || "User"}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400">{user.email}</div>
                   </div>
                 </div>
-                <Link href={`/${currentLocale}/dashboard`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-                  {t.navigation.dashboard}
+                <Link href={`/${currentLocale}/dashboard`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                  控制台
                 </Link>
-                <Link href={`/${currentLocale}/profile`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-                  {t.common.profile}
+                <Link href={`/${currentLocale}/profile`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                  个人资料
                 </Link>
-                <Link href={`/${currentLocale}/settings`} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
-                  {t.common.settings}
+                <Link href={`/${currentLocale}/settings`} className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                  设置
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800"
                 >
-                  {t.common.logout}
+                  退出登录
                 </button>
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-4 px-4 py-2">
                 <Link href={`/${currentLocale}/signin`} className="w-1/2">
-                  <Button variant="outline" className="w-full text-sm font-medium border-blue-200 text-blue-700 hover:bg-blue-50">
-                    {t.common.login}
+                  <Button variant="outline" className="w-full text-sm font-medium border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    登录
                   </Button>
                 </Link>
                 <Link href={`/${currentLocale}/signup`} className="w-1/2">
-                  <Button variant="default" className="w-full text-sm font-medium bg-blue-600 hover:bg-blue-700 border-0">
-                    {t.common.signup}
+                  <Button variant="default" className="w-full text-sm font-medium bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 border-0 rounded-full text-white dark:text-slate-900">
+                    开始使用
                   </Button>
                 </Link>
               </div>
