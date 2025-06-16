@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     title: t.admin.metadata.title,
     description: t.admin.metadata.description,
     keywords: t.admin.metadata.keywords,
-  };
+};
 }
 
 export default function AdminLayout({

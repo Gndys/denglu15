@@ -2,6 +2,8 @@
 
 import { User, CreditCard, ShoppingCart, LayoutDashboard } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation";
+import { Logo } from "@/components/ui/logo";
+import Link from "next/link";
 
 import {
   Sidebar,
@@ -12,15 +14,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
 } from "@/components/ui/sidebar"
 
 export function AppSidebar() {
-  const { t } = useTranslation();
+  const { t, locale: currentLocale } = useTranslation();
 
   // Admin dashboard item
   const dashboardItem = {
     title: t.navigation.admin.dashboard,
-    url: "/admin",
+    url: `/admin`,
     icon: LayoutDashboard,
   }
 
@@ -28,23 +31,28 @@ export function AppSidebar() {
   const items = [
     {
       title: t.navigation.admin.users,
-      url: "/admin/users",
+      url: `/admin/users`,
       icon: User,
     },
     {
       title: t.navigation.admin.subscriptions,
-      url: "/admin/subscriptions",
+      url: `/admin/subscriptions`,
       icon: CreditCard,
     },
     {
       title: t.navigation.admin.orders,
-      url: "/admin/orders",
+      url: `/admin/orders`,
       icon: ShoppingCart,
     }
   ]
 
   return (
     <Sidebar>
+      <SidebarHeader className="p-4 border-b border-sidebar-border">
+        <Link href={`/${currentLocale}`}>
+          <Logo size="md" />
+        </Link>
+      </SidebarHeader>
       <SidebarContent>
         {/* Dashboard Section */}
         <SidebarGroup>

@@ -67,8 +67,8 @@ console.log("Code block");
               <div
                 className={`px-2 py-1 rounded-sm shadow-sm border ${
                   message.role === 'user'
-                    ? 'bg-white text-black border-gray-300'
-                    : 'bg-gray-100 text-black border-gray-200'
+                    ? 'bg-secondary text-secondary-foreground border-secondary'
+                    : 'bg-card text-card-foreground border-border'
                 }`}
               >
                 {message.parts.map((part, i) => {
@@ -76,7 +76,7 @@ console.log("Code block");
                     case 'text':
                       return <div className="prose prose-headings:my-2 prose-li:my-0 prose-ul:my-1 prose-p:my-2 
                 prose-pre:p-0 prose-pre:my-1 
-            dark:prose-invert dark:prose-pre:bg-gray-900 dark:prose-pre:text-gray-200" key={`${message.id}-${i}`}>
+            dark:prose-invert prose-pre:bg-muted prose-pre:text-muted-foreground" key={`${message.id}-${i}`}>
                           <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{part.text}</ReactMarkdown>
                         </div>;
                     default:
@@ -94,11 +94,11 @@ console.log("Code block");
       {/* Fixed form at the bottom */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm">
         <form onSubmit={(e) => handleSubmit(e, { body: { provider, model } })} className="max-w-3xl mx-auto py-4 px-4">
-          <div className="border border-gray-300 dark:border-gray-700 rounded-lg shadow-md">
+          <div className="border border-border rounded-lg shadow-md bg-card">
             {/* Input field */}
             <div className="p-3 pb-2">
               <input
-                className="w-full bg-transparent outline-none"
+                className="w-full bg-transparent outline-none text-card-foreground placeholder:text-muted-foreground"
                 value={input}
                 placeholder="需要Grok帮什么忙?"
                 onChange={handleInputChange}
@@ -106,7 +106,7 @@ console.log("Code block");
             </div>
             
             {/* Toolbar */}
-            <div className="flex items-center justify-between p-2 border-t border-gray-200">
+            <div className="flex items-center justify-between p-2 border-t border-border">
               {/* Model selector */}
               <div className="flex items-center">
                 <Select onValueChange={(value) => {

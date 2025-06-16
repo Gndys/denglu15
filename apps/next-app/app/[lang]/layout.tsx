@@ -5,6 +5,7 @@ import { i18n } from '../i18n-config';
 import { use } from 'react';
 import { Toaster } from "@/components/ui/sonner"
 import { translations } from "@libs/i18n";
+import { ThemeProvider } from "@/hooks/use-theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     title: t.home.metadata.title,
     description: t.home.metadata.description,
     keywords: t.home.metadata.keywords,
-  };
+};
 }
 
 export async function generateStaticParams() {
@@ -43,8 +44,10 @@ export default function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <Toaster />
+        <ThemeProvider defaultTheme="light" defaultColorScheme="default">
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     if (!session || !session.payment_status) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 400 });
     }
-
+    console.log('the payment', session.payment_status);
     // 2. 验证支付状态
     if (session.payment_status !== 'paid') {
       return NextResponse.json({ error: 'Payment not completed' }, { status: 400 });

@@ -25,6 +25,7 @@ import {
   FileText, 
   BookOpen 
 } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -85,14 +86,14 @@ export default function Home() {
           overflow: hidden;
         }
       `}</style>
-      <div className="flex flex-col min-h-screen bg-white dark:bg-slate-900">
+      <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background decorations */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100 dark:bg-blue-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-            <div className="absolute top-40 right-10 w-72 h-72 bg-purple-100 dark:bg-purple-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-100 dark:bg-pink-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-chart-1 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob"></div>
+            <div className="absolute top-40 right-10 w-72 h-72 bg-chart-2 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob animation-delay-2000"></div>
+            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-chart-4 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob animation-delay-4000"></div>
         </div>
         
         <div className="container px-4 md:px-6 relative z-10">
@@ -103,20 +104,20 @@ export default function Home() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <motion.h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white"
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 虽然是{" "}
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                <span className="text-gradient-chart-warm">
                   小船
                 </span>
                 ，也能载你远航
               </motion.h1>
               
               <motion.p 
-                className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed"
+                className="text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -133,31 +134,31 @@ export default function Home() {
               >
                 <Button 
                   size="lg" 
-                  className="px-8 py-4 text-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-full transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
                   立即购买
                   </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="px-8 py-4 text-lg border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
                   查看演示
                   </Button>
               </motion.div>
 
               <motion.div 
-                className="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400 pt-4"
+                className="flex items-center gap-6 text-sm text-muted-foreground pt-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-primary" />
                   <span>一次购买终身使用</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-primary" />
                   <span>早鸟价限时优惠</span>
                 </div>
               </motion.div>
@@ -166,7 +167,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 bg-slate-50 dark:bg-slate-900">
+        <section className="py-24 bg-muted/50">
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -175,10 +176,10 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 全栈 SaaS 开发平台
               </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-200 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 从双框架支持到 AI 集成，从全球化到本土化，TinyShip 为你的商业项目提供完整的现代化技术解决方案。
               </p>
             </motion.div>
@@ -196,9 +197,11 @@ export default function Home() {
                     name={feature.title}
                     description={feature.description}
                     Icon={feature.icon}
-                    className={`${feature.className} group hover:scale-[1.02] transition-all duration-300 hover:shadow-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 h-full`}
+                    className={`${feature.className} group hover:scale-[1.02] transition-all duration-300 hover:shadow-xl bg-card border border-border hover:border-border/80 h-full`}
                     background={
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-5 dark:opacity-15 group-hover:opacity-10 dark:group-hover:opacity-25 transition-opacity duration-300 rounded-xl" />
+                      <div 
+                        className="absolute inset-0 opacity-5 dark:opacity-15 group-hover:opacity-10 dark:group-hover:opacity-25 transition-opacity duration-300 rounded-xl bg-gradient-chart-warm"
+                      />
                     }
                     cta="了解更多"
                     href={`/features/${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
@@ -215,35 +218,35 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-8">基于现代化技术栈构建</h3>
-              <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">Next.js / Nuxt.js</span>
+              <h3 className="text-xl font-semibold text-foreground mb-8">基于现代化技术栈构建</h3>
+                              <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-1 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">Next.js / Nuxt.js</span>
                 </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">TailwindCSS v4</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">TailwindCSS v4</span>
                 </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">Better-Auth</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-3 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">Better-Auth</span>
               </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">Vercel AI SDK</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-4 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">Vercel AI SDK</span>
             </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">TypeScript + Zod</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-5 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">TypeScript + Zod</span>
                   </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">shadcn/ui + Magic UI</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-1 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">shadcn/ui + Magic UI</span>
                   </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">Drizzle ORM + PostgreSQL</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                  <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
+                  <span className="text-card-foreground font-medium">Drizzle ORM + PostgreSQL</span>
                 </div>
               </div>
             </motion.div>
@@ -251,7 +254,7 @@ export default function Home() {
         </section>
 
         {/* Application Features Details */}
-        <section className="py-24 bg-white dark:bg-slate-900">
+        <section className="py-24 bg-background">
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -260,10 +263,10 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 核心应用特性
               </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 从国内外双体系支持到 AI 集成，TinyShip 为你的商业项目提供完整的技术解决方案。
               </p>
             </motion.div>
@@ -277,8 +280,8 @@ export default function Home() {
                       key={index}
                       className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
                         activeFeature === index
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400 shadow-lg'
-                          : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md'
+                          ? 'border-primary bg-primary/5 shadow-lg'
+                          : 'border-border bg-card hover:border-border/80 hover:shadow-md'
                       }`}
                       onClick={() => setActiveFeature(index)}
                       initial={{ opacity: 0, x: -20 }}
@@ -292,19 +295,19 @@ export default function Home() {
                         <div className="flex items-center space-x-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg ${
                             activeFeature === index
-                              ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-                              : 'bg-gradient-to-br from-slate-400 to-slate-500'
+                              ? 'bg-chart-1'
+                              : 'bg-muted-foreground'
                           }`}>
                             {index + 1}
                           </div>
                           <h3 className={`text-lg font-bold ${
-                            activeFeature === index ? 'text-blue-900 dark:text-blue-100' : 'text-slate-900 dark:text-white'
+                            activeFeature === index ? 'text-primary' : 'text-foreground'
                           }`}>
                             {feature.title}
                           </h3>
                         </div>
                         <p className={`text-sm leading-relaxed pl-13 ${
-                          activeFeature === index ? 'text-blue-700 dark:text-blue-200' : 'text-slate-600 dark:text-slate-300'
+                          activeFeature === index ? 'text-primary/80' : 'text-muted-foreground'
                         }`}>
                           {feature.subtitle}
                         </p>
@@ -318,8 +321,8 @@ export default function Home() {
                           >
                             {feature.highlights.slice(0, 3).map((highlight, idx) => (
                               <div key={idx} className="flex items-center space-x-2">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                <span className="text-blue-700 dark:text-blue-200 text-xs font-medium">{highlight}</span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-chart-1"></div>
+                                <span className="text-primary/80 text-xs font-medium">{highlight}</span>
                       </div>
                             ))}
                           </motion.div>
@@ -339,21 +342,21 @@ export default function Home() {
                     className="space-y-6"
                   >
                     {/* 图片占位 */}
-                    <div className="aspect-[16/10] bg-gradient-to-br from-blue-50 to-slate-50 dark:from-blue-900/20 dark:to-slate-800 rounded-2xl border border-slate-200 dark:border-slate-600 flex items-center justify-center overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-slate-100 dark:from-blue-900/30 dark:to-slate-700 flex items-center justify-center">
+                    <div className="aspect-[16/10] bg-gradient-to-br from-primary/5 to-muted rounded-2xl border border-border flex items-center justify-center overflow-hidden">
+                      <div className="w-full h-full bg-gradient-to-br from-primary/10 to-muted/50 flex items-center justify-center">
                         <div className="text-center space-y-4">
                           {React.createElement(applicationFeatures[activeFeature].icon, {
-                            className: "h-20 w-20 text-blue-600 dark:text-blue-400 mx-auto"
+                            className: "h-20 w-20 text-primary mx-auto"
                           })}
-                          <div className="text-slate-600 dark:text-slate-300 font-medium text-lg">{applicationFeatures[activeFeature].imageTitle}</div>
-                          <div className="text-sm text-slate-500 dark:text-slate-400">功能演示界面</div>
+                          <div className="text-muted-foreground font-medium text-lg">{applicationFeatures[activeFeature].imageTitle}</div>
+                          <div className="text-sm text-muted-foreground/80">功能演示界面</div>
                   </div>
                   </div>
                   </div>
 
                     {/* 简要描述 */}
-                    <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-2xl">
-                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <div className="p-6 bg-muted/50 rounded-2xl">
+                      <p className="text-muted-foreground leading-relaxed">
                         {applicationFeatures[activeFeature].description}
                       </p>
                   </div>
@@ -370,20 +373,20 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center space-x-2 px-6 py-3 bg-slate-50 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-600">
+              <div className="inline-flex items-center space-x-2 px-6 py-3 bg-muted/50 rounded-full border border-border">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-2000"></div>
-                  <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse animation-delay-4000"></div>
+                  <div className="w-2 h-2 bg-chart-1 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse animation-delay-2000"></div>
+                  <div className="w-2 h-2 bg-chart-3 rounded-full animate-pulse animation-delay-4000"></div>
                 </div>
-                <span className="text-slate-600 dark:text-slate-300 font-medium">企业级技术架构，生产环境验证</span>
+                <span className="text-muted-foreground font-medium">企业级技术架构，生产环境验证</span>
               </div>
             </motion.div>
         </div>
       </section>
 
         {/* Roadmap Section */}
-        <section className="py-24 bg-white dark:bg-slate-900">
+        <section className="py-24 bg-background">
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -392,10 +395,10 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 产品路线图
               </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 持续迭代，不断创新。我们致力于为开发者提供更强大、更灵活的 SaaS 开发解决方案。
               </p>
             </motion.div>
@@ -416,58 +419,67 @@ export default function Home() {
                     <div className="flex items-center mb-4">
                       <div className={`w-4 h-4 rounded-full border-4 ${
                         item.status === 'completed' 
-                          ? 'bg-green-500 border-green-200' 
+                          ? 'bg-chart-1 border-chart-1/30' 
                           : item.status === 'in-progress'
-                          ? 'bg-blue-500 border-blue-200'
-                          : 'bg-slate-300 dark:bg-slate-600 border-slate-200 dark:border-slate-500'
+                          ? 'bg-chart-2 border-chart-2/30'
+                          : 'bg-muted-foreground border-muted'
                       } shadow-lg mr-3`}>
                         {item.status === 'completed' && (
                           <Check className="w-2 h-2 text-white absolute -top-1 -left-1" />
                         )}
                       </div>
-                      <div className="flex-1 h-0.5 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800"></div>
+                      <div className="flex-1 h-0.5 bg-chart-1/20"></div>
                     </div>
 
                     {/* 内容卡片 */}
                     <div className={`p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] h-80 ${
                       item.status === 'completed' 
-                        ? 'border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-900/20' 
+                        ? 'border-chart-1 bg-chart-1/5' 
                         : item.status === 'in-progress'
-                        ? 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20'
-                        : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500'
+                        ? 'border-chart-2 bg-chart-2/5'
+                        : 'border-border bg-card hover:border-border/80'
                     }`}>
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold ${
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold ${
                           item.status === 'completed' 
-                            ? 'bg-gradient-to-br from-green-500 to-green-600' 
+                            ? 'bg-chart-1 text-white' 
                             : item.status === 'in-progress'
-                            ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-                            : 'bg-gradient-to-br from-slate-400 to-slate-500'
+                            ? 'bg-chart-2 text-white'
+                            : 'bg-muted text-muted-foreground'
                         }`}>
                           <item.icon className="h-6 w-6" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white line-clamp-2">{item.title}</h3>
+                          <h3 className="text-lg font-bold text-foreground line-clamp-2">{item.title}</h3>
                           <div className="flex items-center space-x-2 mt-1">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                               item.status === 'completed' 
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' 
+                                ? 'bg-chart-1/20 text-chart-1' 
                                 : item.status === 'in-progress'
-                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-                                : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                                ? 'bg-chart-2/20 text-chart-2'
+                                : 'bg-muted text-muted-foreground'
                             }`}>
                               {item.statusText}
                             </span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">{item.timeline}</span>
+                            <span className="text-sm text-muted-foreground font-medium">{item.timeline}</span>
                           </div>
             </div>
           </div>
           
-                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-sm line-clamp-3">{item.description}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-3">{item.description}</p>
                       
                       <div className="flex flex-wrap gap-2">
                         {item.features.map((feature, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-xs">
+                          <span 
+                            key={idx} 
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              item.status === 'completed' 
+                                ? 'bg-chart-1/10 text-chart-1' 
+                                : item.status === 'in-progress'
+                                ? 'bg-chart-2/10 text-chart-2'
+                                : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
                             {feature}
                           </span>
                         ))}
@@ -486,20 +498,20 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.5 }}
               viewport={{ once: true }}
             >
-              <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full border border-blue-200 dark:border-blue-700">
+              <div className="inline-flex items-center space-x-2 px-6 py-3 bg-chart-1/5 rounded-full border border-chart-1/20">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-2000"></div>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse animation-delay-4000"></div>
+                  <div className="w-2 h-2 bg-chart-1 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-chart-1/80 rounded-full animate-pulse animation-delay-2000"></div>
+                  <div className="w-2 h-2 bg-chart-1/60 rounded-full animate-pulse animation-delay-4000"></div>
                 </div>
-                <span className="text-slate-700 dark:text-slate-300 font-medium">持续更新中，敬请期待更多功能...</span>
+                <span className="text-chart-1 font-medium">持续更新中，敬请期待更多功能...</span>
               </div>
             </motion.div>
         </div>
       </section>
 
         {/* Stats Section */}
-        <section className="py-24 bg-white dark:bg-slate-900" ref={statsRef}>
+        <section className="py-24 bg-background" ref={statsRef}>
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -508,7 +520,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 值得信赖的选择
               </h2>
             </motion.div>
@@ -521,10 +533,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.developers.toLocaleString()}+
                 </div>
-                <div className="text-slate-600 dark:text-slate-400">用户选择</div>
+                <div className="text-muted-foreground">用户选择</div>
               </motion.div>
               
               <motion.div 
@@ -534,10 +546,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.frameworks}
                 </div>
-                <div className="text-slate-600 dark:text-slate-400">前端框架支持</div>
+                <div className="text-muted-foreground">前端框架支持</div>
               </motion.div>
               
               <motion.div 
@@ -547,10 +559,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 viewport={{ once: true }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.features}+
                 </div>
-                <div className="text-slate-600 dark:text-slate-400">内置功能模块</div>
+                <div className="text-muted-foreground">内置功能模块</div>
               </motion.div>
               
               <motion.div 
@@ -560,17 +572,17 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
               >
-                <div className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.satisfaction}%
               </div>
-                <div className="text-slate-600 dark:text-slate-400">用户满意度</div>
+                <div className="text-muted-foreground">用户满意度</div>
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* Testimonials */}
-        <section className="py-24 bg-slate-50 dark:bg-slate-800">
+        <section className="py-24 bg-muted/50">
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -579,7 +591,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 用户真实反馈
               </h2>
             </motion.div>
@@ -588,7 +600,7 @@ export default function Home() {
             {testimonials.map((testimonial, index) => (
                 <motion.div
                   key={index}
-                  className="bg-white dark:bg-slate-700 p-8 rounded-2xl border border-slate-200 dark:border-slate-600 hover:shadow-lg transition-all duration-300"
+                  className="bg-card p-8 rounded-2xl border border-border hover:shadow-lg transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -596,17 +608,23 @@ export default function Home() {
                 >
                   <div className="flex mb-4">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      <Star key={i} className="h-5 w-5 text-chart-5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">"{testimonial.quote}"</p>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold mr-4">
+                    <div 
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold mr-4 ${
+                        index === 0 ? 'bg-chart-1' : 
+                        index === 1 ? 'bg-chart-3' : 
+                        'bg-chart-5'
+                      }`}
+                    >
                       {testimonial.author[0]}
                   </div>
                   <div>
-                      <div className="font-semibold text-slate-900 dark:text-white">{testimonial.author}</div>
-                      <div className="text-slate-500 dark:text-slate-400 text-sm">{testimonial.role}</div>
+                      <div className="font-semibold text-foreground">{testimonial.author}</div>
+                      <div className="text-muted-foreground text-sm">{testimonial.role}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -616,7 +634,7 @@ export default function Home() {
       </section>
 
         {/* Pricing */}
-        <section className="py-24 bg-white dark:bg-slate-900">
+        <section className="py-24 bg-background">
           <div className="container px-4 md:px-6">
             <motion.div 
               className="text-center mb-16"
@@ -625,106 +643,106 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 早鸟价限时优惠
               </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 一次购买，终身使用。早鸟用户享受超值优惠价格。
               </p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <motion.div
-                className="p-8 rounded-2xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-300 hover:scale-105"
+                className="p-8 rounded-2xl border-2 border-border bg-card hover:border-border/80 transition-all duration-300 hover:scale-105"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
               >
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">早鸟价</h3>
-                  <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">早鸟价</h3>
+                  <div className="text-4xl font-bold text-foreground mb-2">
                     ¥299
                   </div>
-                  <div className="text-lg text-slate-500 dark:text-slate-400 line-through mb-2">原价 ¥599</div>
-                  <p className="text-slate-600 dark:text-slate-300">限时优惠，仅限前 100 名用户</p>
+                  <div className="text-lg text-muted-foreground line-through mb-2">原价 ¥599</div>
+                  <p className="text-muted-foreground">限时优惠，仅限前 100 名用户</p>
             </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">完整源代码访问</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">完整源代码访问</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">所有功能模块</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">所有功能模块</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">终身免费更新</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">终身免费更新</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">技术支持群</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">技术支持群</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">商业使用授权</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">商业使用授权</span>
                   </li>
                 </ul>
                 <Button 
-                  className="w-full py-3 rounded-full transition-all duration-300 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900"
+                  className="w-full py-3 rounded-full transition-all duration-300"
                 >
                   立即抢购
                 </Button>
               </motion.div>
 
               <motion.div
-                className="p-8 rounded-2xl border-2 border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20 shadow-lg transition-all duration-300 hover:scale-105"
+                className="p-8 rounded-2xl border-2 border-primary bg-primary/5 shadow-lg transition-all duration-300 hover:scale-105"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
               >
                 <div className="text-center mb-4">
-                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
                     推荐选择
                   </span>
                 </div>
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">正式版</h3>
-                  <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">正式版</h3>
+                  <div className="text-4xl font-bold text-foreground mb-2">
                     ¥599
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300">早鸟期结束后恢复原价</p>
+                  <p className="text-muted-foreground">早鸟期结束后恢复原价</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">完整源代码访问</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">完整源代码访问</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">所有功能模块</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">所有功能模块</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">终身免费更新</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">终身免费更新</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">优先技术支持</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">优先技术支持</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">商业使用授权</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">商业使用授权</span>
                   </li>
                   <li className="flex items-center">
-                    <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">1对1技术咨询</span>
+                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground">1对1技术咨询</span>
                   </li>
                 </ul>
                 <Button 
-                  className="w-full py-3 rounded-full transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
+                  className="w-full py-3 rounded-full transition-all duration-300"
                 >
                   预约购买
                 </Button>
@@ -734,7 +752,7 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section className="py-24 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-slate-800 dark:via-blue-800 dark:to-slate-800 text-white relative overflow-hidden">
+        <section className="py-24 bg-gradient-chart-warm text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
           <div className="container px-4 md:px-6 relative z-10">
             <motion.div 
@@ -747,21 +765,21 @@ export default function Home() {
               <h2 className="text-3xl md:text-5xl font-bold mb-6">
                 准备好开始你的远航了吗？
               </h2>
-              <p className="text-xl text-slate-300 dark:text-slate-400 mb-8">
+              <p className="text-xl text-primary-foreground/80 mb-8">
                 加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。
                 虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="px-8 py-4 text-lg bg-white text-slate-900 hover:bg-slate-100 rounded-full transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
                   立即抢购 ¥299
                   </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="px-8 py-4 text-lg border-white/30 text-white hover:bg-white/10 rounded-full transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
                   查看演示
                   </Button>
@@ -771,28 +789,25 @@ export default function Home() {
       </section>
       
       {/* Footer */}
-        <footer className="py-12 bg-slate-900 dark:bg-slate-950 text-white">
+        <footer className="py-12 bg-muted text-muted-foreground">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold mr-3">
-                  T
-                </div>
-                <span className="text-xl font-bold">TinyShip</span>
+                <Logo size="md" />
               </div>
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-                <div className="text-slate-400 dark:text-slate-500 text-center md:text-left">
+                <div className="text-muted-foreground text-center md:text-left">
                   © {new Date().getFullYear()} TinyShip. All rights reserved.
                 </div>
                 <div className="flex space-x-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-700 flex items-center justify-center hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors cursor-pointer">
-                    <span className="text-xs">G</span>
+                  <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-muted/50 transition-colors cursor-pointer">
+                    <span className="text-xs text-foreground">G</span>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-700 flex items-center justify-center hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors cursor-pointer">
-                    <span className="text-xs">T</span>
+                  <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-muted/50 transition-colors cursor-pointer">
+                    <span className="text-xs text-foreground">T</span>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-700 flex items-center justify-center hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors cursor-pointer">
-                    <span className="text-xs">D</span>
+                  <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-muted/50 transition-colors cursor-pointer">
+                    <span className="text-xs text-foreground">D</span>
                   </div>
                 </div>
             </div>

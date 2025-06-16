@@ -212,7 +212,7 @@ export default function PricingPage() {
         }
       `}</style>
       
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-24 sm:py-32 overflow-hidden">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -223,27 +223,27 @@ export default function PricingPage() {
               transition={{ duration: 0.8 }}
             >
               <motion.div
-                className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full border border-blue-200 dark:border-blue-700 mb-8"
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-chart-1-bg-15 rounded-full border border-chart-1/20 mb-8"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span className="text-xs font-medium text-blue-900 dark:text-blue-100">{t.pricing.title}</span>
+                <Sparkles className="h-4 w-4 text-chart-1" />
+                <span className="text-xs font-medium text-chart-1">{t.pricing.title}</span>
               </motion.div>
 
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                  {t.pricing.subtitle}
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
+                <span className="text-gradient-chart-warm">
+            {t.pricing.subtitle}
                 </span>
               </h2>
               
-              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 选择最适合你的方案，开始你的 TinyShip 之旅。
                 一次购买，终身使用，早鸟价仅限前 100 名用户。
-              </p>
+          </p>
             </motion.div>
-          </div>
+        </div>
         </section>
 
         {/* Pricing Cards */}
@@ -251,17 +251,17 @@ export default function PricingPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
               {plans.map((plan, index) => {
-                const i18n = plan.i18n && typeof plan.i18n === 'object' ? plan.i18n[currentLocale] : undefined;
+            const i18n = plan.i18n && typeof plan.i18n === 'object' ? plan.i18n[currentLocale] : undefined;
                 const isRecommended = plan.recommended;
                 const isLifetime = plan.id === 'lifetime';
                 
-                return (
+            return (
                   <motion.div
-                    key={plan.id}
+                key={plan.id}
                     className={`relative rounded-xl p-6 shadow-lg transition-all duration-300 hover:scale-[1.02] ${
                       isRecommended 
-                        ? 'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-500 dark:border-blue-400 shadow-blue-500/20' 
-                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                        ? 'bg-card border-2 border-chart-1 shadow-chart-1/20' 
+                        : 'bg-card border border-border hover:border-border/80'
                     }`}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -271,7 +271,7 @@ export default function PricingPage() {
                     {/* Recommended Badge */}
                     {isRecommended && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-md">
+                        <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-chart-warm text-white rounded-full shadow-md">
                           <Crown className="h-3.5 w-3.5" />
                           <span className="text-xs font-medium">推荐选择</span>
                         </div>
@@ -281,35 +281,35 @@ export default function PricingPage() {
                     {/* Plan Header */}
                     <div className="text-center mb-6">
                       <h3 className={`text-xl font-bold mb-2 ${
-                        isRecommended ? 'text-blue-900 dark:text-blue-100' : 'text-slate-900 dark:text-white'
+                        isRecommended ? 'text-card-foreground' : 'text-foreground'
                       }`}>
-                        {i18n?.name || plan.name}
-                      </h3>
+                      {i18n?.name || plan.name}
+                    </h3>
                       
                       <p className={`text-sm ${
-                        isRecommended ? 'text-blue-700 dark:text-blue-200' : 'text-slate-600 dark:text-slate-400'
+                        isRecommended ? 'text-muted-foreground' : 'text-muted-foreground'
                       }`}>
-                        {i18n?.description || plan.description}
-                      </p>
+                    {i18n?.description || plan.description}
+                  </p>
                     </div>
 
                     {/* Price */}
                     <div className="text-center mb-6">
                       <div className="flex items-baseline justify-center space-x-2">
                         <span className={`text-4xl font-bold ${
-                          isRecommended ? 'text-blue-900 dark:text-blue-100' : 'text-slate-900 dark:text-white'
+                          isRecommended ? 'text-card-foreground' : 'text-foreground'
                         }`}>
-                          {plan.currency === 'CNY' ? '¥' : '$'}{plan.amount}
-                        </span>
+                      {plan.currency === 'CNY' ? '¥' : '$'}{plan.amount}
+                    </span>
                         <span className={`text-base font-medium ${
-                          isRecommended ? 'text-blue-700 dark:text-blue-200' : 'text-slate-600 dark:text-slate-400'
+                          isRecommended ? 'text-muted-foreground' : 'text-muted-foreground'
                         }`}>
-                          /{i18n?.duration || plan.duration.description}
-                        </span>
+                      /{i18n?.duration || plan.duration.description}
+                    </span>
                       </div>
                       
                       {isLifetime && (
-                        <div className="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-xs font-medium">
+                        <div className="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-5-bg-15 text-chart-5 rounded-full text-xs font-medium">
                           <Heart className="h-3.5 w-3.5" />
                           <span>一次购买，终身使用</span>
                         </div>
@@ -322,38 +322,38 @@ export default function PricingPage() {
                         <div key={feature} className="flex items-start space-x-3">
                           <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
                             isRecommended 
-                              ? 'bg-blue-100 dark:bg-blue-900/50' 
-                              : 'bg-green-100 dark:bg-green-900/50'
+                              ? 'bg-chart-1' 
+                              : 'bg-chart-2-bg-15'
                           }`}>
                             <Check className={`h-3 w-3 ${
                               isRecommended 
-                                ? 'text-blue-600 dark:text-blue-400' 
-                                : 'text-green-600 dark:text-green-400'
+                                ? 'text-white' 
+                                : 'text-chart-2'
                             }`} />
                           </div>
                           <span className={`text-sm leading-6 ${
-                            isRecommended ? 'text-blue-900 dark:text-blue-100' : 'text-slate-700 dark:text-slate-300'
+                            isRecommended ? 'text-card-foreground' : 'text-card-foreground'
                           }`}>
                             {i18n?.features && Array.isArray(i18n.features) && featureIndex < i18n.features.length
                               ? i18n.features[featureIndex]
-                              : feature}
+                          : feature}
                           </span>
                         </div>
-                      ))}
-                    </div>
+                    ))}
+                </div>
 
                     {/* CTA Button */}
                     <Button
                       onClick={() => handleSubscribe(plan)}
-                      disabled={loading === plan.id || isPending}
+                  disabled={loading === plan.id || isPending}
                       className={`w-full py-3 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-[1.02] ${
                         isRecommended
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg'
+                          ? 'bg-gradient-chart-warm text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
                           : isLifetime
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-md hover:shadow-lg'
-                          : 'bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 shadow-md hover:shadow-lg'
+                          ? 'bg-gradient-chart-cool text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
+                          : 'bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90'
                       } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
-                    >
+                >
                       {loading === plan.id ? (
                         <div className="flex items-center justify-center space-x-2">
                           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -363,18 +363,18 @@ export default function PricingPage() {
                         <div className="flex items-center justify-center space-x-2">
                           <span>{t.pricing.cta}</span>
                           <ArrowRight className="h-4 w-4" />
-                        </div>
+              </div>
                       )}
                     </Button>
 
                     {/* Special Effects for Recommended Plan */}
                     {isRecommended && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-600/5 rounded-xl pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-chart-warm opacity-5 rounded-xl pointer-events-none"></div>
                     )}
                   </motion.div>
-                );
-              })}
-            </div>
+            );
+          })}
+        </div>
 
             {/* Additional Info */}
             <motion.div 
@@ -386,27 +386,27 @@ export default function PricingPage() {
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 <div className="flex flex-col items-center space-y-3">
-                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                    <Shield className="h-6 w-6 text-green-600 dark:text-green-400" />
+                  <div className="w-12 h-12 bg-chart-2-bg-15 rounded-xl flex items-center justify-center">
+                    <Shield className="h-6 w-6 text-chart-2" />
                   </div>
-                  <h4 className="font-semibold text-slate-900 dark:text-white">安全支付</h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 text-center">支持微信支付、Stripe 等多种安全支付方式</p>
+                  <h4 className="font-semibold text-foreground">安全支付</h4>
+                  <p className="text-sm text-muted-foreground text-center">支持微信支付、Stripe 等多种安全支付方式</p>
                 </div>
                 
                 <div className="flex flex-col items-center space-y-3">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                    <Star className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  <div className="w-12 h-12 bg-chart-1-bg-15 rounded-xl flex items-center justify-center">
+                    <Star className="h-6 w-6 text-chart-1" />
                   </div>
-                  <h4 className="font-semibold text-slate-900 dark:text-white">终身更新</h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 text-center">一次购买即可享受所有后续功能更新</p>
+                  <h4 className="font-semibold text-foreground">终身更新</h4>
+                  <p className="text-sm text-muted-foreground text-center">一次购买即可享受所有后续功能更新</p>
                 </div>
                 
                 <div className="flex flex-col items-center space-y-3">
-                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                    <Heart className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                  <div className="w-12 h-12 bg-chart-3-bg-15 rounded-xl flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-chart-3" />
                   </div>
-                  <h4 className="font-semibold text-slate-900 dark:text-white">社区支持</h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 text-center">加入活跃的开发者社区，获得技术支持</p>
+                  <h4 className="font-semibold text-foreground">社区支持</h4>
+                  <p className="text-sm text-muted-foreground text-center">加入活跃的开发者社区，获得技术支持</p>
                 </div>
               </div>
             </motion.div>
