@@ -2,6 +2,7 @@
   "extends": "../.nuxt/tsconfig.server.json",
   "compilerOptions": {
     "paths": {
+      "@config": ["../../../config.ts"],
       "@libs/*": ["../../../libs/*"]
     }
   }

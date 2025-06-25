@@ -10,8 +10,8 @@
 
 ## 📊 总体进度
 
-- [ ] 第一阶段：基础设施搭建 (1-2天)
-- [ ] 第二阶段：认证系统 (2-3天) 
+- [x] 第一阶段：基础设施搭建 (1-2天) ✅
+- ⏳ 第二阶段：认证系统 (2-3天) 
 - [ ] 第三阶段：核心页面功能 (3-4天)
 - [ ] 第四阶段：AI功能 (2天)
 - [ ] 第五阶段：管理后台 (2-3天)
@@ -23,113 +23,140 @@
 
 ## 🎯 第一阶段：基础设施搭建 (1-2天)
 
-### 1.1 shadcn-vue 环境搭建
-- [ ] 安装shadcn-vue CLI工具
+### 1.1 shadcn-vue 环境搭建 ✅
+- [x] 安装shadcn-vue CLI工具
   ```bash
-  npx shadcn-vue@latest init
+  pnpm dlx shadcn-vue@latest init
   ```
-- [ ] 选择配置选项：
-  - [ ] TypeScript: Yes
-  - [ ] Framework: Nuxt
-  - [ ] Style: New York
-  - [ ] Base color: Slate
-  - [ ] CSS variables: Yes
-- [ ] 验证初始化成功
-- [ ] 测试示例组件渲染
+- [x] 选择配置选项：
+  - [x] TypeScript: Yes
+  - [x] Framework: Nuxt
+  - [x] Style: New York
+  - [x] Base color: Slate
+  - [x] CSS variables: Yes
+- [x] 验证初始化成功
+- [x] 测试示例组件渲染
 
-### 1.2 依赖管理更新
-- [ ] 更新 `package.json` 添加必需依赖：
-  - [ ] `@radix-vue/cn`
-  - [ ] `reka-ui` 
-  - [ ] `lucide-vue-next`
-  - [ ] `tailwind-merge`
-  - [ ] `clsx`
-  - [ ] `tw-animate-css`
-  - [ ] `@vueuse/core`
-  - [ ] `@vueuse/nuxt`
-  - [ ] `@pinia/nuxt`
-  - [ ] `@nuxtjs/i18n`
-  - [ ] `vee-validate`
-  - [ ] `@vee-validate/zod`
-- [ ] 执行依赖安装
-- [ ] 验证依赖版本兼容性
+### 1.2 依赖管理更新 ✅
+- [x] 更新 `package.json` 添加必需依赖：
+  - [x] `@radix-vue/cn`
+  - [x] `reka-ui` 
+  - [x] `lucide-vue-next`
+  - [x] `tailwind-merge`
+  - [x] `clsx`
+  - [x] `tw-animate-css`
+  - [x] `@vueuse/core`
+  - [x] `@vueuse/nuxt`
+  - [x] `@pinia/nuxt`
+  - [x] `@nuxtjs/i18n`
+  - [x] `vee-validate`
+  - [x] `@vee-validate/zod`
+- [x] 执行依赖安装
+- [x] 验证依赖版本兼容性
 
-### 1.3 Nuxt配置增强
-- [ ] 更新 `nuxt.config.ts`：
-  - [ ] 添加必需模块配置
-  - [ ] 配置组件自动导入
-  - [ ] 设置路径别名
-  - [ ] 配置CSS和PostCSS
-  - [ ] 添加环境变量配置
-- [ ] 创建 `components.json` 配置文件
-- [ ] 配置 TypeScript 路径映射
-- [ ] 测试开发服务器启动
+### 1.3 Nuxt配置增强 ✅
+- [x] 更新 `nuxt.config.ts`：
+  - [x] 添加必需模块配置
+  - [x] 配置组件自动导入
+  - [x] 设置路径别名
+  - [x] 配置CSS和PostCSS
+  - [x] 添加环境变量配置
+- [x] 创建 `components.json` 配置文件
+- [x] 配置 TypeScript 路径映射
+- [x] 测试开发服务器启动
 
-### 1.4 目录结构创建
-- [ ] 创建 `components/ui/` 目录
-- [ ] 创建 `components/forms/` 目录  
-- [ ] 创建 `components/layout/` 目录
-- [ ] 创建 `composables/` 目录
-- [ ] 创建 `layouts/` 目录
-- [ ] 创建 `middleware/` 目录
-- [ ] 创建 `stores/` 目录
-- [ ] 创建 `types/` 目录
-- [ ] 创建 `plugins/` 目录
+### 1.4 目录结构创建 ✅
+- [x] 创建 `components/ui/` 目录
+- [x] 创建 `components/forms/` 目录  
+- [x] 创建 `components/layout/` 目录
+- [x] 创建 `composables/` 目录
+- [x] 创建 `layouts/` 目录
+- [x] 创建 `middleware/` 目录
+- [x] 创建 `stores/` 目录
+- [x] 创建 `types/` 目录
+- [x] 创建 `plugins/` 目录
 
-### 1.5 基础shadcn-vue组件安装
-- [ ] 安装核心UI组件：
+### 1.5 基础shadcn-vue组件安装 ✅
+- [x] 安装核心UI组件：
   ```bash
-  npx shadcn-vue@latest add button
-  npx shadcn-vue@latest add card  
-  npx shadcn-vue@latest add input
-  npx shadcn-vue@latest add form
-  npx shadcn-vue@latest add dialog
-  npx shadcn-vue@latest add table
-  npx shadcn-vue@latest add select
-  npx shadcn-vue@latest add badge
-  npx shadcn-vue@latest add avatar
-  npx shadcn-vue@latest add dropdown-menu
-  npx shadcn-vue@latest add sheet
-  npx shadcn-vue@latest add sidebar
-  npx shadcn-vue@latest add tabs
-  npx shadcn-vue@latest add progress
-  npx shadcn-vue@latest add switch
-  npx shadcn-vue@latest add separator
-  npx shadcn-vue@latest add label
-  npx shadcn-vue@latest add tooltip
-  npx shadcn-vue@latest add alert
-  npx shadcn-vue@latest add alert-dialog
+  pnpm dlx shadcn-vue@latest add button
+  pnpm dlx shadcn-vue@latest add card  
+  pnpm dlx shadcn-vue@latest add input
+  pnpm dlx shadcn-vue@latest add form
+  pnpm dlx shadcn-vue@latest add dialog
+  pnpm dlx shadcn-vue@latest add table
+  pnpm dlx shadcn-vue@latest add select
+  pnpm dlx shadcn-vue@latest add badge
+  pnpm dlx shadcn-vue@latest add avatar
+  pnpm dlx shadcn-vue@latest add dropdown-menu
+  pnpm dlx shadcn-vue@latest add sheet
+  pnpm dlx shadcn-vue@latest add sidebar
+  pnpm dlx shadcn-vue@latest add tabs
+  pnpm dlx shadcn-vue@latest add progress
+  pnpm dlx shadcn-vue@latest add switch
+  pnpm dlx shadcn-vue@latest add separator
+  pnpm dlx shadcn-vue@latest add label
+  pnpm dlx shadcn-vue@latest add tooltip
+  pnpm dlx shadcn-vue@latest add alert
+  pnpm dlx shadcn-vue@latest add alert-dialog
   ```
-- [ ] 验证组件正确安装
-- [ ] 测试组件基础功能
+- [x] 验证组件正确安装
+- [x] 测试组件基础功能
 
 ---
 
 ## 🔐 第二阶段：认证系统 (2-3天)
 
-### 2.1 Better-Auth集成配置
-- [ ] 创建 `plugins/auth.client.ts`
-- [ ] 创建 `plugins/auth.server.ts` 
-- [ ] 配置与 `libs/auth` 库的集成
-- [ ] 创建 `server/api/auth/[...all].ts` API路由
-- [ ] 测试认证API端点响应
-- [ ] 验证会话管理功能
+### 2.1 Better-Auth集成配置 ✅
+- [x] ~~创建 `plugins/auth.client.ts`~~ (不需要)
+- [x] ~~创建 `plugins/auth.server.ts`~~ (不需要)
+- [x] 配置与 `libs/auth` 库的集成
+- [x] 创建 `server/api/auth/[...all].ts` API路由
+- [x] 测试认证API端点响应
+- [x] 验证会话管理功能
 
-### 2.2 认证状态管理
-- [ ] 创建 `stores/auth.ts` Pinia store
-- [ ] 实现用户状态管理
-- [ ] 实现登录状态持久化
-- [ ] 创建认证相关的composables：
-  - [ ] `composables/useAuth.ts`
-  - [ ] `composables/useUser.ts`
-- [ ] 测试状态同步功能
+### 2.1.5 Pinia状态管理安装配置 ✅
+- [x] 安装Pinia相关依赖
+- [x] 配置Nuxt模块
+- [x] 测试Pinia状态管理功能
 
-### 2.3 认证中间件
-- [ ] 创建 `middleware/auth.ts` (需要登录)
-- [ ] 创建 `middleware/guest.ts` (游客访问)
-- [ ] 创建 `middleware/admin.ts` (管理员权限)
-- [ ] 测试路由保护功能
-- [ ] 验证重定向逻辑
+### 2.2 认证状态管理 ✅
+- [x] ~~创建 `stores/auth.ts` Pinia store~~ (不需要，Better-Auth已提供)
+- [x] ~~实现用户状态管理~~ (Better-Auth hooks已提供)
+- [x] ~~实现登录状态持久化~~ (Better-Auth自动处理)
+- [x] ~~创建认证相关的composables~~ (不需要，直接使用Better-Auth API更简洁)
+- [x] 验证Better-Auth在Nuxt中的使用方式
+
+### 2.3 国际化支持实现 ✅
+- [x] 安装和配置@nuxtjs/i18n模块：
+  - [x] 安装依赖: `@nuxtjs/i18n@9.5.5`
+  - [x] 更新`nuxt.config.ts`配置
+  - [x] 设置支持的语言列表 (en, zh-CN)
+  - [x] 配置默认语言和回退语言
+- [x] 创建`i18n.config.ts`配置文件：
+  - [x] 配置语言检测策略
+  - [x] 设置URL路径前缀策略
+  - [x] 配置Cookie和LocalStorage存储
+  - [x] 集成`libs/i18n`翻译数据
+- [x] ~~创建`composables/useTranslation.ts`~~：(已废弃，直接使用@nuxtjs/i18n原生API)
+  - [x] ~~实现与Next.js `useTranslation` hook对等的API~~
+  - [x] ~~提供`t`, `locale`, `changeLocale`等功能~~
+  - [x] ~~支持Cookie偏好设置存储~~
+  - [x] ~~实现路径切换逻辑~~
+- [x] 配置多语言路由：
+  - [x] 设置URL前缀策略 (/dashboard, /zh-CN/dashboard)
+  - [x] 配置自动语言检测
+  - [x] 实现语言切换重定向
+  - [x] 测试浏览器语言检测
+- [x] 实现页面级别的SEO优化：
+  - [x] 配置动态meta标签
+  - [x] 设置hreflang属性
+  - [x] 实现替代语言链接
+- [x] 测试和验证：
+  - [x] 测试URL路由 (/dashboard, /zh-CN/dashboard)
+  - [x] 验证语言切换功能
+  - [x] 测试Cookie偏好保存
+  - [x] 确认与现有`libs/i18n`数据的集成
 
 ### 2.4 登录页面实现
 - [ ] 创建 `pages/signin.vue`
@@ -176,6 +203,13 @@
 - [ ] 实现微信扫码登录
 - [ ] 集成微信SDK
 - [ ] 测试微信登录流程
+
+### 2.9 认证中间件
+- [ ] 创建 `middleware/auth.ts` (需要登录)
+- [ ] 创建 `middleware/guest.ts` (游客访问)
+- [ ] 创建 `middleware/admin.ts` (管理员权限)
+- [ ] 测试路由保护功能
+- [ ] 验证重定向逻辑
 
 ---
 
@@ -655,15 +689,15 @@
 
 | 功能 | Next.js 参考文件 | Nuxt.js 目标文件 | 状态 |
 |------|-----------------|-----------------|------|
-| 国际化Hook | `hooks/use-translation.ts` | `composables/useTranslation.ts` | ⏳ 待实现 |
+| 国际化Hook | `hooks/use-translation.ts` | `composables/useTranslation.ts` | ⏳ 2.3实现 |
 | 主题Hook | `hooks/use-theme.tsx` | `composables/useTheme.ts` | ⏳ 待实现 |
 | 移动端Hook | `hooks/use-mobile.ts` | `composables/useMobile.ts` | ⏳ 待实现 |
 | 订阅Hook | `hooks/useSubscription.tsx` | `composables/useSubscription.ts` | ⏳ 待实现 |
 | 中间件配置 | `middleware.ts` | `middleware/auth.global.ts` | ⏳ 待实现 |
-| 认证中间件 | `middlewares/authMiddleware.ts` | `middleware/auth.ts` | ⏳ 待实现 |
-| 本地化中间件 | `middlewares/localeMiddleware.ts` | `plugins/i18n.client.ts` | ⏳ 待实现 |
+| 认证中间件 | `middlewares/authMiddleware.ts` | `middleware/auth.ts` | ⏳ 2.9实现 |
+| 本地化中间件 | `middlewares/localeMiddleware.ts` | `@nuxtjs/i18n自动处理` | ⏳ 2.3实现 |
 | 订阅中间件 | `middlewares/subscriptionMiddleware.ts` | `middleware/subscription.ts` | ⏳ 待实现 |
-| 国际化配置 | `app/i18n-config.ts` | `i18n.config.ts` | ⏳ 待实现 |
+| 国际化配置 | `app/i18n-config.ts` | `i18n.config.ts` | ⏳ 2.3实现 |
 
 ### 📱 UI组件文件 (shadcn-vue 自动生成)
 
@@ -671,26 +705,26 @@
 
 | Next.js UI组件 | Nuxt.js UI组件 | 安装命令 |
 |---------------|---------------|----------|
-| `components/ui/button.tsx` | `components/ui/Button.vue` | `npx shadcn-vue@latest add button` |
-| `components/ui/card.tsx` | `components/ui/Card.vue` | `npx shadcn-vue@latest add card` |
-| `components/ui/input.tsx` | `components/ui/Input.vue` | `npx shadcn-vue@latest add input` |
-| `components/ui/form.tsx` | `components/ui/Form.vue` | `npx shadcn-vue@latest add form` |
-| `components/ui/dialog.tsx` | `components/ui/Dialog.vue` | `npx shadcn-vue@latest add dialog` |
-| `components/ui/table.tsx` | `components/ui/Table.vue` | `npx shadcn-vue@latest add table` |
-| `components/ui/select.tsx` | `components/ui/Select.vue` | `npx shadcn-vue@latest add select` |
-| `components/ui/badge.tsx` | `components/ui/Badge.vue` | `npx shadcn-vue@latest add badge` |
-| `components/ui/avatar.tsx` | `components/ui/Avatar.vue` | `npx shadcn-vue@latest add avatar` |
-| `components/ui/dropdown-menu.tsx` | `components/ui/DropdownMenu.vue` | `npx shadcn-vue@latest add dropdown-menu` |
-| `components/ui/sheet.tsx` | `components/ui/Sheet.vue` | `npx shadcn-vue@latest add sheet` |
-| `components/ui/sidebar.tsx` | `components/ui/Sidebar.vue` | `npx shadcn-vue@latest add sidebar` |
-| `components/ui/tabs.tsx` | `components/ui/Tabs.vue` | `npx shadcn-vue@latest add tabs` |
-| `components/ui/progress.tsx` | `components/ui/Progress.vue` | `npx shadcn-vue@latest add progress` |
-| `components/ui/switch.tsx` | `components/ui/Switch.vue` | `npx shadcn-vue@latest add switch` |
-| `components/ui/separator.tsx` | `components/ui/Separator.vue` | `npx shadcn-vue@latest add separator` |
-| `components/ui/label.tsx` | `components/ui/Label.vue` | `npx shadcn-vue@latest add label` |
-| `components/ui/tooltip.tsx` | `components/ui/Tooltip.vue` | `npx shadcn-vue@latest add tooltip` |
-| `components/ui/alert.tsx` | `components/ui/Alert.vue` | `npx shadcn-vue@latest add alert` |
-| `components/ui/alert-dialog.tsx` | `components/ui/AlertDialog.vue` | `npx shadcn-vue@latest add alert-dialog` |
+| `components/ui/button.tsx` | `components/ui/Button.vue` | `pnpm dlx shadcn-vue@latest add button` |
+| `components/ui/card.tsx` | `components/ui/Card.vue` | `pnpm dlx shadcn-vue@latest add card` |
+| `components/ui/input.tsx` | `components/ui/Input.vue` | `pnpm dlx shadcn-vue@latest add input` |
+| `components/ui/form.tsx` | `components/ui/Form.vue` | `pnpm dlx shadcn-vue@latest add form` |
+| `components/ui/dialog.tsx` | `components/ui/Dialog.vue` | `pnpm dlx shadcn-vue@latest add dialog` |
+| `components/ui/table.tsx` | `components/ui/Table.vue` | `pnpm dlx shadcn-vue@latest add table` |
+| `components/ui/select.tsx` | `components/ui/Select.vue` | `pnpm dlx shadcn-vue@latest add select` |
+| `components/ui/badge.tsx` | `components/ui/Badge.vue` | `pnpm dlx shadcn-vue@latest add badge` |
+| `components/ui/avatar.tsx` | `components/ui/Avatar.vue` | `pnpm dlx shadcn-vue@latest add avatar` |
+| `components/ui/dropdown-menu.tsx` | `components/ui/DropdownMenu.vue` | `pnpm dlx shadcn-vue@latest add dropdown-menu` |
+| `components/ui/sheet.tsx` | `components/ui/Sheet.vue` | `pnpm dlx shadcn-vue@latest add sheet` |
+| `components/ui/sidebar.tsx` | `components/ui/Sidebar.vue` | `pnpm dlx shadcn-vue@latest add sidebar` |
+| `components/ui/tabs.tsx` | `components/ui/Tabs.vue` | `pnpm dlx shadcn-vue@latest add tabs` |
+| `components/ui/progress.tsx` | `components/ui/Progress.vue` | `pnpm dlx shadcn-vue@latest add progress` |
+| `components/ui/switch.tsx` | `components/ui/Switch.vue` | `pnpm dlx shadcn-vue@latest add switch` |
+| `components/ui/separator.tsx` | `components/ui/Separator.vue` | `pnpm dlx shadcn-vue@latest add separator` |
+| `components/ui/label.tsx` | `components/ui/Label.vue` | `pnpm dlx shadcn-vue@latest add label` |
+| `components/ui/tooltip.tsx` | `components/ui/Tooltip.vue` | `pnpm dlx shadcn-vue@latest add tooltip` |
+| `components/ui/alert.tsx` | `components/ui/Alert.vue` | `pnpm dlx shadcn-vue@latest add alert` |
+| `components/ui/alert-dialog.tsx` | `components/ui/AlertDialog.vue` | `pnpm dlx shadcn-vue@latest add alert-dialog` |
 
 ---
 
@@ -705,17 +739,49 @@
 | **表单处理** | React Hook Form | Vee-Validate | 🔄 需适配 |
 | **路由** | App Router | Nuxt Router | 🔄 需适配 |
 | **认证** | Better-Auth | Better-Auth | ✅ 库相同 |
-| **国际化** | 自定义Hook | @nuxtjs/i18n | 🔄 需适配 |
+| **国际化** | 自定义实现 | @nuxtjs/i18n | 🔄 功能增强 |
 | **API** | Route Handlers | Nitro API | 🔄 需适配 |
+
+### 🌍 国际化实现对比
+
+#### Next.js实现方式 (当前)
+```typescript
+// 特点：手动实现，基于文件系统路由
+- URL结构: /[lang]/dashboard (/en/dashboard, /zh-CN/dashboard)
+- 语言检测: 自定义middleware + cookie + accept-language header
+- 路由重定向: 手动实现localeMiddleware
+- Hook: 自定义useTranslation hook
+- 数据源: libs/i18n统一翻译数据
+```
+
+#### Nuxt.js实现方式 (目标)
+```typescript
+// 特点：@nuxtjs/i18n模块，更丰富的功能
+- URL结构: /dashboard (自动前缀) 或 /en/dashboard (显式前缀)
+- 语言检测: 自动检测 + 多种策略 (cookie, header, domain等)
+- 路由生成: 自动为所有页面生成多语言路由
+- Hook: 原生$t函数 + 自定义useTranslation (保持API兼容)
+- 数据源: 可直接集成libs/i18n或配置为lazy loading
+- SEO优化: 自动生成hreflang, meta标签等
+```
+
+#### 主要差异和优势
+| 功能 | Next.js | Nuxt.js | 优势 |
+|------|---------|---------|------|
+| **路由生成** | 手动配置 | 自动生成 | ✅ 减少配置 |
+| **语言检测** | 自定义实现 | 多种策略 | ✅ 更灵活 |
+| **SEO支持** | 手动配置 | 自动优化 | ✅ 更完善 |
+| **性能优化** | 静态翻译 | 懒加载支持 | ✅ 更优化 |
+| **开发体验** | 需要维护middleware | 开箱即用 | ✅ 更简单 |
 
 ---
 
 ## 📊 进度追踪
 
-### 总体进度: 0% (0/8 阶段完成)
+### 总体进度: 12.5% (1/8 阶段完成)
 
-- 🔴 **第一阶段**: 0% (0/5 子任务完成)
-- 🔴 **第二阶段**: 0% (0/8 子任务完成)  
+- ✅ **第一阶段**: 100% (5/5 子任务完成)
+- ⏳ **第二阶段**: 36% (4/11 子任务完成)  
 - 🔴 **第三阶段**: 0% (0/9 子任务完成)
 - 🔴 **第四阶段**: 0% (0/4 子任务完成)
 - 🔴 **第五阶段**: 0% (0/6 子任务完成)
@@ -877,6 +943,46 @@ const handleSubmit = async (data: LoginData) => {
 2. **功能测试**: 确保每个交互功能都与Next.js版本一致
 3. **API测试**: 使用相同的测试数据验证API响应
 4. **样式验证**: 检查响应式布局和主题切换
+
+---
+
+## 🎯 2.3 国际化实现要点
+
+### API兼容性保证
+为了确保后续页面开发的顺利进行，`useTranslation` composable必须与Next.js版本保持API一致：
+
+```typescript
+// 目标API (与Next.js一致)
+const { t, locale, locales, defaultLocale, changeLocale, isDefaultLocale } = useTranslation()
+
+// 使用方式保持不变
+t.auth.signin.title
+t.common.buttons.submit
+changeLocale('zh-CN')
+```
+
+### 路由策略选择
+推荐使用**前缀策略**以保持与Next.js的URL结构一致：
+- ✅ `/en/dashboard` (推荐，与Next.js一致)
+- ❌ `/dashboard?lang=en` (不推荐)
+- ❌ `/dashboard` (仅默认语言，不推荐)
+
+### 与libs/i18n集成
+确保直接使用现有的翻译数据，避免重复定义：
+```typescript
+// i18n.config.ts中
+import { translations } from '@libs/i18n'
+export default defineI18nConfig(() => ({
+  messages: translations,
+  // ...其他配置
+}))
+```
+
+### 测试重点
+- [ ] URL路由: `/en/dashboard` → `/zh-CN/dashboard` 切换
+- [ ] Cookie持久化: 刷新页面后语言偏好保持
+- [ ] 自动检测: 首次访问根据浏览器语言跳转
+- [ ] 404处理: 不存在的语言代码正确回退
 
 ---
 
