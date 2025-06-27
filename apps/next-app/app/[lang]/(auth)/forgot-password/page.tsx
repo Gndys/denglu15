@@ -11,23 +11,26 @@ import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/ui/form-error";
 import { Turnstile } from "@/components/ui/turnstile";
 import { Loader2 } from "lucide-react";
-import { forgetPasswordSchema } from "@libs/validators/user";
+import { createValidators } from "@libs/validators";
 import { authClientReact } from '@libs/auth/authClient';
 import type { z } from "zod";
 import { useTranslation } from "@/hooks/use-translation";
 import { config } from "@config";
 
-type FormData = z.infer<typeof forgetPasswordSchema>;
-
 export default function ForgetPasswordPage() {
   const router = useRouter();
-  const { t, locale } = useTranslation();
+  const { t, locale, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0); // 用于强制重新渲染 Turnstile
+
+  // 创建国际化验证器
+  const { forgetPasswordSchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof forgetPasswordSchema>;
 
   const {
     register,
@@ -38,6 +41,7 @@ export default function ForgetPasswordPage() {
     defaultValues: {
       email: "",
     },
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: FormData) => {
@@ -110,9 +114,7 @@ export default function ForgetPasswordPage() {
                   />
                   {errors?.email && (
                     <p className="px-1 text-xs text-red-600">
-                      {errors.email.type === 'required'
-                        ? t.auth.forgetPassword.errors.requiredEmail
-                        : t.auth.forgetPassword.errors.invalidEmail}
+                      {errors.email.message}
                     </p>
                   )}
                 </div>

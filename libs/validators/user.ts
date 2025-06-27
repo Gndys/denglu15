@@ -38,95 +38,166 @@ function validatePhoneNumber(phone: string, countryCode: string): boolean {
   return country.phoneLength.includes(cleanPhone.length);
 }
 
-// 基础用户验证器
-export const userSchema = z.object({
-  name: z.string().min(2).max(50),
-  email: z.string().email(),
-  emailVerified: z.boolean().default(false),
-  image: z.string().url().nullable().optional(),
-  role: z.enum([userRoles.ADMIN, userRoles.USER]).default(userRoles.USER),
-  phoneNumber: z.string().nullable().optional(),
-  phoneNumberVerified: z.boolean().default(false),
-  banned: z.boolean().default(false),
-  banReason: z.string().nullable().optional(),
-});
+// 翻译函数类型定义
+type TranslationFunction = (key: string, params?: Record<string, any>) => string;
 
-// 邮箱注册验证器
-export const emailSignUpSchema = z.object({
-  name: z.string().min(2).max(50),
-  email: z.string().email(),
-  password: z.string().min(8).max(100),
-});
+// 创建国际化验证器的工厂函数
+export function createValidators(t: TranslationFunction) {
+  // 基础用户验证器
+  const userSchema = z.object({
+    name: z.string()
+      .min(2, t('validators.user.name.minLength', { min: 2 }))
+      .max(50, t('validators.user.name.maxLength', { max: 50 })),
+    email: z.string().email(t('validators.user.email.invalid')),
+    emailVerified: z.boolean().default(false),
+    image: z.string().url(t('validators.user.image.invalidUrl')).nullable().optional(),
+    role: z.enum([userRoles.ADMIN, userRoles.USER]).default(userRoles.USER),
+    phoneNumber: z.string().nullable().optional(),
+    phoneNumberVerified: z.boolean().default(false),
+    banned: z.boolean().default(false),
+    banReason: z.string().nullable().optional(),
+  });
 
-// 扩展的注册表单验证器（包含可选的图片URL）
-export const signupFormSchema = emailSignUpSchema.extend({
-  image: z.string().url().optional().or(z.literal('')),
-});
+  // 邮箱注册验证器
+  const emailSignUpSchema = z.object({
+    name: z.string()
+      .min(2, t('validators.user.name.minLength', { min: 2 }))
+      .max(50, t('validators.user.name.maxLength', { max: 50 })),
+    email: z.string().email(t('validators.user.email.invalid')),
+    password: z.string()
+      .min(8, t('validators.user.password.minLength', { min: 8 }))
+      .max(100, t('validators.user.password.maxLength', { max: 100 })),
+  });
 
-// 邮箱登录验证器
-export const emailSignInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).max(100),
-});
+  // 扩展的注册表单验证器（包含可选的图片URL）
+  const signupFormSchema = emailSignUpSchema.extend({
+    image: z.string().url(t('validators.user.image.invalidUrl')).optional().or(z.literal('')),
+  });
 
-// 扩展的登录表单验证器（包含记住我选项）
-export const loginFormSchema = emailSignInSchema.extend({
-  remember: z.boolean().default(false),
-});
+  // 邮箱登录验证器
+  const emailSignInSchema = z.object({
+    email: z.string().email(t('validators.user.email.invalid')),
+    password: z.string()
+      .min(8, t('validators.user.password.minLength', { min: 8 }))
+      .max(100, t('validators.user.password.maxLength', { max: 100 })),
+  });
 
-// 手机号注册验证器
-export const phoneSignUpSchema = z.object({
-  countryCode: z.string().min(1, '请选择国家/地区'),
-  phoneNumber: z.string().min(1, '请输入手机号'),
-  code: z.string().length(4),
-}).refine((data) => validatePhoneNumber(data.phoneNumber, data.countryCode), {
-  message: "手机号格式不正确",
-  path: ["phoneNumber"],
-});
+  // 扩展的登录表单验证器（包含记住我选项）
+  const loginFormSchema = emailSignInSchema.extend({
+    remember: z.boolean().default(false),
+  });
 
-// 手机号登录第一步验证器（发送验证码）
-export const phoneLoginSchema = z.object({
-  countryCode: z.string().min(1, '请选择国家/地区'),
-  phone: z.string().min(1, '请输入手机号'),
-}).refine((data) => validatePhoneNumber(data.phone, data.countryCode), {
-  message: "手机号格式不正确",
-  path: ["phone"],
-});
+  // 手机号注册验证器
+  const phoneSignUpSchema = z.object({
+    countryCode: z.string().min(1, t('validators.user.countryCode.required')),
+    phoneNumber: z.string().min(1, t('validators.user.phoneNumber.required')),
+    code: z.string().length(6, t('validators.user.verificationCode.invalidLength', { length: 6 })),
+  }).refine((data) => validatePhoneNumber(data.phoneNumber, data.countryCode), {
+    message: t('validators.user.phoneNumber.invalid'),
+    path: ["phoneNumber"],
+  });
 
-// 手机号登录第二步验证器（验证验证码）
-export const phoneVerifySchema = z.object({
-  countryCode: z.string().min(1),
-  phone: z.string().min(1),
-  code: z.string().length(4),
-});
+  // 手机号登录第一步验证器（发送验证码）
+  const phoneLoginSchema = z.object({
+    countryCode: z.string().min(1, t('validators.user.countryCode.required')),
+    phone: z.string().min(1, t('validators.user.phoneNumber.required')),
+  }).refine((data) => validatePhoneNumber(data.phone, data.countryCode), {
+    message: t('validators.user.phoneNumber.invalid'),
+    path: ["phone"],
+  });
 
-// 更新用户验证器 - 所有字段都是可选的
-export const updateUserSchema = userSchema.partial();
+  // 手机号登录第二步验证器（验证验证码）
+  const phoneVerifySchema = z.object({
+    countryCode: z.string().min(1, t('validators.user.countryCode.required')),
+    phone: z.string().min(1, t('validators.user.phoneNumber.required')),
+    code: z.string().length(6, t('validators.user.verificationCode.invalidLength', { length: 6 })),
+  });
 
-// 用户ID验证器
-export const userIdSchema = z.object({
-  id: z.string().min(1),
-});
+  // 更新用户验证器 - 所有字段都是可选的
+  const updateUserSchema = userSchema.partial();
 
-// 忘记密码验证器
-export const forgetPasswordSchema = z.object({
-  email: z.string().email(),
-});
+  // 用户ID验证器
+  const userIdSchema = z.object({
+    id: z.string().min(1, t('validators.user.id.required')),
+  });
 
-// 重置密码验证器
-export const resetPasswordSchema = z.object({
-  password: z.string().min(8).max(100),
-  confirmPassword: z.string().min(8).max(100),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+  // 忘记密码验证器
+  const forgetPasswordSchema = z.object({
+    email: z.string().email(t('validators.user.email.invalid')),
+  });
 
-export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your password')
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+  // 重置密码验证器
+  const resetPasswordSchema = z.object({
+    password: z.string()
+      .min(8, t('validators.user.password.minLength', { min: 8 }))
+      .max(100, t('validators.user.password.maxLength', { max: 100 })),
+    confirmPassword: z.string()
+      .min(8, t('validators.user.password.minLength', { min: 8 }))
+      .max(100, t('validators.user.password.maxLength', { max: 100 })),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('validators.user.password.mismatch'),
+    path: ["confirmPassword"],
+  });
+
+  const changePasswordSchema = z.object({
+    currentPassword: z.string().min(1, t('validators.user.currentPassword.required')),
+    newPassword: z.string().min(8, t('validators.user.password.minLength', { min: 8 })),
+    confirmPassword: z.string().min(1, t('validators.user.confirmPassword.required'))
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('validators.user.password.mismatch'),
+    path: ["confirmPassword"],
+  });
+
+  return {
+    userSchema,
+    emailSignUpSchema,
+    signupFormSchema,
+    emailSignInSchema,
+    loginFormSchema,
+    phoneSignUpSchema,
+    phoneLoginSchema,
+    phoneVerifySchema,
+    updateUserSchema,
+    userIdSchema,
+    forgetPasswordSchema,
+    resetPasswordSchema,
+    changePasswordSchema,
+  };
+}
+
+// 为了向后兼容，保留默认的英文版本验证器
+export const {
+  userSchema,
+  emailSignUpSchema,
+  signupFormSchema,
+  emailSignInSchema,
+  loginFormSchema,
+  phoneSignUpSchema,
+  phoneLoginSchema,
+  phoneVerifySchema,
+  updateUserSchema,
+  userIdSchema,
+  forgetPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} = createValidators((key: string, params?: Record<string, any>) => {
+  // 默认英文错误消息的简单实现
+  const defaultMessages: Record<string, string> = {
+    'validators.user.name.minLength': `Name must be at least ${params?.min || 2} characters`,
+    'validators.user.name.maxLength': `Name must be less than ${params?.max || 50} characters`,
+    'validators.user.email.invalid': 'Please enter a valid email address',
+    'validators.user.image.invalidUrl': 'Please enter a valid URL',
+    'validators.user.password.minLength': `Password must be at least ${params?.min || 8} characters`,
+    'validators.user.password.maxLength': `Password must be less than ${params?.max || 100} characters`,
+    'validators.user.password.mismatch': "Passwords don't match",
+    'validators.user.countryCode.required': 'Please select country/region',
+    'validators.user.phoneNumber.required': 'Please enter phone number',
+    'validators.user.phoneNumber.invalid': 'Invalid phone number format',
+    'validators.user.verificationCode.invalidLength': `Verification code must be ${params?.length || 6} characters`,
+    'validators.user.id.required': 'User ID is required',
+    'validators.user.currentPassword.required': 'Current password is required',
+    'validators.user.confirmPassword.required': 'Please confirm your password',
+  };
+  
+  return defaultMessages[key] || key;
 }); 

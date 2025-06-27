@@ -1,162 +1,394 @@
-# Validators System
+# User Validators
 
-ShipEasy's data validation system built on Zod, providing type-safe data validation and form handling capabilities.
+ShipEasy's internationalized data validation system built on Zod, providing type-safe data validation and multi-language error message support.
 
-## 🎯 Design Goals
+## 🌟 Core Features
 
-- **Type Safety**: Use TypeScript and Zod to ensure compile-time and runtime type safety
-- **Simple & Intuitive**: Keep validation rules simple and easy to understand and maintain
-- **Highly Reusable**: Support validator composition and extension to avoid code duplication
-- **Form Integration**: Seamless integration with React Hook Form for excellent user experience
-- **Internationalization**: Support multi-language error message display
+- **🌍 Full Internationalization** - Multi-language error messages with parameter interpolation
+- **🔧 Framework Compatible** - Supports both Vue.js (Nuxt) and React (Next.js)
+- **📱 Phone Validation** - Multi-country/region phone number format validation
+- **🛡️ Type Safety** - Complete TypeScript type support
+- **🎯 Form Integration** - Seamless integration with React Hook Form and VeeValidate
+- **⚡ Consistent Experience** - All forms use `onBlur` validation mode
 
-## 📁 Directory Structure
+## 📦 Quick Start
 
-```
-libs/validators/
-├── README.md          # Chinese documentation
-├── README.en.md       # This document (English)
-├── user.ts           # User-related validators
-└── index.ts          # Unified exports (future planning)
-```
-
-## 🏗️ Core Architecture
-
-### Validator Categories
-
-Our validators are categorized by business scenarios:
-
-1. **Base Validators** - Complete validation for database entities
-2. **Form Validators** - Validation for specific form scenarios
-3. **Operation Validators** - Validation for specific business operations
-4. **Extended Validators** - Extensions and variants based on base validators
-
-### Naming Conventions
-
-- Base validators: `entitySchema` (e.g., `userSchema`)
-- Form validators: `actionFormSchema` (e.g., `signupFormSchema`, `loginFormSchema`)
-- Operation validators: `actionSchema` (e.g., `changePasswordSchema`, `resetPasswordSchema`)
-- Extended validators: `baseEntityExtendedSchema` (e.g., `updateUserSchema`)
-
-## 🔧 Usage
-
-### 1. Integration with React Hook Form
+### Vue.js / Nuxt.js Usage
 
 ```typescript
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema } from "@libs/validators/user";
-import type { z } from "zod";
+import { createValidators } from '@libs/validators'
 
-type FormData = z.infer<typeof loginFormSchema>;
+// Directly use Vue i18n's t function in Nuxt.js components
+const { t } = useI18n() 
+const { loginFormSchema, signupFormSchema } = createValidators(t)
+
+// Use in form validation
+const { handleSubmit, errors, defineField } = useForm({
+  validationSchema: toTypedSchema(loginFormSchema),
+  mode: 'onBlur'
+})
+```
+
+### React / Next.js Usage
+
+```typescript
+import { createValidators, createNextTranslationFunction } from '@libs/validators'
+import { useTranslation } from '@/hooks/use-translation'
+
+// In Next.js components
+const { t } = useTranslation() 
+const tWithParams = createNextTranslationFunction(t) // Create translation function with parameter interpolation
+const { loginFormSchema, signupFormSchema } = createValidators(tWithParams)
+
+// Use in form validation
+const { register, handleSubmit, formState: { errors } } = useForm({
+  resolver: zodResolver(loginFormSchema),
+  mode: 'onBlur' // Unified validation experience
+})
+```
+
+## 🔧 Available Validators
+
+### User Authentication Validators
+
+```typescript
+const {
+  // 📧 Email Registration/Login
+  emailSignUpSchema,    // Email registration validation
+  signupFormSchema,     // Registration form validation (with optional image)
+  emailSignInSchema,    // Email login validation
+  loginFormSchema,      // Login form validation (with remember me)
+  
+  // 📱 Phone Registration/Login
+  phoneSignUpSchema,    // Phone registration validation
+  phoneLoginSchema,     // Phone login step 1 (send verification code)
+  phoneVerifySchema,    // Phone login step 2 (verify code)
+  
+  // 🔐 Password Management
+  forgetPasswordSchema,   // Forgot password validation
+  resetPasswordSchema,    // Reset password validation
+  changePasswordSchema,   // Change password validation
+  
+  // 👤 User Management
+  userSchema,           // Complete user info validation
+  updateUserSchema,     // Update user info (all fields optional)
+  userIdSchema,         // User ID validation
+} = createValidators(translationFunction)
+```
+
+### Phone Validation Support
+
+```typescript
+import { countryCodes, type CountryCode } from '@libs/validators'
+
+// Supported country/region codes
+console.log(countryCodes) 
+// [
+//   { code: '+86', name: 'China', flag: '🇨🇳', phoneLength: [11] },
+//   { code: '+1', name: 'United States', flag: '🇺🇸', phoneLength: [10] },
+//   // More countries...
+// ]
+```
+
+## 🌍 Internationalization Configuration
+
+### Translation Key Structure
+
+Validators use a unified translation key pattern: `validators.user.{field}.{errorType}`
+
+```typescript
+// Translation file example (libs/i18n/locales/en.ts, zh-CN.ts)
+export default {
+  validators: {
+    user: {
+      name: {
+        minLength: "Name must be at least {min} characters",
+        maxLength: "Name must be less than {max} characters"
+      },
+      email: {
+        invalid: "Please enter a valid email address"
+      },
+      password: {
+        minLength: "Password must be at least {min} characters",
+        maxLength: "Password must be less than {max} characters",
+        mismatch: "Passwords don't match"
+      },
+      phoneNumber: {
+        required: "Please enter phone number",
+        invalid: "Invalid phone number format"
+      },
+      verificationCode: {
+        invalidLength: "Verification code must be {length} characters"
+      }
+    }
+  }
+}
+```
+
+### Parameter Interpolation Examples
+
+```typescript
+// English: "Password must be at least 8 characters"
+// Chinese: "密码至少需要8个字符"
+
+// Vue.js - Use t function directly
+t('validators.user.password.minLength', { min: 8 })
+
+// Next.js - Use enhanced translation function
+tWithParams('validators.user.password.minLength', { min: 8 })
+```
+
+## 📝 Practical Examples
+
+### Login Form (Next.js)
+
+```tsx
+'use client'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createValidators, createNextTranslationFunction } from '@libs/validators'
+import { useTranslation } from '@/hooks/use-translation'
 
 export function LoginForm() {
-  const form = useForm<FormData>({
+  const { t } = useTranslation()
+  const tWithParams = createNextTranslationFunction(t)
+  const { loginFormSchema } = createValidators(tWithParams)
+  
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginFormSchema),
-    mode: 'onBlur',
-  });
-
-  const onSubmit = async (data: FormData) => {
-    // Form submission logic
-  };
+    mode: 'onBlur', // Validate on blur
+    defaultValues: {
+      email: '',
+      password: '',
+      remember: true
+    }
+  })
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      {/* Form fields */}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <input 
+          {...register('email')} 
+          type="email" 
+          autoComplete="email"
+        />
+        {errors.email && (
+          <span className="error">{errors.email.message}</span>
+        )}
+      </div>
+      
+      <div>
+        <input 
+          {...register('password')} 
+          type="password"
+          autoComplete="current-password"
+        />
+        {errors.password && (
+          <span className="error">{errors.password.message}</span>
+        )}
+      </div>
+      
+      <button type="submit">Login</button>
     </form>
-  );
+  )
 }
 ```
 
-### 2. Direct Data Validation
+### Registration Form (Nuxt.js)
+
+```vue
+<template>
+  <form @submit="onSubmit">
+    <div>
+      <input v-model="name" type="text" />
+      <span v-if="errors.name" class="error">{{ errors.name }}</span>
+    </div>
+    
+    <div>
+      <input v-model="email" type="email" />
+      <span v-if="errors.email" class="error">{{ errors.email }}</span>
+    </div>
+    
+    <div>
+      <input v-model="password" type="password" />
+      <span v-if="errors.password" class="error">{{ errors.password }}</span>
+    </div>
+    
+    <button type="submit">Register</button>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import { createValidators } from '@libs/validators'
+
+// Directly use Vue i18n's t function
+const { t } = useI18n()
+const { signupFormSchema } = createValidators(t)
+
+const { handleSubmit, errors, defineField } = useForm({
+  validationSchema: toTypedSchema(signupFormSchema)
+})
+
+const [name] = defineField('name')
+const [email] = defineField('email')
+const [password] = defineField('password')
+
+const onSubmit = handleSubmit((values) => {
+  // Handle form submission
+})
+</script>
+```
+
+## 🛠️ Architecture Design
+
+### Validator Factory Pattern
 
 ```typescript
-import { userSchema } from "@libs/validators/user";
+// libs/validators/user.ts core implementation
+export function createValidators(t: TranslationFunction) {
+  const userSchema = z.object({
+    name: z.string()
+      .min(2, t('validators.user.name.minLength', { min: 2 }))
+      .max(50, t('validators.user.name.maxLength', { max: 50 })),
+    email: z.string().email(t('validators.user.email.invalid')),
+    // More fields...
+  })
 
-// Safe parsing (recommended)
-const result = userSchema.safeParse(data);
-if (!result.success) {
-  console.error('Validation failed:', result.error.issues);
-  return;
+  return {
+    userSchema,
+    loginFormSchema: userSchema.pick({ email: true, password: true })
+      .extend({ remember: z.boolean().default(false) }),
+    // More validators...
+  }
 }
-// Use validated data: result.data
 ```
 
-### 3. TypeScript Type Inference
+### Framework Adaptation Layer
 
 ```typescript
-import type { z } from "zod";
-import { userSchema } from "@libs/validators/user";
+// Vue.js - Use Vue i18n's t function directly
+const { t } = useI18n()
+const { loginFormSchema } = createValidators(t)
 
-// Automatic type inference
-type User = z.infer<typeof userSchema>;
+// Next.js - Use translation function factory to create enhanced translation function
+import { createNextTranslationFunction } from '@libs/validators'
 
-function createUser(userData: User) {
-  // userData has complete type hints
-}
+const { t } = useTranslation()
+const tWithParams = createNextTranslationFunction(t)
+const { loginFormSchema } = createValidators(tWithParams)
 ```
 
-## 🎨 Best Practices
+## 🧪 Testing and Debugging
 
-### Validator Design Principles
+### Test Pages
 
-- **Single Responsibility**: Each validator focuses on specific use cases
-- **Composition over Inheritance**: Use `.extend()` and `.partial()` to compose validators
-- **Clear Error Messages**: Provide clear validation error messages
-- **Performance Considerations**: Avoid complex validation logic, keep validators lightweight
+- **Next.js**: Visit `/test-validator-nextjs` to test validator functionality
+- **Nuxt.js**: Visit `/test-validator` to test validator functionality
+
+### Run Unit Tests
+
+```bash
+# Run all validator tests
+pnpm test tests/unit/validators/
+
+# Run integration tests
+pnpm test tests/unit/validators/integration.test.ts
+```
+
+## 📚 API Reference
+
+### createValidators(translationFunction)
+
+Main factory function for creating internationalized validators.
+
+**Parameters:**
+- `translationFunction: (key: string, params?: Record<string, any>) => string`
+
+**Returns:**
+Object containing all validator schemas.
+
+### Utility Functions
+
+```typescript
+// Next.js translation function creator
+createNextTranslationFunction(translations: object): TranslationFunction
+```
+
+## 🎯 Best Practices
 
 ### Form Validation Configuration
 
 ```typescript
-const form = useForm<FormData>({
+// Recommended form configuration
+const form = useForm({
   resolver: zodResolver(schema),
-  mode: 'onBlur',              // Validate on blur
-  reValidateMode: 'onChange',  // Re-validation mode
-  defaultValues: { /* ... */ } // Provide default values
-});
+  mode: 'onBlur',              // Unified blur validation
+  reValidateMode: 'onChange',  // Real-time validation after correction
+  defaultValues: { /* */ }     // Provide default values
+})
 ```
 
-### Validator Extension
+### Error Message Display
+
+```tsx
+// Use validator error messages directly
+{errors.fieldName && (
+  <span className="error">{errors.fieldName.message}</span>
+)}
+```
+
+### Type Safety
 
 ```typescript
-// Create new validators based on existing ones
-export const adminUserSchema = userSchema.extend({
-  permissions: z.array(z.string()),
-});
+import type { z } from 'zod'
 
-// Create optional field versions
-export const partialUserSchema = userSchema.partial();
-
-// Select specific fields
-export const userProfileSchema = userSchema.pick({
-  name: true,
-  email: true,
-  image: true,
-});
+// Automatically infer form data types
+type LoginFormData = z.infer<typeof loginFormSchema>
+type SignupFormData = z.infer<typeof signupFormSchema>
 ```
 
-## 🧪 Testing
+## 🔮 Project Integration
 
-Validators have complete test coverage located at `tests/unit/validators/user.test.ts`.
+### Current Integration Status
 
-## 🔮 Future Plans
+- ✅ **Next.js App** - Fully integrated with unified validation experience
+- ✅ **Nuxt.js App** - Fully integrated with unified validation experience
+- ✅ **Multi-language Support** - English and Chinese error messages
+- ✅ **Phone Validation** - Multi-country/region support
+- ✅ **Type Safety** - Complete TypeScript support
 
-1. **More Validators**: Plan to add subscription, payment and other business-related validators
-2. **Custom Validators**: Support more complex business rule validation
-3. **Validator Tools**: Develop validator generation and testing tools
+### Integrated Forms
 
-## 🤝 Contribution Guidelines
+- Login form (`/signin`)
+- Registration form (`/signup`) 
+- Forgot password form (`/forgot-password`)
+- Reset password form (`/reset-password`)
+- Phone login form (`/cellphone`)
+- Change password dialog
+- Admin user management form
 
-When adding new validators, please follow these steps:
+## 🤝 Contributing
 
-1. Add new schemas to the appropriate validator file
-2. Follow existing naming conventions
-3. Add complete TypeScript type annotations
-4. Write corresponding test cases
-5. Update this README document
+### Adding New Validators
 
-## 📚 Related Technologies
+1. Add validator logic to `libs/validators/user.ts`
+2. Add corresponding error message keys to translation files
+3. Update type definitions and exports
+4. Add unit tests
+5. Update documentation
 
-- [Zod](https://zod.dev/) - TypeScript-first schema validation
-- [React Hook Form](https://react-hook-form.com/) - High-performance form library
-- [TypeScript](https://www.typescriptlang.org/) - Type safety 
+### Adding New Translations
+
+1. Add new language files to `libs/i18n/locales/`
+2. Add `validators.user.*` translation keys
+3. Test parameter interpolation functionality
+
+## 📄 License
+
+MIT License
+
+---
+
+**💡 Tip**: This is a modern, fully internationalized validator system. Vue.js uses the `t` function directly, while Next.js uses `createNextTranslationFunction` to create an enhanced translation function. 

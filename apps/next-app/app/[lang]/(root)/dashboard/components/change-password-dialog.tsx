@@ -15,13 +15,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { authClientReact } from "@libs/auth/authClient";
-import { changePasswordSchema } from "@libs/validators/user";
+import { createValidators } from "@libs/validators";
 import type { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-
-type FormData = z.infer<typeof changePasswordSchema>;
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -29,8 +27,13 @@ interface ChangePasswordDialogProps {
 }
 
 export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialogProps) {
-  const { t } = useTranslation();
+  const { t, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
+
+  // 创建国际化验证器
+  const { changePasswordSchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof changePasswordSchema>;
 
   const {
     register,
@@ -99,9 +102,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               />
               {errors.currentPassword && (
                 <span className="text-destructive text-xs mt-1 block">
-                  {errors.currentPassword.message === 'Current password is required'
-                    ? t.dashboard.accountManagement.changePassword.errors.required
-                    : errors.currentPassword.message}
+                  {errors.currentPassword.message}
                 </span>
               )}
             </div>
@@ -123,9 +124,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               />
               {errors.newPassword && (
                 <span className="text-destructive text-xs mt-1 block">
-                  {errors.newPassword.message === 'Password must be at least 8 characters'
-                    ? t.dashboard.accountManagement.changePassword.errors.minLength
-                    : errors.newPassword.message}
+                  {errors.newPassword.message}
                 </span>
               )}
             </div>
@@ -147,9 +146,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               />
               {errors.confirmPassword && (
                 <span className="text-destructive text-xs mt-1 block">
-                  {errors.confirmPassword.message === "Passwords don't match"
-                    ? t.dashboard.accountManagement.changePassword.errors.mismatch
-                    : errors.confirmPassword.message}
+                  {errors.confirmPassword.message}
                 </span>
               )}
             </div>

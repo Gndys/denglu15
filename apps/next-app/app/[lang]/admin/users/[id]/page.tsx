@@ -15,7 +15,7 @@ import { SaveIcon, Trash2Icon } from 'lucide-react'
 import { authClientReact } from "@libs/auth/authClient"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { userSchema } from "@libs/validators/user"
+import { createValidators } from "@libs/validators"
 import { z } from "zod"
 import {
   AlertDialog,
@@ -32,17 +32,7 @@ import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useTranslation } from "@/hooks/use-translation"
 
-// 创建用户schema（包含密码字段）
-const createUserSchema = userSchema.extend({
-  password: z.string().min(8).max(100),
-  image: z.string().url().optional().or(z.literal('')),
-});
 
-// 更新用户schema（所有字段可选）
-const updateUserSchema = userSchema.partial();
-
-type CreateUserFormData = z.infer<typeof createUserSchema>;
-type UpdateUserFormData = z.infer<typeof updateUserSchema>;
 
 interface UserPageProps {
   params: Promise<{
@@ -51,7 +41,7 @@ interface UserPageProps {
 }
 
 export default function UserPage({ params }: UserPageProps) {
-  const { t } = useTranslation();
+  const { t, tWithParams } = useTranslation();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +49,23 @@ export default function UserPage({ params }: UserPageProps) {
   const resolvedParams = use(params);
   const { id } = resolvedParams;
   const isEditMode = id !== 'new';
+
+  // 创建国际化验证器
+  const { userSchema, emailSignUpSchema, updateUserSchema } = createValidators(tWithParams);
+
+  // 创建用户schema（包含密码字段）
+  const createUserSchema = emailSignUpSchema.extend({
+    image: z.string().url().optional().or(z.literal('')),
+    role: z.enum([userRoles.ADMIN, userRoles.USER]).default(userRoles.USER),
+    phoneNumber: z.string().nullable().optional(),
+    emailVerified: z.boolean().default(false),
+    phoneNumberVerified: z.boolean().default(false),
+    banned: z.boolean().default(false),
+    banReason: z.string().nullable().optional(),
+  });
+
+  type CreateUserFormData = z.infer<typeof createUserSchema>;
+  type UpdateUserFormData = z.infer<typeof updateUserSchema>;
 
   const {
     register,
@@ -73,7 +80,8 @@ export default function UserPage({ params }: UserPageProps) {
       emailVerified: false,
       phoneNumberVerified: false,
       banned: false,
-    }
+    },
+    mode: 'onBlur',
   });
 
   useEffect(() => {

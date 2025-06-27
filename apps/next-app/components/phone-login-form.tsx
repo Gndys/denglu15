@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,20 +18,17 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Loader2 } from "lucide-react"
-import { phoneLoginSchema, phoneVerifySchema, countryCodes } from "@libs/validators/user"
+import { createValidators, countryCodes } from "@libs/validators"
 import type { z } from "zod"
 import { useTranslation } from "@/hooks/use-translation"
 import { config } from "@config"
-
-type FormData = z.infer<typeof phoneLoginSchema>;
-type VerifyData = z.infer<typeof phoneVerifySchema>;
 
 export function PhoneLoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [otpSent, setOtpSent] = useState(false);
@@ -40,9 +37,16 @@ export function PhoneLoginForm({
   const [turnstileKey, setTurnstileKey] = useState(0); // 用于强制重新渲染 Turnstile
   const [countdown, setCountdown] = useState(0); // 倒计时秒数
 
+  // 创建国际化验证器
+  const { phoneLoginSchema, phoneVerifySchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof phoneLoginSchema>;
+  type VerifyData = z.infer<typeof phoneVerifySchema>;
+
   const {
     register,
     handleSubmit,
+    control,
     watch,
     setValue,
     formState: { errors },
@@ -51,7 +55,8 @@ export function PhoneLoginForm({
     defaultValues: {
       countryCode: '+86', // 默认选择中国
       phone: '',
-    }
+    },
+    mode: 'onBlur', // 添加 onBlur 验证模式
   });
 
   const countryCode = watch("countryCode");
@@ -216,10 +221,16 @@ export function PhoneLoginForm({
             <div className="grid gap-2">
               <Label htmlFor="phone">{t.auth.phone.phoneNumber}</Label>
               <div className="flex gap-2">
-                <CountrySelect
-                  value={countryCode}
-                  onValueChange={(value) => setValue("countryCode", value)}
-                  disabled={loading}
+                <Controller
+                  name="countryCode"
+                  control={control}
+                  render={({ field }) => (
+                    <CountrySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={loading}
+                    />
+                  )}
                 />
                 <Input
                   id="phone"
@@ -262,24 +273,24 @@ export function PhoneLoginForm({
           </div>
         </form>
       ) : (
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          onVerifyOTP();
-        }}>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label>{t.auth.phone.verificationCode}</Label>
-              <div className="text-sm text-muted-foreground mb-2">
-                {t.auth.phone.codeSentTo} {countryCodes.find(c => c.code === countryCode)?.flag} {countryCode} {phoneNumber}
-              </div>
+        <form onSubmit={(e) => { e.preventDefault(); onVerifyOTP(); }}>
+          <div className="grid gap-6">
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold">{t.auth.phone.enterCode}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t.auth.phone.codeSentTo} {countryCode} {phoneNumber}
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <div className="flex justify-center">
                 <InputOTP
+                  maxLength={6}
                   value={otp}
                   onChange={(value) => setOtp(value)}
-                  maxLength={6}
-                  className="gap-2"
+                  disabled={loading}
                 >
-                  <InputOTPGroup>
+                  <InputOTPGroup className="gap-2">
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
                     <InputOTPSlot index={2} />
@@ -289,23 +300,24 @@ export function PhoneLoginForm({
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-            </div>
-
-            {/* 重新发送验证码按钮 */}
-            <div className="flex justify-center">
-              <Button 
-                type="button"
-                variant="link" 
-                size="sm"
-                disabled={countdown > 0 || loading}
-                onClick={onResendOTP}
-                className="text-sm"
-              >
-                {countdown > 0 
-                  ? `${countdown}${t.auth.phone.resendCountdown}`
-                  : t.actions.resendCode
-                }
-              </Button>
+              
+              <div className="text-center">
+                {countdown > 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    {t.auth.phone.resendIn} {countdown} {t.auth.phone.seconds}
+                  </p>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm"
+                    onClick={onResendOTP}
+                    disabled={loading}
+                  >
+                    {t.auth.phone.resendCode}
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-3">

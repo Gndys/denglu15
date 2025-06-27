@@ -2,6 +2,7 @@
 import { resolve } from 'path';
 import { loadEnv } from 'vite'
 import tailwindcss from "@tailwindcss/vite";
+import svgLoader from 'vite-svg-loader';
 
 
 // 加载根目录的环境变量
@@ -15,6 +16,21 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       tailwindcss(),
+      svgLoader({
+        defaultImport: 'component', // 默认导入为 Vue 组件
+        svgoConfig: {
+          plugins: [
+            {
+              name: 'preset-default',
+              params: {
+                overrides: {
+                  removeViewBox: false, // 保留 viewBox 属性
+                },
+              },
+            },
+          ],
+        },
+      }),
     ],
     optimizeDeps: {
       include: ['pg', 'drizzle-orm']
@@ -41,7 +57,10 @@ export default defineNuxtConfig({
     // 公共环境变量（客户端可访问）
     public: {
       betterAuthUrl: rootEnv.BETTER_AUTH_URL,
-      apiBaseUrl: rootEnv.API_BASE_URL
+      apiBaseUrl: rootEnv.API_BASE_URL,
+      // Captcha 配置
+      captchaEnabled: rootEnv.CAPTCHA_ENABLED || 'true',
+      turnstileSiteKey: rootEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY || rootEnv.TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
     }
   },
 

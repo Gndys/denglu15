@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClientReact } from "@libs/auth/authClient";
-import { signupFormSchema } from "@libs/validators/user";
+import { createValidators } from "@libs/validators";
 import type { z } from "zod";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -19,14 +19,12 @@ import { useTranslation } from "@/hooks/use-translation"
 import { config } from "@config"
 import Link from "next/link"
 
-type FormData = z.infer<typeof signupFormSchema>;
-
 export function SignupForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter();
-  const { t, locale } = useTranslation();
+  const { t, locale, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState('');
@@ -34,6 +32,11 @@ export function SignupForm({
   const [verificationEmail, setVerificationEmail] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0); // 用于强制重新渲染 Turnstile
+
+  // 创建国际化验证器
+  const { signupFormSchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof signupFormSchema>;
 
   const {
     register,
@@ -139,12 +142,11 @@ export function SignupForm({
                 placeholder={t.auth.signup.namePlaceholder}
                 className={cn(errors.name && "border-destructive")}
                 aria-invalid={errors.name ? "true" : "false"}
+                autoComplete="name"
               />
               {errors.name && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {errors.name.type === 'required' 
-                    ? t.auth.signup.errors.requiredName 
-                    : t.auth.signup.errors.invalidName}
+                  {errors.name.message}
                 </span>
               )}
             </div>
@@ -159,12 +161,11 @@ export function SignupForm({
                 placeholder={t.auth.signup.emailPlaceholder}
                 className={cn(errors.email && "border-destructive")}
                 aria-invalid={errors.email ? "true" : "false"}
+                autoComplete="email"
               />
               {errors.email && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {errors.email.type === 'required' 
-                    ? t.auth.signup.errors.requiredEmail 
-                    : t.auth.signup.errors.invalidEmail}
+                  {errors.email.message}
                 </span>
               )}
             </div>
@@ -179,12 +180,11 @@ export function SignupForm({
                 placeholder={t.auth.signup.passwordPlaceholder}
                 className={cn(errors.password && "border-destructive")}
                 aria-invalid={errors.password ? "true" : "false"}
+                autoComplete="new-password"
               />
               {errors.password && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {errors.password.type === 'required' 
-                    ? t.auth.signup.errors.requiredPassword 
-                    : t.auth.signup.errors.invalidPassword}
+                  {errors.password.message}
                 </span>
               )}
             </div>
@@ -204,7 +204,7 @@ export function SignupForm({
               />
               {errors.image && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {t.auth.signup.errors.invalidImage}
+                  {errors.image.message}
                 </span>
               )}
             </div>

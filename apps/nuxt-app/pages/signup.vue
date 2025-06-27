@@ -10,6 +10,7 @@
           v-model="form.email"
           required
           placeholder="Enter your email"
+          autocomplete="email"
         />
       </div>
       <div class="form-group">
@@ -20,6 +21,7 @@
           v-model="form.password"
           required
           placeholder="Enter your password"
+          autocomplete="new-password"
         />
       </div>
       <div class="form-group">
@@ -30,6 +32,7 @@
           v-model="form.name"
           required
           placeholder="Enter your name"
+          autocomplete="name"
         />
       </div>
       <div class="form-group">
@@ -51,6 +54,17 @@
 
 <script setup lang="ts">
 import { authClientVue } from "@libs/auth/authClient"
+
+// 国际化
+const { t } = useI18n()
+
+// 设置页面标题和meta
+const keywords = t('auth.metadata.signup.keywords')
+useSeoMeta({
+  title: t('auth.metadata.signup.title'),
+  description: t('auth.metadata.signup.description'),
+  keywords: Array.isArray(keywords) ? keywords.join(', ') : keywords
+})
 
 // 表单数据
 const form = reactive({

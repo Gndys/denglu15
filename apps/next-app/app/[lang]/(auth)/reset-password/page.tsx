@@ -10,20 +10,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/ui/form-error";
 import { Loader2 } from "lucide-react";
-import { resetPasswordSchema } from "@libs/validators/user";
+import { createValidators } from "@libs/validators";
 import { authClientReact } from '@libs/auth/authClient';
 import type { z } from "zod";
 import { useTranslation } from "@/hooks/use-translation"
 
-type FormData = z.infer<typeof resetPasswordSchema>;
-
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+
+  // 创建国际化验证器
+  const { resetPasswordSchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof resetPasswordSchema>;
 
   useEffect(() => {
     // Get token from URL when component mounts
@@ -48,6 +51,7 @@ export default function ResetPasswordPage() {
       password: "",
       confirmPassword: "",
     },
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: FormData) => {
@@ -71,33 +75,16 @@ export default function ResetPasswordPage() {
     }
   };
 
-  if (resetSuccess) {
-    return (
-      <Card className="w-[380px]">
-        <CardContent className="pt-6 text-center space-y-4">
-          <h3 className="text-lg font-medium">{t.auth.resetPassword.success.title}</h3>
-          <p className="text-muted-foreground">
-            {t.auth.resetPassword.success.description}
-          </p>
-          <Button
-            className="w-full"
-            onClick={() => router.push('/signin')}
-          >
-            {t.auth.resetPassword.success.backToSignin}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="w-[380px]">
-      <CardHeader className="text-center">
-        <CardTitle className="text-xl">{t.auth.resetPassword.title}</CardTitle>
-        <CardDescription>
-          {t.auth.resetPassword.description}
-        </CardDescription>
-      </CardHeader>
+      {!resetSuccess ? (
+        <>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">{t.auth.resetPassword.title}</CardTitle>
+          <CardDescription>
+            {t.auth.resetPassword.description}
+          </CardDescription>
+        </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4">
@@ -113,9 +100,7 @@ export default function ResetPasswordPage() {
               />
               {errors?.password && (
                 <p className="px-1 text-xs text-red-600">
-                  {errors.password.type === 'required'
-                    ? t.auth.resetPassword.errors.requiredPassword
-                    : t.auth.resetPassword.errors.invalidPassword}
+                  {errors.password.message}
                 </p>
               )}
             </div>
@@ -131,9 +116,7 @@ export default function ResetPasswordPage() {
               />
               {errors?.confirmPassword && (
                 <p className="px-1 text-xs text-red-600">
-                  {errors.confirmPassword.type === 'required'
-                    ? t.auth.resetPassword.errors.requiredPassword
-                    : t.auth.resetPassword.errors.passwordsDontMatch}
+                  {errors.confirmPassword.message}
                 </p>
               )}
             </div>
@@ -147,6 +130,18 @@ export default function ResetPasswordPage() {
         </form>
         {error && <FormError message={error.message} code={error.code} />}
       </CardContent>
+      </>
+      ) : (
+        <div className="text-center space-y-4">
+          <h3 className="font-medium">{t.auth.resetPassword.success.title}</h3>
+          <p className="text-muted-foreground">
+            {t.auth.resetPassword.success.description}
+          </p>
+          <Button onClick={() => router.push("/signin")}>
+            {t.auth.resetPassword.success.goToSignIn}
+          </Button>
+        </div>
+      )}
     </Card>
-  );
+  )
 }

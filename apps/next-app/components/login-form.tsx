@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClientReact } from "@libs/auth/authClient";
-import { loginFormSchema } from "@libs/validators/user";
+import { createValidators } from "@libs/validators";
 import type { z } from "zod";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -17,19 +17,23 @@ import { useTranslation } from "@/hooks/use-translation";
 import { config } from "@config";
 import Link from "next/link";
 
-type FormData = z.infer<typeof loginFormSchema>;
-
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter();
-  const { t, locale } = useTranslation();
+  const { t, locale, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0); // 用于强制重新渲染 Turnstile
+
+  // 创建国际化验证器
+  const { loginFormSchema } = createValidators(tWithParams);
+  
+  type FormData = z.infer<typeof loginFormSchema>;
+
   const {
     register,
     handleSubmit,
@@ -102,12 +106,11 @@ export function LoginForm({
                 placeholder={t.auth.signin.emailPlaceholder}
                 className={cn(errors.email && "border-destructive")}
                 aria-invalid={errors.email ? "true" : "false"}
+                autoComplete="email"
               />
               {errors.email && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {errors.email.type === 'required' 
-                    ? t.auth.signin.errors.requiredEmail 
-                    : t.auth.signin.errors.invalidEmail}
+                  {errors.email.message}
                 </span>
               )}
             </div>
@@ -129,10 +132,11 @@ export function LoginForm({
                 {...register('password')}
                 className={cn(errors.password && "border-destructive")}
                 aria-invalid={errors.password ? "true" : "false"}
+                autoComplete="current-password"
               />
               {errors.password && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {t.auth.signin.errors.requiredPassword}
+                  {errors.password.message}
                 </span>
               )}
             </div>

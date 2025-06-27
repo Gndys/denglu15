@@ -108,7 +108,7 @@ export const zhCN: Locale = {
       socialLogin: "使用您喜欢的社交账号登录",
       continueWith: "或继续使用",
       email: "邮箱",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "请输入邮箱地址",
       password: "密码",
       forgotPassword: "忘记密码？",
       rememberMe: "记住我",
@@ -142,7 +142,7 @@ export const zhCN: Locale = {
       name: "姓名",
       namePlaceholder: "请输入您的姓名",
       email: "邮箱",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "请输入邮箱地址",
       password: "密码",
       passwordPlaceholder: "创建密码",
       imageUrl: "头像图片链接",
@@ -199,7 +199,7 @@ export const zhCN: Locale = {
       title: "忘记密码",
       description: "重置密码并重新获得账户访问权限",
       email: "邮箱",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "请输入邮箱地址",
       submit: "发送重置链接",
       submitting: "发送中...",
       termsNotice: "点击继续即表示您同意我们的",
@@ -816,6 +816,44 @@ export const zhCN: Locale = {
       title: "TinyShip - 现代全栈 SaaS 开发脚手架",
       description: "现代化的全功能 Monorepo 脚手架，用于构建支持国内（中国）和国际市场的 SaaS 应用程序。采用 Next.js/Nuxt.js、TypeScript 和完整的身份验证系统构建。",
       keywords: ["SaaS", "monorepo", "脚手架", "Next.js", "Nuxt.js", "TypeScript", "身份验证", "国际化", "中国市场", "国际市场"]
+    }
+  },
+  validators: {
+    user: {
+      name: {
+        minLength: "姓名至少需要{min}个字符",
+        maxLength: "姓名不能超过{max}个字符"
+      },
+      email: {
+        invalid: "请输入有效的邮箱地址"
+      },
+      image: {
+        invalidUrl: "请输入有效的链接地址"
+      },
+      password: {
+        minLength: "密码至少需要{min}个字符",
+        maxLength: "密码不能超过{max}个字符",
+        mismatch: "两次输入的密码不一致"
+      },
+      countryCode: {
+        required: "请选择国家/地区"
+      },
+      phoneNumber: {
+        required: "请输入手机号",
+        invalid: "手机号格式不正确"
+      },
+      verificationCode: {
+        invalidLength: "验证码必须是{length}位数字"
+      },
+      id: {
+        required: "用户ID不能为空"
+      },
+      currentPassword: {
+        required: "请输入当前密码"
+      },
+      confirmPassword: {
+        required: "请确认密码"
+      }
     }
   },
   header: {

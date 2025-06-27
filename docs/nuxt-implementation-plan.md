@@ -158,19 +158,24 @@
   - [x] 测试Cookie偏好保存
   - [x] 确认与现有`libs/i18n`数据的集成
 
-### 2.4 登录页面实现
-- [ ] 创建 `pages/signin.vue`
-- [ ] 实现页面布局和样式
-- [ ] 创建 `components/LoginForm.vue`：
-  - [ ] 邮箱/密码登录表单
-  - [ ] 表单验证逻辑
-  - [ ] 错误处理显示
-  - [ ] 提交状态管理
-- [ ] 创建 `components/SocialAuth.vue`：
-  - [ ] 社交登录按钮组
-  - [ ] 微信登录支持
-  - [ ] GitHub登录支持
-  - [ ] Google登录支持
+### 2.4 登录页面实现 ✅
+- [x] 创建 `pages/signin.vue`
+- [x] 实现页面布局和样式
+- [x] 创建 `components/LoginForm.vue`：
+  - [x] 邮箱/密码登录表单
+  - [x] 表单验证逻辑 (使用 vee-validate + zod)
+  - [x] 错误处理显示
+  - [x] 提交状态管理
+- [x] 创建 `components/SocialAuth.vue`：
+  - [x] 社交登录按钮组
+  - [x] 微信登录支持
+  - [x] GitHub登录支持
+  - [x] Google登录支持
+- [x] 创建认证布局 `layouts/auth.vue`
+- [x] 创建支持组件：
+  - [x] `components/ui/Logo.vue`
+  - [x] `components/ui/FormError.vue` 
+  - [x] `components/ui/SocialButton.vue`
 - [ ] 测试登录流程完整性
 
 ### 2.5 注册页面实现  
@@ -781,7 +786,7 @@
 ### 总体进度: 12.5% (1/8 阶段完成)
 
 - ✅ **第一阶段**: 100% (5/5 子任务完成)
-- ⏳ **第二阶段**: 36% (4/11 子任务完成)  
+- ⏳ **第二阶段**: 45% (5/11 子任务完成)  
 - 🔴 **第三阶段**: 0% (0/9 子任务完成)
 - 🔴 **第四阶段**: 0% (0/4 子任务完成)
 - 🔴 **第五阶段**: 0% (0/6 子任务完成)

@@ -2,6 +2,7 @@
 
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import { translations, type SupportedLocale, defaultLocale, locales, type Translations } from '@libs/i18n';
+import { createNextTranslationFunction } from '@libs/validators';
 
 export function useTranslation() {
   const params = useParams();
@@ -9,6 +10,9 @@ export function useTranslation() {
   const pathname = usePathname();
   const locale = (params?.lang as SupportedLocale) || defaultLocale;
   const t = translations[locale] as Translations;
+
+  // 创建支持参数插值的翻译函数
+  const tWithParams = createNextTranslationFunction(t);
 
   const changeLocale = (newLocale: SupportedLocale) => {
     // Get the current path without the locale prefix
@@ -23,6 +27,7 @@ export function useTranslation() {
 
   return {
     t,
+    tWithParams, // 新增：支持参数插值的翻译函数
     locale,
     locales,
     defaultLocale,

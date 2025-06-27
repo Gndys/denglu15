@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { countryCodes, type CountryCode } from "@libs/validators/user"
+import { countryCodes, type CountryCode } from "@libs/validators"
 
 interface CountrySelectProps {
   value?: string

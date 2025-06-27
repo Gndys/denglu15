@@ -108,7 +108,7 @@ export const en: Locale = {
       socialLogin: "Sign in with your favorite social account",
       continueWith: "Or continue with",
       email: "Email",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "Enter your email",
       password: "Password",
       forgotPassword: "Forgot password?",
       rememberMe: "Remember me",
@@ -142,7 +142,7 @@ export const en: Locale = {
       name: "Name",
       namePlaceholder: "Enter your name",
       email: "Email",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "Enter your email",
       password: "Password",
       passwordPlaceholder: "Create a password",
       imageUrl: "Profile Image URL",
@@ -199,7 +199,7 @@ export const en: Locale = {
       title: "Forgot Password",
       description: "Reset your password and regain access to your account",
       email: "Email",
-      emailPlaceholder: "m@example.com",
+      emailPlaceholder: "Enter your email",
       submit: "Send reset link",
       submitting: "Sending...",
       termsNotice: "By clicking continue, you agree to our",
@@ -816,6 +816,44 @@ export const en: Locale = {
       title: "TinyShip - Premium Features",
       description: "Explore all the premium features available with your subscription. Access advanced tools, AI assistance, and enhanced functionality.",
       keywords: ["premium", "features", "advanced", "tools", "subscription", "benefits", "enhanced"]
+    }
+  },
+  validators: {
+    user: {
+      name: {
+        minLength: "Name must be at least {min} characters",
+        maxLength: "Name must be less than {max} characters"
+      },
+      email: {
+        invalid: "Please enter a valid email address"
+      },
+      image: {
+        invalidUrl: "Please enter a valid URL"
+      },
+      password: {
+        minLength: "Password must be at least {min} characters",
+        maxLength: "Password must be less than {max} characters",
+        mismatch: "Passwords don't match"
+      },
+      countryCode: {
+        required: "Please select country/region"
+      },
+      phoneNumber: {
+        required: "Please enter phone number",
+        invalid: "Invalid phone number format"
+      },
+      verificationCode: {
+        invalidLength: "Verification code must be {length} characters"
+      },
+      id: {
+        required: "User ID is required"
+      },
+      currentPassword: {
+        required: "Current password is required"
+      },
+      confirmPassword: {
+        required: "Please confirm your password"
+      }
     }
   },
   header: {
