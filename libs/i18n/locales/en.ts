@@ -10,7 +10,13 @@ export const en: Locale = {
     settings: "Settings",
     and: "and",
     loading: "Loading...",
-    unexpectedError: "An unexpected error occurred"
+    unexpectedError: "An unexpected error occurred",
+    theme: {
+      light: "Light Theme",
+      dark: "Dark Theme",
+      system: "System Theme",
+      toggle: "Toggle Theme"
+    }
   },
   navigation: {
     home: "Home",
@@ -622,7 +628,8 @@ export const en: Locale = {
           email: "Email address",
           image: "https://example.com/your-image.jpg"
         },
-        emailReadonly: "Email address cannot be modified"
+        emailReadonly: "Email address cannot be modified",
+        imageDescription: "Optional: Enter a URL for your profile picture"
       },
       updateSuccess: "Profile updated successfully",
       updateError: "Failed to update profile. Please try again."
@@ -659,7 +666,8 @@ export const en: Locale = {
       },
       provider: {
         stripe: "Stripe",
-        wechat: "WeChat Pay"
+        wechat: "WeChat Pay",
+        creem: "Creem"
       },
       noOrders: "No orders found",
       noOrdersDescription: "You haven't placed any orders yet",
@@ -862,6 +870,9 @@ export const en: Locale = {
       },
       confirmPassword: {
         required: "Please confirm your password"
+      },
+      deleteAccount: {
+        confirmRequired: "You must confirm account deletion"
       }
     }
   },
@@ -884,6 +895,7 @@ export const en: Locale = {
       adminPanel: "Admin Panel"
     },
     language: {
+      switchLanguage: "Switch Language",
       english: "English",
       chinese: "中文"
     }

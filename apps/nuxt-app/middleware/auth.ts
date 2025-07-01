@@ -1,29 +1,38 @@
+import { authClientVue } from "@libs/auth/authClient"
+
 /**
  * Authentication middleware for Nuxt.js
  * Requires user to be logged in to access protected routes
  */
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   // Skip authentication check for authentication pages and public pages
   const publicPages = [
     '/signin', '/signup', '/forgot-password', '/reset-password', 
-    '/cellphone', '/wechat', '/', '/pricing'
+    '/cellphone', '/wechat', '/', '/pricing', '/ai', '/premium-features'
   ]
   
-  if (publicPages.some(page => to.path === page || to.path.endsWith(page))) {
+  // Extract the path without locale prefix for checking
+  const pathWithoutLocale = to.path.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/'
+  
+  if (publicPages.includes(pathWithoutLocale)) {
     return
   }
 
-  // For client-side, use a simple cookie check
-  // Better-Auth stores session info in cookies
+  // For client-side, use Better Auth session check
   if (import.meta.client) {
-    const cookies = document.cookie
-    const hasSession = cookies.includes('better-auth.session_token') || 
-                      cookies.includes('better-auth-session')
-    
-    if (!hasSession) {
-      const localePath = useLocalePath()
+    try {
+      // Use Better Auth to get session
+      const session = await authClientVue.getSession()
+      
+      if (!session?.data?.user) {
+        console.log('No valid session found, redirecting to signin')
+        const returnUrl = encodeURIComponent(to.fullPath)
+        return navigateTo(`/signin?returnUrl=${returnUrl}`)
+      }
+    } catch (error) {
+      console.error('Error checking session:', error)
       const returnUrl = encodeURIComponent(to.fullPath)
-      return navigateTo(`${localePath('/signin')}?returnUrl=${returnUrl}`)
+      return navigateTo(`/signin?returnUrl=${returnUrl}`)
     }
   }
 }) 

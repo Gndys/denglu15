@@ -20,6 +20,21 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   vite: {
+    // Fix HMR issues with file watching
+    server: {
+      // host: '0.0.0.0',
+      hmr: {
+          protocol: 'ws',
+          host: 'localhost'
+      },
+     /* client: {
+          webSocketURL: 'ws://0.0.0.0:8080/ws',
+      },*/
+      watch: {
+          usePolling: true,
+          interval: 1000,
+      },
+    },
     plugins: [
       tailwindcss(),
       svgLoader({
@@ -43,15 +58,16 @@ export default defineNuxtConfig({
     }
   },
 
-  // Configure Nitro to support CommonJS modules
+  // Configure Nitro to support CommonJS modules and improve HMR
   nitro: {
-    rootDir: resolve(__dirname, '../..'),
     experimental: {
       wasm: true
     },
     commonJS: {
       include: [/pg/, /drizzle-orm/]
-    }
+    },
+    // Development specific settings
+    dev: process.env.NODE_ENV === 'development'
   },
 
   // Configure environment variables using centralized config
@@ -85,7 +101,19 @@ export default defineNuxtConfig({
     transpile: ['pg', 'drizzle-orm']
   },
 
-  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n'],
+  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/color-mode'],
+  
+  // Color mode configuration
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'light', // fallback value if not system preference found
+    hid: 'nuxt-color-mode-script',
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode'
+  },
   
   // Internationalization configuration
   i18n: {

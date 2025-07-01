@@ -148,6 +148,13 @@ export function createValidators(t: TranslationFunction) {
     path: ["confirmPassword"],
   });
 
+  // Delete account validation schema
+  const deleteAccountSchema = z.object({
+    confirm: z.boolean().refine(val => val === true, {
+      message: t('validators.user.deleteAccount.confirmRequired')
+    })
+  });
+
   return {
     userSchema,
     emailSignUpSchema,
@@ -162,6 +169,7 @@ export function createValidators(t: TranslationFunction) {
     forgetPasswordSchema,
     resetPasswordSchema,
     changePasswordSchema,
+    deleteAccountSchema,
   };
 }
 
@@ -180,6 +188,7 @@ export const {
   forgetPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  deleteAccountSchema,
 } = createValidators((key: string, params?: Record<string, any>) => {
   // 默认英文错误消息的简单实现
   const defaultMessages: Record<string, string> = {
@@ -197,6 +206,7 @@ export const {
     'validators.user.id.required': 'User ID is required',
     'validators.user.currentPassword.required': 'Current password is required',
     'validators.user.confirmPassword.required': 'Please confirm your password',
+    'validators.user.deleteAccount.confirmRequired': 'You must confirm account deletion',
   };
   
   return defaultMessages[key] || key;

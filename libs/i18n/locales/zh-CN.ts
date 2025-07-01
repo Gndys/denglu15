@@ -10,7 +10,13 @@ export const zhCN: Locale = {
     settings: "设置",
     and: "和",
     loading: "加载中...",
-    unexpectedError: "发生意外错误"
+    unexpectedError: "发生意外错误",
+    theme: {
+      light: "浅色主题",
+      dark: "深色主题",
+      system: "跟随系统",
+      toggle: "切换主题"
+    }
   },
   navigation: {
     home: "首页",
@@ -622,7 +628,8 @@ export const zhCN: Locale = {
           email: "邮箱地址",
           image: "https://example.com/your-image.jpg"
         },
-        emailReadonly: "邮箱地址无法修改"
+        emailReadonly: "邮箱地址无法修改",
+        imageDescription: "可选：输入您的头像图片链接"
       },
       updateSuccess: "个人资料更新成功",
       updateError: "更新个人资料失败，请重试"
@@ -659,7 +666,8 @@ export const zhCN: Locale = {
       },
       provider: {
         stripe: "Stripe",
-        wechat: "微信支付"
+        wechat: "微信支付",
+        creem: "Creem"
       },
       noOrders: "没有找到订单",
       noOrdersDescription: "您还没有下过任何订单",
@@ -862,6 +870,9 @@ export const zhCN: Locale = {
       },
       confirmPassword: {
         required: "请确认密码"
+      },
+      deleteAccount: {
+        confirmRequired: "您必须确认删除账户"
       }
     }
   },
@@ -884,6 +895,7 @@ export const zhCN: Locale = {
       adminPanel: "管理后台"
     },
     language: {
+      switchLanguage: "切换语言",
       english: "English",
       chinese: "中文"
     }

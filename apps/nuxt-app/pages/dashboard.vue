@@ -1,70 +1,211 @@
 <script setup lang="ts">
 import { authClientVue } from "@libs/auth/authClient"
- 
-const session = authClientVue.useSession()
-</script>
- 
-<template>
-  <div class="container mx-auto p-6">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-      
-      <!-- Loading state -->
-      <div v-if="session.isPending" class="flex items-center justify-center p-8">
-        <div class="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        <span class="ml-2 text-muted-foreground">Loading...</span>
-      </div>
-      
-      <!-- Authenticated state -->
-      <div v-else-if="session.data?.user" class="space-y-6">
-        <div class="bg-card p-6 rounded-lg border">
-          <h2 class="text-xl font-semibold mb-4">Welcome back!</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="text-sm font-medium text-muted-foreground">Name</label>
-              <p class="text-lg">{{ session.data.user.name || 'Not set' }}</p>
-            </div>
-            <div>
-              <label class="text-sm font-medium text-muted-foreground">Email</label>
-              <p class="text-lg">{{ session.data.user.email }}</p>
-            </div>
-            <div>
-              <label class="text-sm font-medium text-muted-foreground">Email Verified</label>
-              <p class="text-lg">{{ session.data.user.emailVerified ? 'Yes' : 'No' }}</p>
-            </div>
-            <div>
-              <label class="text-sm font-medium text-muted-foreground">Role</label>
-              <p class="text-lg">{{ session.data.user.role || 'User' }}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-card p-6 rounded-lg border">
-          <h3 class="text-lg font-semibold mb-4">Actions</h3>
-          <div class="flex gap-4">
-            <button 
-              @click="authClientVue.signOut()"
-              class="px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 transition-colors"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
+import { toast } from 'vue-sonner'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import { createValidators } from '@libs/validators'
+import { z } from 'zod'
 
-        <!-- Debug info -->
-        <details class="bg-muted p-4 rounded-lg">
-          <summary class="cursor-pointer text-sm font-medium">Debug Info</summary>
-          <pre class="mt-4 text-xs overflow-auto">{{ JSON.stringify(session.data, null, 2) }}</pre>
-        </details>
+// Set page layout and middleware
+definePageMeta({
+  layout: 'default',
+  middleware: 'auth'
+})
+
+// Set page head information
+const { t, locale } = useI18n()
+useHead({
+  title: t('dashboard.metadata.title'),
+  meta: [
+    { name: 'description', content: t('dashboard.metadata.description') },
+    { name: 'keywords', content: t('dashboard.metadata.keywords') }
+  ]
+})
+
+const session = authClientVue.useSession()
+const user = computed(() => session.value?.data?.user)
+
+// Reactive state
+const loading = ref(true)
+const isEditing = ref(false)
+const refreshKey = ref(0)
+
+// Create internationalized validators for profile update
+const validators = createValidators(t)
+
+// Create a specific schema for profile updates that allows empty image
+const profileUpdateSchema = z.object({
+  name: z.string()
+    .min(2, t('validators.user.name.minLength', { min: 2 }))
+    .max(50, t('validators.user.name.maxLength', { max: 50 })),
+  image: z.string()
+    .url(t('validators.user.image.invalidUrl'))
+    .optional()
+    .or(z.literal(''))
+})
+
+// Form validation using vee-validate
+const { handleSubmit, errors, defineField, isSubmitting, resetForm, setValues } = useForm({
+  validationSchema: toTypedSchema(profileUpdateSchema),
+  initialValues: {
+    name: '',
+    image: ''
+  }
+})
+
+// Define form fields with validation
+const [name, nameAttrs] = defineField('name', {
+  validateOnBlur: true
+})
+const [image, imageAttrs] = defineField('image', {
+  validateOnBlur: true
+})
+
+// Legacy support for DashboardTabs component props
+const editForm = computed(() => ({
+  name: name.value,
+  image: image.value
+}))
+
+// Watch user data changes and update form
+watch([user, () => session.value?.isPending, refreshKey], ([userData, isPending]) => {
+  if (userData) {
+    setValues({
+      name: userData.name || '',
+      image: userData.image || ''
+    })
+    loading.value = false
+  } else if (!isPending) {
+    loading.value = false
+  }
+}, { immediate: true })
+
+// Format date
+const formatDate = (dateString: string | Date) => {
+  const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+  const currentLocale = locale.value
+  return date.toLocaleDateString(currentLocale === 'zh-CN' ? 'zh-CN' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+// Get user role display name
+const getRoleDisplayName = (role: string) => {
+  switch (role) {
+    case 'admin':
+      return t('dashboard.roles.admin')
+    case 'user':
+      return t('dashboard.roles.user')
+    default:
+      return role
+  }
+}
+
+// Get user role badge variant
+const getRoleBadgeVariant = (role: string) => {
+  switch (role) {
+    case 'admin':
+      return 'destructive'
+    case 'user':
+      return 'secondary'
+    default:
+      return 'outline'
+  }
+}
+
+// Handle user profile update using validation
+const handleUpdateProfile = handleSubmit(async (values) => {
+  if (!user.value) return
+  
+  try {
+    await authClientVue.updateUser({
+      name: values.name?.trim() || undefined,
+      image: values.image?.trim() || undefined,
+    })
+    
+    isEditing.value = false
+    // Show success message
+    toast.success(t('dashboard.profile.updateSuccess'))
+    
+    // Force refresh component state to ensure latest data is displayed
+    refreshKey.value = refreshKey.value + 1
+    
+    // Actively fetch latest session data
+    setTimeout(async () => {
+      try {
+        await authClientVue.getSession()
+      } catch (error) {
+        console.error('Failed to refresh session:', error)
+      }
+    }, 100)
+    
+  } catch (error) {
+    console.error('Failed to update profile:', error)
+    // Show error message
+    toast.error(t('dashboard.profile.updateError'))
+  }
+})
+
+// Cancel edit and reset form to original values
+const handleCancelEdit = () => {
+  if (user.value) {
+    setValues({
+      name: user.value.name || '',
+      image: user.value.image || ''
+    })
+  }
+  isEditing.value = false
+}
+
+// Legacy support - handle edit form changes from child component
+const handleSetEditForm = (form: any) => {
+  if (form.name !== undefined) {
+    name.value = form.name
+  }
+  if (form.image !== undefined) {
+    image.value = form.image
+  }
+}
+
+// Note: Authentication is handled by the auth middleware
+</script>
+
+<template>
+  <div class="container py-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+      <!-- Page title -->
+      <div class="text-center">
+        <h1 class="text-3xl font-bold tracking-tight">
+          {{ t('dashboard.title') }}
+        </h1>
+        <p class="text-muted-foreground mt-2">
+          {{ t('dashboard.description') }}
+        </p>
       </div>
-      
-      <!-- Unauthenticated state -->
-      <div v-else class="text-center p-8">
-        <h2 class="text-xl font-semibold mb-4">Please sign in to continue</h2>
-        <NuxtLink to="/signin" class="inline-flex px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-          Sign In
-        </NuxtLink>
+
+      <!-- Loading state -->
+      <div v-if="session.isPending || loading" class="flex items-center justify-center h-40">
+        <div class="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
+
+      <!-- Dashboard tabs -->
+      <DashboardTabs
+        v-else-if="user"
+        :user="user"
+        :is-editing="isEditing"
+        :edit-form="editForm"
+        :update-loading="isSubmitting"
+        :form-errors="errors as Record<string, string>"
+        @set-editing="isEditing = $event"
+        @set-edit-form="handleSetEditForm"
+        @update-profile="handleUpdateProfile"
+        @cancel-edit="handleCancelEdit"
+        :format-date="formatDate"
+        :get-role-display-name="getRoleDisplayName"
+        :get-role-badge-variant="getRoleBadgeVariant"
+      />
     </div>
   </div>
 </template>
