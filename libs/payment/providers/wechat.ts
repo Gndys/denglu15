@@ -32,7 +32,21 @@ import { ofetch } from 'ofetch';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // 获取项目根目录（假设在 libs/payment/providers 文件夹中）
-const projectRoot = path.resolve(__dirname, '../../..');
+// 直接从项目根目录定位证书路径
+// 不管在什么环境下，都从当前工作目录向上找到项目根目录
+const findProjectRoot = (startPath: string): string => {
+  let currentPath = startPath
+  while (currentPath !== path.dirname(currentPath)) {
+    if (fs.existsSync(path.join(currentPath, 'libs', 'payment', 'cert'))) {
+      return currentPath
+    }
+    currentPath = path.dirname(currentPath)
+  }
+  throw new Error('Could not find project root directory')
+}
+
+const projectRoot = findProjectRoot(process.cwd())
+const certPath = path.join(projectRoot, 'libs', 'payment', 'cert')
 
 // 微信支付回调响应类型
 interface WechatPayNotification {
@@ -100,8 +114,6 @@ export class WechatPayProvider implements PaymentProvider {
     this.apiKey = config.payment.providers.wechat.apiKey;
     this.notifyUrl = config.app.payment.webhookUrls.wechat;
     
-    // 使用项目根目录来定位证书文件
-    const certPath = path.join(projectRoot, 'libs/payment/cert');
     console.log('Certificate path:', certPath);
     
     try {

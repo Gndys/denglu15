@@ -91,6 +91,7 @@ export const config = {
       /**
        * Payment Success/Cancel URLs
        * These URLs will be used by payment providers for redirects
+       * The locale middleware will automatically add locale prefix
        */
       get successUrl() {
         return `${config.app.baseUrl}/payment-success`;

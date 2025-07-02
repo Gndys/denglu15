@@ -6,6 +6,7 @@ export interface PaymentParams {
   orderId: string;
   amount?: number;
   currency?: string;
+
   metadata?: Record<string, any>;
 }
 
