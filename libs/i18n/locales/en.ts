@@ -313,57 +313,16 @@ export const en: Locale = {
       }
     },
     users: {
-      title: "Users",
-      createUser: "Create User",
-      editUser: "Edit User",
-      form: {
-        title: "User Information",
-        description: "Basic user details and account settings",
-        labels: {
-          name: "Name",
-          email: "Email",
-          password: "Password",
-          role: "Role",
-          image: "Profile Image URL",
-          phoneNumber: "Phone Number",
-          emailVerified: "Email Verified",
-          phoneVerified: "Phone Verified",
-          banned: "Banned",
-          banReason: "Ban Reason"
-        },
-        placeholders: {
-          selectRole: "Select role"
-        }
-      },
-      messages: {
-        createSuccess: "User created successfully",
-        updateSuccess: "User updated successfully",
-        deleteSuccess: "User deleted successfully",
-        fetchError: "Failed to fetch user",
-        operationFailed: "Operation failed",
-        deleteError: "Failed to delete user"
-      },
-      deleteDialog: {
-        title: "Are you absolutely sure?",
-        description: "This action cannot be undone. This will permanently delete the user and remove their data from our servers."
-      },
+      title: "User Management",
+      subtitle: "Manage users, roles, and permissions",
       actions: {
-        addUser: "Add User"
+        addUser: "Add User",
+        editUser: "Edit User",
+        deleteUser: "Delete User",
+        banUser: "Ban User",
+        unbanUser: "Unban User"
       },
       table: {
-        noResults: "No results.",
-        search: {
-          searchBy: "Search by...",
-          searchPlaceholder: "Search by {field}...",
-          filterByRole: "Filter by role",
-          allRoles: "All roles",
-          banStatus: "Ban status",
-          allUsers: "All users",
-          bannedUsers: "Banned",
-          notBannedUsers: "Not banned",
-          view: "View",
-          toggleColumns: "Toggle columns"
-        },
         columns: {
           id: "ID",
           name: "Name",
@@ -376,17 +335,87 @@ export const en: Locale = {
           actions: "Actions"
         },
         actions: {
-          editUser: "Edit user",
-          deleteUser: "Delete user"
+          editUser: "Edit User",
+          deleteUser: "Delete User"
+        },
+        noResults: "No users found",
+        search: {
+          searchBy: "Search by",
+          searchPlaceholder: "Search {field}...",
+          filterByRole: "Filter by role",
+          allRoles: "All Roles",
+          banStatus: "Ban status",
+          allUsers: "All users",
+          bannedUsers: "Banned",
+          notBannedUsers: "Not banned",
+          view: "View",
+          toggleColumns: "Toggle columns"
+        },
+        pagination: {
+          showing: "Showing {start} to {end} of {total} results",
+          pageInfo: "Page {current} of {total}"
         },
         dialog: {
           banTitle: "Ban User",
-          banDescription: "Are you sure you want to ban this user? They will no longer be able to access the platform.",
-          unbanSuccess: "User unbanned successfully",
+          banDescription: "Are you sure you want to ban this user? They will not be able to access the application.",
           banSuccess: "User banned successfully",
+          unbanSuccess: "User unbanned successfully",
           updateRoleSuccess: "User role updated successfully",
           updateRoleFailed: "Failed to update user role"
         }
+      },
+      banDialog: {
+        title: "Ban User",
+        description: "Are you sure you want to ban {userName}? They will not be able to access the application."
+      },
+      unbanDialog: {
+        title: "Unban User",
+        description: "Are you sure you want to unban {userName}? They will regain access to the application."
+      },
+      form: {
+        labels: {
+          name: "Name",
+          email: "Email",
+          password: "Password",
+          confirmPassword: "Confirm Password",
+          role: "Role",
+          image: "Profile Image",
+          phoneNumber: "Phone Number",
+          emailVerified: "Email Verified",
+          phoneVerified: "Phone Verified",
+          banned: "Banned",
+          banReason: "Ban Reason"
+        },
+        placeholders: {
+          name: "Enter user's name",
+          email: "Enter user's email",
+          password: "Enter password (min 8 characters)",
+          confirmPassword: "Confirm password",
+          selectRole: "Select role",
+          image: "https://example.com/avatar.jpg",
+          phoneNumber: "Enter phone number",
+          banReason: "Reason for banning (optional)"
+        },
+        validation: {
+          nameRequired: "Name is required",
+          emailRequired: "Email is required",
+          emailInvalid: "Please enter a valid email",
+          passwordRequired: "Password is required",
+          passwordMinLength: "Password must be at least 8 characters",
+          passwordMismatch: "Passwords do not match",
+          roleRequired: "Role is required"
+        }
+      },
+      deleteDialog: {
+        title: "Delete User",
+        description: "Are you absolutely sure? This action cannot be undone. This will permanently delete the user account and remove all associated data."
+      },
+      messages: {
+        createSuccess: "User created successfully",
+        updateSuccess: "User updated successfully",
+        deleteSuccess: "User deleted successfully",
+        deleteError: "Failed to delete user",
+        operationFailed: "Operation failed"
       }
     },
     orders: {

@@ -38,6 +38,12 @@ export default defineNuxtConfig({
         'test.vikingship.uk'
       ]
     },
+    // Enable JSX support for Vue
+    esbuild: {
+      jsx: 'preserve',
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment'
+    },
     plugins: [
       tailwindcss(),
       svgLoader({
@@ -107,6 +113,24 @@ export default defineNuxtConfig({
   },
 
   modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/color-mode', 'nuxt-charts'],
+  
+  // Configure components auto-import
+  components: {
+    dirs: [
+      {
+        path: '~/components',
+        pathPrefix: false,
+      },
+      {
+        path: '~/components/admin',
+        pathPrefix: false,
+      },
+      {
+        path: '~/components/admin/users',
+        pathPrefix: false,
+      }
+    ]
+  },
   
   // Color mode configuration
   colorMode: {

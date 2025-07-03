@@ -177,13 +177,13 @@ const handleCancelEdit = () => {
                     <Label for="name">{{ t('dashboard.profile.form.labels.name') }}</Label>
                     <div class="relative">
                       <Input
-                        id="name"
-                        :model-value="editForm?.name || ''"
-                        @update:model-value="handleSetEditForm({...editForm, name: $event})"
-                        :placeholder="t('dashboard.profile.form.placeholders.name')"
+                      id="name"
+                      :model-value="editForm?.name || ''"
+                      @update:model-value="handleSetEditForm({...editForm, name: $event})"
+                      :placeholder="t('dashboard.profile.form.placeholders.name')"
                         :class="cn(formErrors?.name && 'border-destructive')"
                         :aria-invalid="formErrors?.name ? 'true' : 'false'"
-                      />
+                    />
                       <span v-if="formErrors?.name" class="text-destructive text-xs absolute -bottom-5 left-0">
                         {{ formErrors.name }}
                       </span>

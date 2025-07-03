@@ -266,9 +266,9 @@ export const zhCN: Locale = {
   },
   admin: {
     metadata: {
-      title: "TinyShip - 管理员仪表板",
-      description: "全面的管理员仪表板，用于管理 SaaS 应用程序中的用户、订阅、订单和系统分析。",
-              keywords: "管理员, 仪表板, 管理, SaaS, 分析, 用户, 订阅, 订单"
+      title: "TinyShip - 管理后台",
+      description: "全面的管理仪表板，用于管理用户、订阅、订单和系统分析，为您的SaaS应用提供强大的管理功能。",
+      keywords: "管理后台, 仪表板, 管理, SaaS, 分析, 用户, 订阅, 订单"
     },
     dashboard: {
       title: "管理员仪表板",
@@ -314,47 +314,36 @@ export const zhCN: Locale = {
     },
     users: {
       title: "用户管理",
+      subtitle: "管理用户、角色和权限",
       createUser: "创建用户",
       editUser: "编辑用户",
-      form: {
-        title: "用户信息",
-        description: "基本用户信息和账户设置",
-        labels: {
-          name: "姓名",
-          email: "邮箱",
-          password: "密码",
-          role: "角色",
-          image: "头像图片链接",
-          phoneNumber: "手机号",
-          emailVerified: "邮箱已验证",
-          phoneVerified: "手机号已验证",
-          banned: "已封禁",
-          banReason: "封禁原因"
-        },
-        placeholders: {
-          selectRole: "选择角色"
-        }
-      },
-      messages: {
-        createSuccess: "用户创建成功",
-        updateSuccess: "用户更新成功",
-        deleteSuccess: "用户删除成功",
-        fetchError: "获取用户信息失败",
-        operationFailed: "操作失败",
-        deleteError: "删除用户失败"
-      },
-      deleteDialog: {
-        title: "确定要删除吗？",
-        description: "此操作无法撤销。这将永久删除该用户并从服务器中移除其数据。"
-      },
       actions: {
-        addUser: "添加用户"
+        addUser: "添加用户",
+        editUser: "编辑用户",
+        deleteUser: "删除用户",
+        banUser: "封禁用户",
+        unbanUser: "解封用户"
       },
       table: {
-        noResults: "未找到结果",
+        columns: {
+          id: "ID",
+          name: "姓名",
+          email: "邮箱",
+          role: "角色",
+          emailVerified: "邮箱验证",
+          banned: "封禁状态",
+          createdAt: "创建时间",
+          updatedAt: "更新时间",
+          actions: "操作"
+        },
+        actions: {
+          editUser: "编辑用户",
+          deleteUser: "删除用户"
+        },
+        noResults: "未找到用户",
         search: {
-          searchBy: "搜索条件...",
-          searchPlaceholder: "按{field}搜索...",
+          searchBy: "搜索字段",
+          searchPlaceholder: "搜索 {field}...",
           filterByRole: "按角色筛选",
           allRoles: "所有角色",
           banStatus: "封禁状态",
@@ -364,29 +353,72 @@ export const zhCN: Locale = {
           view: "视图",
           toggleColumns: "切换列显示"
         },
-        columns: {
-          id: "ID",
-          name: "姓名",
-          email: "邮箱",
-          role: "角色",
-          emailVerified: "邮箱已验证",
-          banned: "已封禁",
-          createdAt: "创建时间",
-          updatedAt: "更新时间",
-          actions: "操作"
-        },
-        actions: {
-          editUser: "编辑用户",
-          deleteUser: "删除用户"
+        pagination: {
+          showing: "显示第 {start} 到 {end} 条，共 {total} 条结果",
+          pageInfo: "第 {current} 页，共 {total} 页"
         },
         dialog: {
           banTitle: "封禁用户",
-          banDescription: "您确定要封禁此用户吗？封禁后该用户将无法访问平台。",
-          unbanSuccess: "用户解封成功",
+          banDescription: "您确定要封禁此用户吗？他们将无法访问应用程序。",
           banSuccess: "用户封禁成功",
+          unbanSuccess: "用户解封成功",
           updateRoleSuccess: "用户角色更新成功",
           updateRoleFailed: "用户角色更新失败"
         }
+      },
+      banDialog: {
+        title: "封禁用户",
+        description: "您确定要封禁 {userName} 吗？他们将无法访问应用程序。"
+      },
+      unbanDialog: {
+        title: "解封用户",
+        description: "您确定要解封 {userName} 吗？他们将重新获得访问权限。"
+      },
+      form: {
+        labels: {
+          name: "姓名",
+          email: "邮箱",
+          password: "密码",
+          confirmPassword: "确认密码",
+          role: "角色",
+          image: "头像",
+          phoneNumber: "手机号",
+          emailVerified: "邮箱已验证",
+          phoneVerified: "手机已验证",
+          banned: "已封禁",
+          banReason: "封禁原因"
+        },
+        placeholders: {
+          name: "请输入用户姓名",
+          email: "请输入用户邮箱",
+          password: "请输入密码（至少8位）",
+          confirmPassword: "请确认密码",
+          selectRole: "请选择角色",
+          image: "https://example.com/avatar.jpg",
+          phoneNumber: "请输入手机号",
+          banReason: "封禁原因（可选）"
+        },
+        validation: {
+          nameRequired: "姓名不能为空",
+          emailRequired: "邮箱不能为空",
+          emailInvalid: "请输入有效的邮箱地址",
+          passwordRequired: "密码不能为空",
+          passwordMinLength: "密码至少需要8位字符",
+          passwordMismatch: "两次输入的密码不一致",
+          roleRequired: "请选择角色"
+        }
+      },
+      deleteDialog: {
+        title: "删除用户",
+        description: "您确定要删除此用户吗？此操作无法撤销，将永久删除用户账户和所有相关数据。"
+      },
+      messages: {
+        createSuccess: "用户创建成功",
+        updateSuccess: "用户更新成功",
+        deleteSuccess: "用户删除成功",
+        fetchError: "获取用户信息失败",
+        operationFailed: "操作失败",
+        deleteError: "删除用户失败"
       }
     },
     orders: {
