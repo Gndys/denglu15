@@ -25,6 +25,11 @@
       <Search class="h-4 w-4" />
     </Button>
 
+    <!-- Clear Button -->
+    <Button type="button" variant="outline" size="icon" class="shrink-0" @click="handleClear">
+      <X class="h-4 w-4" />
+    </Button>
+
     <!-- Separator -->
     <div class="mx-2 h-4 w-[1px] bg-border" />
 
@@ -56,7 +61,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Search } from 'lucide-vue-next'
+import { Search, X } from 'lucide-vue-next'
 
 type SearchField = "email" | "name" | "id"
 type Role = "admin" | "user" | "all"
@@ -143,4 +148,13 @@ watch(() => route.query, (newQuery) => {
   role.value = (newQuery.role as Role) || 'all'
   banned.value = (newQuery.banned as BannedStatus) || 'all'
 }, { immediate: true })
+
+// Handle clear button
+const handleClear = () => {
+  searchValue.value = ''
+  searchField.value = 'email'
+  role.value = 'all'
+  banned.value = 'all'
+  onSearch()
+}
 </script> 

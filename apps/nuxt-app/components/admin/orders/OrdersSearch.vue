@@ -30,6 +30,11 @@
       <SearchIcon class="h-4 w-4" />
     </Button>
 
+    <!-- Clear Button -->
+    <Button type="button" variant="outline" size="icon" class="shrink-0" @click="handleClear">
+      <X class="h-4 w-4" />
+    </Button>
+
     <!-- Divider -->
     <div class="mx-2 h-4 w-[1px] bg-border" />
 
@@ -70,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { SearchIcon } from 'lucide-vue-next'
+import { SearchIcon, X } from 'lucide-vue-next'
 
 // Get composables
 const { t } = useI18n()
@@ -160,6 +165,15 @@ const onSearch = () => {
 // Handle form submit
 const handleSubmit = (e: Event) => {
   e.preventDefault()
+  onSearch()
+}
+
+// Handle clear
+const handleClear = () => {
+  searchValue.value = ''
+  searchField.value = 'userEmail'
+  status.value = 'all'
+  provider.value = 'all'
   onSearch()
 }
 
