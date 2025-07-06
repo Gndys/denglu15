@@ -12,7 +12,7 @@
             v-if="messages.length > 0"
             variant="outline"
             size="sm"
-            @click="reload"
+            @click="reloadConversation"
           >
             {{ $t('ai.chat.actions.newChat') }}
           </Button>
@@ -223,8 +223,8 @@ const {
   input, 
   handleSubmit: originalHandleSubmit, 
   isLoading, 
-  error, 
-  reload 
+  error,
+   
 } = useChat({
   api: '/api/chat',
   body: computed(() => {
@@ -242,7 +242,9 @@ const scrollToBottom = async () => {
   await nextTick()
   scrollAnchor.value?.scrollIntoView({ behavior: 'smooth' })
 }
-
+const reloadConversation = () => {
+  messages.value = []
+}
 // Enhanced form submission with custom body
 const handleSubmit = (event: Event) => {
   event.preventDefault()
