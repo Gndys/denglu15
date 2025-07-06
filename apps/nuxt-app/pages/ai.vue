@@ -262,10 +262,8 @@ const handleSubmit = (event: Event) => {
 
 // Handle keyboard shortcuts
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault()
-    handleSubmit(event)
-  }
+  // 移除自动发送逻辑，只保留 Shift+Enter 换行
+  // 用户需要点击发送按钮来发送消息
 }
 
 // Auto-resize textarea

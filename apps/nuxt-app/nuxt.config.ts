@@ -84,7 +84,7 @@ export default defineNuxtConfig({
     // Server-side environment variables
     databaseUrl: appConfig.database.url,
     betterAuthSecret: process.env.BETTER_AUTH_SECRET,
-    openaiApiKey: process.env.OPENAI_API_KEY,
+    // AI configuration is handled by @libs/ai directly from environment variables
     
     // Public environment variables (accessible on client)
     public: {

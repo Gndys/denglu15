@@ -26,39 +26,27 @@ Phase 5.1 AI Chat Page Basics 已 **100% 完成**，使用了 AI SDK 官方推�
 ### 1. 服务器端 API (`apps/nuxt-app/server/api/chat.post.ts`)
 
 ```typescript
-import { streamText } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
+import { streamResponse } from '@libs/ai'
 
-export default defineLazyEventHandler(async () => {
-  const config = useRuntimeConfig()
-  
-  return defineEventHandler(async (event) => {
-    const { messages, provider = 'openai', model = 'gpt-4o' } = await readBody(event)
+export default defineEventHandler(async (event) => {
+  const { messages, provider, model } = await readBody(event)
 
-    // 创建 AI 提供商实例
-    const aiProvider = createOpenAI({
-      apiKey: config.openaiApiKey,
-    })
-    
-    // 流式文本生成
-    const result = streamText({
-      model: aiProvider(model),
-      messages,
-      maxTokens: 1000,
-      temperature: 0.7,
-    })
-
-    return result.toDataStreamResponse()
+  // 使用统一的 AI 库处理流式响应
+  return streamResponse({
+    messages,
+    provider: provider || undefined,
+    model: model || undefined
   })
 })
 ```
 
 **特性**:
-- ✅ 使用 AI SDK 的 `streamText` 函数
+- ✅ 使用项目统一的 `@libs/ai` 库
 - ✅ 支持多个 AI 提供商 (OpenAI, Qwen, DeepSeek)
+- ✅ 自动提供商配置和 API 密钥管理
 - ✅ 流式响应处理
 - ✅ 错误处理和验证
-- ✅ 运行时配置集成
+- ✅ 与项目架构完全一致
 
 ### 2. 客户端页面 (`apps/nuxt-app/pages/ai.vue`)
 
@@ -146,23 +134,25 @@ const {
 
 ### 环境变量
 ```bash
-# 必需
-OPENAI_API_KEY=your_openai_api_key
+# AI 提供商 API 密钥 (由 @libs/ai 自动读取)
+OPENAI_API_KEY=your_openai_api_key_here
+QWEN_API_KEY=your_qwen_api_key_here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
 
-# 可选 (用于其他提供商)
-QWEN_API_KEY=your_qwen_api_key
-DEEPSEEK_API_KEY=your_deepseek_api_key
+# 可选：自定义 API 基础 URL
+OPENAI_BASE_URL=https://api.openai.com/v1
+QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+
+# 可选：默认 AI 提供商
+AI_PROVIDER=openai
 ```
 
-### Nuxt 配置
-```typescript
-// nuxt.config.ts
-export default defineNuxtConfig({
-  runtimeConfig: {
-    openaiApiKey: process.env.OPENAI_API_KEY,
-  }
-})
-```
+### 项目架构集成
+- ✅ **统一配置**: 使用 `@libs/ai` 的配置管理
+- ✅ **环境变量**: 自动从环境变量读取 API 密钥
+- ✅ **提供商支持**: 完整的多提供商支持 (OpenAI, Qwen, DeepSeek)
+- ✅ **类型安全**: 完整的 TypeScript 类型定义
+- ✅ **Monorepo 架构**: 与项目整体架构完全一致
 
 ## 📱 演示功能
 
@@ -173,10 +163,10 @@ export default defineNuxtConfig({
 - ✅ **错误处理** - 完整的错误处理机制
 
 ### 使用方式
-1. 配置 `OPENAI_API_KEY` 环境变量
-2. 启动 Nuxt 开发服务器
-3. 访问 `/ai` 页面
-4. 选择 AI 模型并开始对话
+1. **配置环境变量** - 在项目根目录 `.env` 文件中设置 AI 提供商 API 密钥
+2. **启动开发服务器** - `cd apps/nuxt-app && pnpm dev`
+3. **访问 AI 页面** - `http://localhost:7001/ai`
+4. **选择模型并对话** - 从下拉菜单选择 AI 模型开始聊天
 
 ## 🔄 与 Next.js 实现对比
 
