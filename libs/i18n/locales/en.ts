@@ -3,6 +3,7 @@ import type { Locale } from './types'
 export const en: Locale = {
   common: {
     welcome: "Welcome to ShipEasy",
+    siteName: "ShipEasy",
     login: "Login",
     signup: "Sign Up",
     logout: "Logout",
@@ -930,6 +931,44 @@ export const en: Locale = {
       title: "TinyShip - Premium Features",
       description: "Explore all the premium features available with your subscription. Access advanced tools, AI assistance, and enhanced functionality.",
       keywords: "premium, features, advanced, tools, subscription, benefits, enhanced"
+    },
+    title: "Premium Features",
+    description: "Thank you for your subscription! Here are all the premium features you can now access.",
+    loading: "Loading...",
+    subscription: {
+      title: "Your Subscription",
+      description: "Current subscription status and details",
+      status: "Subscription Status",
+      type: "Subscription Type",
+      expiresAt: "Expires At",
+      active: "Active",
+      inactive: "Inactive",
+      lifetime: "Lifetime Member",
+      recurring: "Recurring Subscription"
+    },
+    badges: {
+      lifetime: "Lifetime Member"
+    },
+    features: {
+      userManagement: {
+        title: "Advanced User Management",
+        description: "Complete user profile management and custom settings"
+      },
+      aiAssistant: {
+        title: "AI Smart Assistant",
+        description: "Advanced artificial intelligence features to boost productivity"
+      },
+      documentProcessing: {
+        title: "Unlimited Document Processing",
+        description: "Process any number and size of document files"
+      },
+      dataAnalytics: {
+        title: "Detailed Data Analytics",
+        description: "In-depth data analysis and visualization reports"
+      }
+    },
+    actions: {
+      accessFeature: "Access Feature"
     }
   },
   validators: {

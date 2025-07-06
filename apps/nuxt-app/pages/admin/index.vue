@@ -76,7 +76,15 @@
             </div>
           </div>
         </div>
-        <RevenueChart :chart-data="stats.chartData" />
+        <!-- Use dynamic component loading to prevent SSR issues -->
+        <ClientOnly>
+          <LazyRevenueChart :chart-data="stats.chartData" />
+          <template #fallback>
+            <div class="h-[300px] flex items-center justify-center border rounded-lg bg-muted/50">
+              <div class="text-muted-foreground">Loading chart...</div>
+            </div>
+          </template>
+        </ClientOnly>
       </Card>
 
       <!-- Time-based Statistics -->
@@ -120,15 +128,14 @@
         </Card>
       </div>
 
-      <!-- Recent Orders -->
-      <AdminOrdersCard :limit="10" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { DollarSign, Users, ShoppingBag } from 'lucide-vue-next'
-import RevenueChart from '../../components/admin/RevenueChart.vue'
+// Remove static import to prevent SSR issues
+// import RevenueChart from '../../components/admin/RevenueChart.vue'
 
 // Define metadata for SEO
 definePageMeta({

@@ -1,16 +1,24 @@
 <template>
-  <!-- Re-render the component on colorMode change -->
-  <AreaChart
-    :key="colorMode.value"
-    :data="chartData"
-    :height="300"
-    :categories="categories"
-    :y-grid-line="true"
-    :x-formatter="xFormatter"
-    :curve-type="CurveType.MonotoneX"
-    :legend-position="LegendPosition.Top"
-    :hide-legend="false"
-  />
+  <!-- Use ClientOnly to prevent SSR issues with chart library -->
+  <ClientOnly>
+    <!-- Re-render the component on colorMode change -->
+    <AreaChart
+      :key="colorMode.value"
+      :data="chartData"
+      :height="300"
+      :categories="categories"
+      :y-grid-line="true"
+      :x-formatter="xFormatter"
+      :curve-type="CurveType.MonotoneX"
+      :legend-position="LegendPosition.Top"
+      :hide-legend="false"
+    />
+    <template #fallback>
+      <div class="h-[300px] flex items-center justify-center border rounded-lg bg-muted/50">
+        <div class="text-muted-foreground">Loading chart...</div>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

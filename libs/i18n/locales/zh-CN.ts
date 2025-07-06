@@ -3,6 +3,7 @@ import type { Locale } from './types'
 export const zhCN: Locale = {
   common: {
     welcome: "欢迎使用 ShipEasy",
+    siteName: "ShipEasy",
     login: "登录",
     signup: "注册",
     logout: "退出登录",
@@ -10,14 +11,14 @@ export const zhCN: Locale = {
     settings: "设置",
     and: "和",
     loading: "加载中...",
-    unexpectedError: "发生意外错误",
+    unexpectedError: "发生了意外错误",
     notAvailable: "不可用",
     yes: "是",
     no: "否",
     theme: {
       light: "浅色主题",
       dark: "深色主题",
-      system: "跟随系统",
+      system: "系统主题",
       toggle: "切换主题"
     }
   },
@@ -922,7 +923,45 @@ export const zhCN: Locale = {
     metadata: {
       title: "TinyShip - 高级功能",
       description: "探索您的订阅包含的所有高级功能。访问高级工具、AI 助手和增强功能。",
-              keywords: "高级功能, 功能, 高级, 工具, 订阅, 权益, 增强"
+      keywords: "高级功能, 功能, 高级, 工具, 订阅, 权益, 增强"
+    },
+    title: "高级功能",
+    description: "感谢您的订阅！以下是您现在可以使用的所有高级功能。",
+    loading: "加载中...",
+    subscription: {
+      title: "您的订阅",
+      description: "当前订阅状态和详细信息",
+      status: "订阅状态",
+      type: "订阅类型",
+      expiresAt: "到期时间",
+      active: "已激活",
+      inactive: "未激活",
+      lifetime: "终身会员",
+      recurring: "周期性订阅"
+    },
+    badges: {
+      lifetime: "终身会员"
+    },
+    features: {
+      userManagement: {
+        title: "高级用户管理",
+        description: "完整的用户档案管理和自定义设置"
+      },
+      aiAssistant: {
+        title: "AI 智能助手",
+        description: "先进的人工智能功能，提升工作效率"
+      },
+      documentProcessing: {
+        title: "无限文档处理",
+        description: "处理任意数量和大小的文档文件"
+      },
+      dataAnalytics: {
+        title: "详细数据分析",
+        description: "深入的数据分析和可视化报表"
+      }
+    },
+    actions: {
+      accessFeature: "访问功能"
     }
   },
   ai: {

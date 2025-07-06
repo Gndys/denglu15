@@ -2,16 +2,16 @@
   <div>
     <!-- SEO Head -->
     <Head>
-      <title>高级功能 - {{ $t('common.siteName') }}</title>
-      <meta name="description" content="查看您可以使用的所有高级功能和订阅详情" />
-      <meta name="keywords" content="高级功能, 订阅, 会员, 专业版" />
+      <title>{{ $t('premiumFeatures.metadata.title') }}</title>
+      <meta name="description" :content="$t('premiumFeatures.metadata.description')" />
+      <meta name="keywords" :content="$t('premiumFeatures.metadata.keywords')" />
     </Head>
 
-    <div class="container py-10">
+    <div class="container py-10 mx-auto">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex items-center justify-center py-20">
         <Loader2 class="h-8 w-8 animate-spin text-primary" />
-        <span class="ml-2 text-muted-foreground">{{ $t('common.loading') }}</span>
+        <span class="ml-2 text-muted-foreground">{{ $t('premiumFeatures.loading') }}</span>
       </div>
 
       <!-- Content -->
@@ -20,13 +20,13 @@
         <div class="flex flex-col items-start gap-4 md:flex-row md:justify-between md:gap-8">
           <div class="flex-1 space-y-4">
             <div class="inline-flex items-center gap-2">
-              <h1 class="text-3xl font-bold tracking-tight">高级功能</h1>
+              <h1 class="text-3xl font-bold tracking-tight">{{ $t('premiumFeatures.title') }}</h1>
               <Badge v-if="userData?.isLifetime" variant="outline" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-                终身会员
+                {{ $t('premiumFeatures.badges.lifetime') }}
               </Badge>
             </div>
             <p class="text-muted-foreground">
-              感谢您的订阅！以下是您现在可以使用的所有高级功能。
+              {{ $t('premiumFeatures.description') }}
             </p>
           </div>
         </div>
@@ -34,31 +34,31 @@
         <!-- Subscription Info -->
         <Card v-if="userData" class="mt-6 mb-8">
           <CardHeader>
-            <CardTitle>您的订阅</CardTitle>
-            <CardDescription>当前订阅状态和详细信息</CardDescription>
+            <CardTitle>{{ $t('premiumFeatures.subscription.title') }}</CardTitle>
+            <CardDescription>{{ $t('premiumFeatures.subscription.description') }}</CardDescription>
           </CardHeader>
           <CardContent>
             <div class="grid gap-4 md:grid-cols-2">
               <div class="space-y-2">
-                <p class="text-sm font-medium">订阅状态</p>
+                <p class="text-sm font-medium">{{ $t('premiumFeatures.subscription.status') }}</p>
                 <div class="flex items-center space-x-2">
                   <div v-if="userData.subscriptionActive" class="w-2 h-2 bg-green-500 rounded-full"></div>
                   <div v-else class="w-2 h-2 bg-red-500 rounded-full"></div>
                   <span :class="userData.subscriptionActive ? 'text-green-600' : 'text-red-600'">
-                    {{ userData.subscriptionActive ? '已激活' : '未激活' }}
+                    {{ userData.subscriptionActive ? $t('premiumFeatures.subscription.active') : $t('premiumFeatures.subscription.inactive') }}
                   </span>
                 </div>
               </div>
               
               <div class="space-y-2">
-                <p class="text-sm font-medium">订阅类型</p>
+                <p class="text-sm font-medium">{{ $t('premiumFeatures.subscription.type') }}</p>
                 <p class="text-sm text-muted-foreground">
-                  {{ userData.isLifetime ? '终身会员' : '周期性订阅' }}
+                  {{ userData.isLifetime ? $t('premiumFeatures.subscription.lifetime') : $t('premiumFeatures.subscription.recurring') }}
                 </p>
               </div>
               
               <div v-if="!userData.isLifetime && userData.expiresAt" class="space-y-2">
-                <p class="text-sm font-medium">到期时间</p>
+                <p class="text-sm font-medium">{{ $t('premiumFeatures.subscription.expiresAt') }}</p>
                 <p class="text-sm text-muted-foreground">
                   {{ formatDate(userData.expiresAt) }}
                 </p>
@@ -80,7 +80,7 @@
               <p class="text-muted-foreground">{{ feature.description }}</p>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" class="w-full">访问功能</Button>
+              <Button variant="outline" class="w-full">{{ $t('premiumFeatures.actions.accessFeature') }}</Button>
             </CardFooter>
           </Card>
         </div>
@@ -94,7 +94,7 @@ import { ref, onMounted } from 'vue'
 import { Loader2, User, Sparkles, FileText, BarChart } from 'lucide-vue-next'
 
 // Router and i18n
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // Reactive state
 const isLoading = ref(true)
@@ -109,29 +109,30 @@ const userData = ref<{
 const premiumFeatures = [
   {
     icon: User,
-    title: "高级用户管理",
-    description: "完整的用户档案管理和自定义设置"
+    title: t('premiumFeatures.features.userManagement.title'),
+    description: t('premiumFeatures.features.userManagement.description')
   },
   {
     icon: Sparkles,
-    title: "AI 智能助手",
-    description: "先进的人工智能功能，提升工作效率"
+    title: t('premiumFeatures.features.aiAssistant.title'),
+    description: t('premiumFeatures.features.aiAssistant.description')
   },
   {
     icon: FileText,
-    title: "无限文档处理",
-    description: "处理任意数量和大小的文档文件"
+    title: t('premiumFeatures.features.documentProcessing.title'),
+    description: t('premiumFeatures.features.documentProcessing.description')
   },
   {
     icon: BarChart,
-    title: "详细数据分析",
-    description: "深入的数据分析和可视化报表"
+    title: t('premiumFeatures.features.dataAnalytics.title'),
+    description: t('premiumFeatures.features.dataAnalytics.description')
   }
 ]
 
 // Utility functions
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('zh-CN')
+  const localeCode = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
+  return new Date(dateString).toLocaleDateString(localeCode)
 }
 
 // Fetch subscription details
@@ -157,14 +158,5 @@ const fetchSubscriptionDetails = async () => {
 // Fetch data on mount
 onMounted(() => {
   fetchSubscriptionDetails()
-})
-
-// SEO
-useHead({
-  title: '高级功能',
-  meta: [
-    { name: 'description', content: '查看您可以使用的所有高级功能和订阅详情' },
-    { name: 'keywords', content: '高级功能, 订阅, 会员, 专业版' }
-  ]
 })
 </script> 

@@ -5,6 +5,7 @@
 import { authClientVue } from '@libs/auth/authClient'
 import { Action, Subject, can, createAppUser } from '@libs/permissions'
 
+
 // Route configuration interface
 interface ProtectedRouteConfig {
   pattern: RegExp
@@ -106,7 +107,10 @@ async function hasValidSubscription(userId: string): Promise<boolean> {
  */
 async function getUserSession() {
   try {
+    // Since we already waited for auth to be ready in the middleware,
+    // we can directly get the session
     const session = await authClientVue.getSession()
+    
     return {
       session,
       user: session?.data?.user,
@@ -123,6 +127,17 @@ async function getUserSession() {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  // Add debug logging to see if middleware is triggered
+  console.log(`🚀 Auth middleware triggered for: ${to.path}`)
+  
+  // Skip middleware on server-side - let client handle authentication
+  if (import.meta.server) {
+    console.log(`🖥️ Skipping auth middleware on server for: ${to.path}`)
+    return
+  }
+
+  console.log(`🌐 Processing auth middleware on client for: ${to.path}`)
+
   // Skip middleware for auth pages and public routes (support locale prefixes)
   const authRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password', '/cellphone', '/wechat']
   const publicRoutes = ['/', '/pricing', '/payment-success', '/payment-cancel']
@@ -150,7 +165,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // Skip API routes in client-side navigation
-  if (process.client && to.path.startsWith('/api/')) {
+  if (import.meta.client && to.path.startsWith('/api/')) {
     return
   }
 
@@ -163,8 +178,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   console.log(`🔒 Protected route accessed: ${to.path} (Type: ${matchedRoute.type})`)
 
-  // Get user session (unified approach)
+  // On client-side, wait for auth to be ready before checking
+  console.log(`⏳ Ensuring auth is ready on client-side for: ${to.path}`)
+
+  // Get user session (client-side only now)
+  console.log(`🔍 Getting user session for: ${to.path}`)
   const { user, isAuthenticated } = await getUserSession()
+  console.log(`🔍 Session result: isAuthenticated=${isAuthenticated}, user=${user ? user.id : 'null'}`)
 
   // --- 1. Authentication Check ---
   if (matchedRoute.requiresAuth && !isAuthenticated) {
