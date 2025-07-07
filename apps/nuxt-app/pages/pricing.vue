@@ -11,11 +11,21 @@
       <!-- Hero Section -->
       <section class="relative py-24 sm:py-32 overflow-hidden">
         <div class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <div class="mx-auto max-w-4xl text-center">
-            <div class="inline-flex items-center space-x-2 px-4 py-2 bg-chart-1-bg-15 rounded-full border border-chart-1/20 mb-8">
+          <motion.div 
+            class="mx-auto max-w-4xl text-center"
+            :initial="{ opacity: 0, y: 20 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ duration: 0.8 }"
+          >
+            <motion.div
+              class="inline-flex items-center space-x-2 px-4 py-2 bg-chart-1-bg-15 rounded-full border border-chart-1/20 mb-8"
+              :initial="{ opacity: 0, scale: 0.9 }"
+              :animate="{ opacity: 1, scale: 1 }"
+              :transition="{ duration: 0.6, delay: 0.2 }"
+            >
               <Sparkles class="h-4 w-4 text-chart-1" />
               <span class="text-xs font-medium text-chart-1">{{ t('pricing.title') }}</span>
-            </div>
+            </motion.div>
 
             <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
               <span class="text-gradient-chart-warm">
@@ -27,7 +37,7 @@
               选择最适合你的方案，开始你的 TinyShip 之旅。
               一次购买，终身使用，早鸟价仅限前 100 名用户。
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -35,7 +45,7 @@
       <section class="py-24">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-            <div
+            <motion.div
               v-for="(plan, index) in plans"
               :key="plan.id"
               :class="[
@@ -44,6 +54,10 @@
                   ? 'bg-card border-2 border-chart-1 shadow-chart-1/20' 
                   : 'bg-card border border-border hover:border-border/80'
               ]"
+              :initial="{ opacity: 0, y: 20 }"
+              :whileInView="{ opacity: 1, y: 0 }"
+              :transition="{ duration: 0.6, delay: index * 0.1 }"
+              :viewport="{ once: true }"
             >
               <!-- Recommended Badge -->
               <div v-if="isRecommended(plan)" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -148,11 +162,17 @@
 
               <!-- Special Effects for Recommended Plan -->
               <div v-if="isRecommended(plan)" class="absolute inset-0 bg-gradient-chart-warm opacity-5 rounded-xl pointer-events-none"></div>
-            </div>
+            </motion.div>
           </div>
 
           <!-- Additional Info -->
-          <div class="mt-16 text-center">
+          <motion.div 
+            class="mt-16 text-center"
+            :initial="{ opacity: 0, y: 20 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :transition="{ duration: 0.6, delay: 0.5 }"
+            :viewport="{ once: true }"
+          >
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div class="flex flex-col items-center space-y-3">
                 <div class="w-12 h-12 bg-chart-2-bg-15 rounded-xl flex items-center justify-center">
@@ -178,7 +198,7 @@
                 <p class="text-sm text-muted-foreground text-center">加入活跃的开发者社区，获得技术支持</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
@@ -243,6 +263,7 @@ import { ref, computed, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles } from 'lucide-vue-next'
+import { motion } from 'motion-v'
 import type { Plan } from '@config'
 
 // Get config data

@@ -22,6 +22,7 @@
 </template>
 
 <script setup lang="ts">
+import { oklch2hex } from 'colorizr'
 // Interface for chart data structure
 interface RevenueChartItem {
   month: string
@@ -41,27 +42,84 @@ const props = withDefaults(defineProps<Props>(), {
 // Theme composable for theme switching
 const { theme, colorScheme } = useTheme()
 
+// Parse OKLCH string to object format for colorizr library
+const parseOklchString = (oklchString: string) => {
+  // Match OKLCH format: oklch(l c h) or oklch(l c h / alpha)
+  const match = oklchString.match(/oklch\(\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)(?:\s*\/\s*[0-9.]+)?\s*\)/)
+  
+  if (!match) {
+    console.warn('Failed to parse OKLCH string:', oklchString)
+    return null
+  }
+  
+  const l = parseFloat(match[1])
+  const c = parseFloat(match[2])
+  const h = parseFloat(match[3])
+  
+  // Validate parsed values
+  if (isNaN(l) || isNaN(c) || isNaN(h)) {
+    console.warn('Invalid OKLCH values:', { l, c, h, original: oklchString })
+    return null
+  }
+  
+  return { l, c, h }
+}
+
 // Get chart colors from CSS custom properties (hex format for chart compatibility)
 const getChartColor = (colorVar: string): string => {
+  if (import.meta.client) {
+    const colorValue = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--${colorVar}`)
+      .trim()
 
+    if (!colorValue) {
+      // Fallback colors
+      return colorVar === 'chart-1' ? '#D97706' : '#009689'
+    }
+    
+    // Check if it's already a hex color
+    if (colorValue.startsWith('#') || colorValue.startsWith('rgb(')) {
+      return colorValue
+    }
+    
+    // Check if it's an OKLCH color and convert to RGB hex using colorizr
+    if (colorValue.startsWith('oklch(')) {
+      const oklchObject = parseOklchString(colorValue)
+      if (oklchObject) {
+        try {
+          const hexColor = oklch2hex(oklchObject)
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`OKLCH ${colorValue} → ${hexColor}`)
+          }
+          return hexColor || '#3b82f6'
+        } catch (error) {
+          console.warn('Failed to convert OKLCH color:', colorValue, error)
+          return '#3b82f6'
+        }
+      }
+    }
+        
+    // Fallback if format is unrecognized
+    return colorValue || '#3b82f6'
+  }
   
   // Fallback colors for SSR
   return colorVar === 'chart-1' ? '#D97706' : '#009689'
 }
 
-// Define chart categories with CSS variable colors
+// Define chart categories with CSS variable colors (auto-converted using colorizr)
 const categories = computed(() => {
-  const revenueColor = '#D97706'
-  const ordersColor = '#009689'
+  const revenueColor = getChartColor('chart-1')
+  const ordersColor = getChartColor('chart-2')
   
   return {
     revenue: {
       name: 'Revenue',
-      color: revenueColor, // Uses CSS variable --chart-1-hex
+      color: revenueColor, // Auto-converts CSS variable --chart-1 from OKLCH to RGB hex
     },
     orders: {
       name: 'Orders', 
-      color: ordersColor, // Uses CSS variable --chart-2-hex
+      color: ordersColor, // Auto-converts CSS variable --chart-2 from OKLCH to RGB hex
     },
   }
 })

@@ -113,7 +113,7 @@ export default defineNuxtConfig({
     transpile: ['pg', 'drizzle-orm']
   },
 
-  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', 'nuxt-charts'],
+  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', 'nuxt-charts', 'motion-v/nuxt'],
   
   // Configure components auto-import
   components: {

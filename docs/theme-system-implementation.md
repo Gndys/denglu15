@@ -190,6 +190,7 @@ const switchToClaudeTheme = () => setColorScheme('claude')
 3. **RevenueChart useColorMode错误** - 替换为useTheme composable，消除linter错误
 4. **CSS路径问题** - 修正UI样式库导入路径从3层到4层目录
 5. **主题持久化优化** - 分离初始化和更新逻辑，防止循环保存
+6. **OKLCH颜色转换优化** - 使用colorizr库替代自定义算法，提升转换精度和性能
 
 ### 修复验证
 - ✅ 明暗切换不再重置颜色方案
@@ -206,6 +207,15 @@ const switchToClaudeTheme = () => setColorScheme('claude')
 
 **修复前**：`{"theme":"dark","colorScheme":"default"}` - colorScheme被错误重置
 **修复后**：`{"theme":"dark","colorScheme":"claude"}` - colorScheme正确保持
+
+### OKLCH颜色转换功能 (colorizr库)
+**问题**：图表库只支持RGB hex格式，但主题系统使用OKLCH格式
+**解决方案**：使用专业的colorizr库进行颜色转换
+- 自动检测OKLCH格式：`oklch(0.646 0.222 41.116)`
+- 解析为对象格式：`{ l: 0.646, c: 0.222, h: 41.116 }`
+- 使用colorizr转换：`oklch2hex({ l: 0.646, c: 0.222, h: 41.116 })` → `#d97706`
+- 向后兼容hex和rgb格式
+- 更高精度和性能的颜色转换
 
 ## 📈 第七阶段完成状态
 
