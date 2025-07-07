@@ -113,7 +113,7 @@ export default defineNuxtConfig({
     transpile: ['pg', 'drizzle-orm']
   },
 
-  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/color-mode', 'nuxt-charts'],
+  modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', 'nuxt-charts'],
   
   // Configure components auto-import
   components: {
@@ -133,17 +133,8 @@ export default defineNuxtConfig({
     ]
   },
   
-  // Color mode configuration
-  colorMode: {
-    preference: 'system', // default value of $colorMode.preference
-    fallback: 'light', // fallback value if not system preference found
-    hid: 'nuxt-color-mode-script',
-    globalName: '__NUXT_COLOR_MODE__',
-    componentName: 'ColorScheme',
-    classPrefix: '',
-    classSuffix: '',
-    storageKey: 'nuxt-color-mode'
-  },
+  // Theme configuration is now handled by our custom useTheme composable
+  // and theme.client.ts plugin
   
   // Internationalization configuration
   i18n: {

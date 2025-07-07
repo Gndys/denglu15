@@ -19,7 +19,16 @@ export const en: Locale = {
       light: "Light Theme",
       dark: "Dark Theme",
       system: "System Theme",
-      toggle: "Toggle Theme"
+      toggle: "Toggle Theme",
+      appearance: "Appearance",
+      colorScheme: "Color Scheme",
+      themes: {
+        default: "Default",
+        claude: "Claude",
+        "cosmic-night": "Cosmic Night",
+        "modern-minimal": "Modern Minimal",
+        "ocean-breeze": "Ocean Breeze"
+      }
     }
   },
   navigation: {

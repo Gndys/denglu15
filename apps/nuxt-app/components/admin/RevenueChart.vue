@@ -1,9 +1,9 @@
 <template>
   <!-- Use ClientOnly to prevent SSR issues with chart library -->
   <ClientOnly>
-    <!-- Re-render the component on colorMode change -->
+    <!-- Re-render the component on theme change -->
     <AreaChart
-      :key="colorMode.value"
+      :key="`${theme}-${colorScheme}`"
       :data="chartData"
       :height="300"
       :categories="categories"
@@ -38,18 +38,12 @@ const props = withDefaults(defineProps<Props>(), {
   chartData: () => []
 })
 
-// Color mode composable for theme switching
-const colorMode = useColorMode()
+// Theme composable for theme switching
+const { theme, colorScheme } = useTheme()
 
 // Get chart colors from CSS custom properties (hex format for chart compatibility)
 const getChartColor = (colorVar: string): string => {
-  if (import.meta.client) {
-    const hexValue = getComputedStyle(document.documentElement)
-      .getPropertyValue(`--${colorVar}-hex`)
-      .trim()
-    
-    return hexValue || '#3b82f6'
-  }
+
   
   // Fallback colors for SSR
   return colorVar === 'chart-1' ? '#D97706' : '#009689'
@@ -57,8 +51,8 @@ const getChartColor = (colorVar: string): string => {
 
 // Define chart categories with CSS variable colors
 const categories = computed(() => {
-  const revenueColor = getChartColor('chart-1')
-  const ordersColor = getChartColor('chart-2')
+  const revenueColor = '#D97706'
+  const ordersColor = '#009689'
   
   return {
     revenue: {

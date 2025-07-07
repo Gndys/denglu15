@@ -8,7 +8,7 @@
   >
     <!-- Light mode icon - show when current theme is light -->
     <SunIcon 
-      v-if="$colorMode.preference === 'light'"
+      v-if="theme === 'light'"
       class="h-4 w-4 transition-all"
     />
     <!-- Dark mode icon - show when current theme is dark -->
@@ -24,18 +24,16 @@
 import { SunIcon, MoonIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 
-const colorMode = useColorMode()
+const { theme, setTheme } = useTheme()
 const { t } = useI18n()
 
 // Simple toggle between light and dark
 const toggleTheme = () => {
-  colorMode.preference = colorMode.preference === 'light' ? 'dark' : 'light'
+  setTheme(theme.value === 'light' ? 'dark' : 'light')
 }
 
-// Computed property for accessibility label
+// Current theme label for accessibility
 const currentThemeLabel = computed(() => {
-  return colorMode.preference === 'light' 
-    ? t('common.theme.dark') 
-    : t('common.theme.light')
+  return theme.value === 'light' ? t('common.theme.dark') : t('common.theme.light')
 })
 </script> 

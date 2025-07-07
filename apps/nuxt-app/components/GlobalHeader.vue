@@ -58,8 +58,11 @@
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <!-- Theme toggle -->
+          <!-- Dark Mode Toggle -->
           <ThemeToggle />
+          
+          <!-- Color Scheme Selector -->
+          <ColorSchemeSelector />
 
           <!-- User menu or Auth buttons -->
           <div class="flex items-center space-x-2">
