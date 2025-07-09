@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/hooks/use-translation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { nanoid } from 'nanoid'
+import { config } from '@config';
 
 declare global {
   interface Window {
@@ -25,7 +26,7 @@ export default function WeixinLoginPage() {
           id: 'login_container',
           appid: process.env.NEXT_PUBLIC_WECHAT_APP_ID,
           scope: 'snsapi_login',
-          redirect_uri: encodeURIComponent(process.env.NEXT_PUBLIC_WECHAT_REDIRECT_URI!),
+          redirect_uri: encodeURIComponent(`${config.app.baseUrl}/api/auth/oauth2/callback/wechat`),
           state: nanoid(10),
           style: 'black',
           href: 'https://api.easycv.cn/public/wxLogin.css',

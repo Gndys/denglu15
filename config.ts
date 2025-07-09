@@ -36,11 +36,8 @@ function requireEnvForService(key: string, service: string, devDefault?: string)
 type BasePlan = {
   id: string;
   provider: string;
-  name: string;
-  description: string;
   amount: number;
   currency: string;
-  features: readonly string[];
   recommended?: boolean;
   i18n: {
     [locale: string]: {
@@ -53,14 +50,14 @@ type BasePlan = {
 };
 
 export type RecurringPlan = BasePlan & {
-  duration: { type: 'recurring'; months: number; description: string };
+  duration: { type: 'recurring'; months: number };
   stripePriceId?: string | undefined;
   stripeProductId?: string | undefined;
   creemProductId?: string | undefined;
 };
 
 export type OneTimePlan = BasePlan & {
-  duration: { type: 'one_time'; months: number; description: string };
+  duration: { type: 'one_time'; months: number };
   stripePriceId?: string | undefined;
   stripeProductId?: string | undefined;
   creemProductId?: string | undefined;
@@ -99,20 +96,55 @@ export const config = {
       get cancelUrl() {
         return `${config.app.baseUrl}/payment-cancel`;
       },
+    }
+  },
+  /**
+   * Authentication Service Configuration
+   */
+  auth: {
+    requireEmailVerification: true,
+
+    /**
+     * Social Login Providers Configuration
+     */
+    socialProviders: {
       /**
-       * Webhook URLs
-       * These URLs will be used by payment providers for notifications
+       * Google OAuth Configuration
        */
-      get webhookUrls() {
-        return {
-          stripe: `${config.app.baseUrl}/api/payment/webhook/stripe`,
-          wechat: `https://test.vikingship.uk/api/payment/webhook/wechat`,
-          creem: `${config.app.baseUrl}/api/payment/webhook/creem`
-        };
+      google: {
+        get clientId() {
+          return getEnvForService('GOOGLE_CLIENT_ID', 'Google Auth');
+        },
+        get clientSecret() {
+          return getEnvForService('GOOGLE_CLIENT_SECRET', 'Google Auth');
+        }
+      },
+
+      /**
+       * GitHub OAuth Configuration
+       */
+      github: {
+        get clientId() {
+          return getEnvForService('GITHUB_CLIENT_ID', 'GitHub Auth');
+        },
+        get clientSecret() {
+          return getEnvForService('GITHUB_CLIENT_SECRET', 'GitHub Auth');
+        }
+      },
+
+      /**
+       * WeChat OAuth Configuration
+       */
+      wechat: {
+        get appId() {
+          return getEnvForService('WECHAT_APP_ID', 'WeChat Auth');
+        },
+        get appSecret() {
+          return getEnvForService('WECHAT_APP_SECRET', 'WeChat Auth');
+        }
       }
     }
   },
-
   /**
    * Payment Configuration
    */
@@ -174,19 +206,12 @@ export const config = {
       monthlyWechat: {
         provider: 'wechat',
         id: 'monthlyWechat',
-        name: '月度订阅',
-        description: '每月订阅，灵活管理',
         amount: 0.01,
         currency: 'CNY',
         duration: {
           months: 1,
-          description: '1个月',
           type: 'one_time'
         },
-        features: [
-          '所有高级功能',
-          '优先支持'
-        ],
         i18n: {
           'en': {
             name: 'Monthly Plan',
@@ -211,22 +236,15 @@ export const config = {
       monthly: {
         provider: 'stripe',
         id: 'monthly',
-        name: '月度订阅',
-        description: '每月订阅，灵活管理',
         amount: 10,
         currency: 'CNY',
         duration: {
           months: 1,
-          description: '1个月',
           type: 'recurring'
         },
         // 当使用 Stripe 支付时，订阅的时长和价格将由 stripePriceId 决定
         // 这里的 duration 和 amount 仅用于显示和计算，实际订阅周期和价格以 Stripe 后台配置为准
         stripePriceId: 'price_1RL2GgDjHLfDWeHDBHjoZaap',
-        features: [
-          '所有高级功能',
-          '优先支持'
-        ],
         i18n: {
           'en': {
             name: 'Monthly Plan',
@@ -251,20 +269,12 @@ export const config = {
       'monthly-pro': {
         provider: 'stripe',
         id: 'monthly-pro',
-        name: '月度专业版',
-        description: '每月订阅，灵活管理',
         amount: 20,
         currency: 'CNY',
         duration: {
           months: 1,
-          description: '1个月',
           type: 'recurring'
         },
-        features: [
-          '所有高级功能',
-          '优先支持',
-          '终身免费更新'
-        ],
         stripePriceId: 'price_1RMmc4DjHLfDWeHDp9Xhpn5X',
         i18n: {
           'en': {
@@ -292,21 +302,13 @@ export const config = {
       lifetime: {
         provider: 'stripe',
         id: 'lifetime',
-        name: '终身会员',
-        description: '一次付费，永久使用',
         amount: 999,
         currency: 'CNY',
         recommended: true,
         duration: {
           months: 999999,
-          description: '终身',
           type: 'one_time'
         },
-        features: [
-          '所有高级功能',
-          '优先支持',
-          '终身免费更新'
-        ],
         stripePriceId: 'price_1RL2IcDjHLfDWeHDMCmobkzb',
         i18n: {
           'en': {
@@ -334,20 +336,13 @@ export const config = {
       monthlyCreem: {
         provider: 'creem',
         id: 'monthlyCreem',
-        name: '月度订阅',
-        description: '每月订阅，灵活管理',
         amount: 10,
         currency: 'USD',
         duration: {
           months: 1,
-          description: '1个月',
           type: 'recurring'
         },
         creemProductId: 'prod_1M1c4ktVmvLgrNtpVB9oQf', // Will be set after creating product in Creem
-        features: [
-          '所有高级功能',
-          '优先支持'
-        ],
         i18n: {
           'en': {
             name: 'Monthly Plan (Creem)',
@@ -372,51 +367,7 @@ export const config = {
     } as const,
   },
 
-  /**
-   * Authentication Service Configuration
-   */
-  auth: {
-    /**
-     * Social Login Providers Configuration
-     */
-    socialProviders: {
-      /**
-       * Google OAuth Configuration
-       */
-      google: {
-        get clientId() {
-          return getEnvForService('GOOGLE_CLIENT_ID', 'Google Auth');
-        },
-        get clientSecret() {
-          return getEnvForService('GOOGLE_CLIENT_SECRET', 'Google Auth');
-        }
-      },
 
-      /**
-       * GitHub OAuth Configuration
-       */
-      github: {
-        get clientId() {
-          return getEnvForService('GITHUB_CLIENT_ID', 'GitHub Auth');
-        },
-        get clientSecret() {
-          return getEnvForService('GITHUB_CLIENT_SECRET', 'GitHub Auth');
-        }
-      },
-
-      /**
-       * WeChat OAuth Configuration
-       */
-      wechat: {
-        get appId() {
-          return getEnvForService('WECHAT_APP_ID', 'WeChat Auth');
-        },
-        get appSecret() {
-          return getEnvForService('WECHAT_APP_SECRET', 'WeChat Auth');
-        }
-      }
-    }
-  },
 
   /**
    * SMS Service Configuration
@@ -440,6 +391,7 @@ export const config = {
       },
       endpoint: 'dysmsapi.aliyuncs.com',
       signName: '上海挚箴技术服务中心',
+      templateCode: 'SMS_1234567890',
     },
 
     /**
@@ -480,32 +432,6 @@ export const config = {
         return getEnvForService('RESEND_API_KEY', 'Resend Email');
       }
     },
-
-    /**
-     * SendGrid Configuration
-     */
-    sendgrid: {
-      // Optional service, using warning instead of error
-      get apiKey() {
-        return getEnvForService('SENDGRID_API_KEY', 'SendGrid Email');
-      }
-    },
-
-    /**
-     * SMTP Configuration
-     */
-    smtp: {
-      host: getEnv('SMTP_HOST') || 'smtp.example.com',
-      port: Number(getEnv('SMTP_PORT')) || 587,
-      // Optional service, using warning instead of error
-      get username() {
-        return getEnvForService('SMTP_USERNAME', 'SMTP Email');
-      },
-      get password() {
-        return getEnvForService('SMTP_PASSWORD', 'SMTP Email');
-      },
-      secure: true,
-    }
   },
 
   /**

@@ -255,6 +255,8 @@ export default function PricingPage() {
                 const isRecommended = plan.recommended;
                 const isLifetime = plan.id === 'lifetime';
                 
+            const features = i18n?.features || [];
+            
             return (
                   <motion.div
                 key={plan.id}
@@ -283,13 +285,13 @@ export default function PricingPage() {
                       <h3 className={`text-xl font-bold mb-2 ${
                         isRecommended ? 'text-card-foreground' : 'text-foreground'
                       }`}>
-                      {i18n?.name || plan.name}
+                      {i18n?.name || 'Plan'}
                     </h3>
                       
                       <p className={`text-sm ${
                         isRecommended ? 'text-muted-foreground' : 'text-muted-foreground'
                       }`}>
-                    {i18n?.description || plan.description}
+                    {i18n?.description || 'Description'}
                   </p>
                     </div>
 
@@ -304,7 +306,7 @@ export default function PricingPage() {
                         <span className={`text-base font-medium ${
                           isRecommended ? 'text-muted-foreground' : 'text-muted-foreground'
                         }`}>
-                      /{i18n?.duration || plan.duration.description}
+                      /{i18n?.duration || 'Duration'}
                     </span>
                       </div>
                       
@@ -318,7 +320,7 @@ export default function PricingPage() {
 
                     {/* Features */}
                     <div className="space-y-3 mb-6">
-                      {plan.features.map((feature, featureIndex) => (
+                      {features.map((feature, featureIndex) => (
                         <div key={feature} className="flex items-start space-x-3">
                           <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
                             isRecommended 
@@ -334,9 +336,7 @@ export default function PricingPage() {
                           <span className={`text-sm leading-6 ${
                             isRecommended ? 'text-card-foreground' : 'text-card-foreground'
                           }`}>
-                            {i18n?.features && Array.isArray(i18n.features) && featureIndex < i18n.features.length
-                              ? i18n.features[featureIndex]
-                          : feature}
+                            {feature}
                           </span>
                         </div>
                     ))}
@@ -422,9 +422,7 @@ export default function PricingPage() {
               {currentPlan && (
                 <span>
                   {currentPlan.currency === 'CNY' ? '¥' : '$'}{currentPlan.amount} - 
-                  {currentPlan.i18n && 
-                   currentPlan.i18n[currentLocale] && 
-                   currentPlan.i18n[currentLocale].name || currentPlan.name}
+                  {currentPlan.i18n?.[currentLocale]?.name || 'Plan'}
                 </span>
               )}
             </DialogTitle>

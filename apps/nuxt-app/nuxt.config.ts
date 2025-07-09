@@ -95,7 +95,7 @@ export default defineNuxtConfig({
       turnstileSiteKey: appConfig.captcha.cloudflare.siteKey,
       // WeChat configuration
       wechatAppId: process.env.WECHAT_APP_ID || 'your-wechat-app-id',
-      wechatRedirectUri: process.env.WECHAT_REDIRECT_URI || `${appConfig.app.baseUrl}/api/auth/oauth2/callback/wechat`,
+      wechatRedirectUri: `${appConfig.app.baseUrl}/api/auth/oauth2/callback/wechat`,
       // Payment configuration
       paymentPlans: JSON.parse(JSON.stringify(appConfig.payment.plans))
     }

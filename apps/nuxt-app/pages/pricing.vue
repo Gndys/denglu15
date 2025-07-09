@@ -110,7 +110,7 @@
               <!-- Features -->
               <div class="space-y-3 mb-6">
                 <div
-                  v-for="(feature, featureIndex) in plan.features"
+                  v-for="feature in getPlanFeatures(plan)"
                   :key="feature"
                   class="flex items-start space-x-3"
                 >
@@ -131,7 +131,7 @@
                     'text-sm leading-6',
                     isRecommended(plan) ? 'text-card-foreground' : 'text-card-foreground'
                   ]">
-                    {{ getPlanFeature(plan, featureIndex) }}
+                    {{ feature }}
                   </span>
                 </div>
               </div>
@@ -299,26 +299,19 @@ const isRecommended = (plan: Plan) => plan.recommended
 const isLifetime = (plan: Plan) => plan.id === 'lifetime'
 
 const getPlanName = (plan: Plan) => {
-  const i18n = plan.i18n?.[locale.value]
-  return i18n?.name || plan.name
+  return plan.i18n?.[locale.value]?.name || plan.i18n?.['zh-CN']?.name || 'Plan'
 }
 
 const getPlanDescription = (plan: Plan) => {
-  const i18n = plan.i18n?.[locale.value]
-  return i18n?.description || plan.description
+  return plan.i18n?.[locale.value]?.description || plan.i18n?.['zh-CN']?.description || 'Description'
 }
 
 const getPlanDuration = (plan: Plan) => {
-  const i18n = plan.i18n?.[locale.value]
-  return i18n?.duration || plan.duration.description
+  return plan.i18n?.[locale.value]?.duration || plan.i18n?.['zh-CN']?.duration || 'Duration'
 }
 
-const getPlanFeature = (plan: Plan, index: number) => {
-  const i18n = plan.i18n?.[locale.value]
-  if (i18n?.features && Array.isArray(i18n.features) && index < i18n.features.length) {
-    return i18n.features[index]
-  }
-  return plan.features[index]
+const getPlanFeatures = (plan: Plan) => {
+  return plan.i18n?.[locale.value]?.features || plan.i18n?.['zh-CN']?.features || []
 }
 
 // Payment polling

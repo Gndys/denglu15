@@ -4,6 +4,7 @@ import { DataTable } from './data-table';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react'
 import { translations } from '@libs/i18n';
+import { config } from '@config';
 
 interface PageProps {
   params: Promise<{
@@ -57,7 +58,7 @@ export default async function OrdersPage({ params, searchParams }: PageProps) {
 
   try {
     // 调用API获取订单数据
-    const baseUrl = process.env.APP_BASE_URL || 'http://localhost:7001';
+    const baseUrl = config.app.baseUrl;
     const apiUrl = `${baseUrl}/api/admin/orders?${queryParams.toString()}`;
     console.log('Fetching orders from:', apiUrl);
     

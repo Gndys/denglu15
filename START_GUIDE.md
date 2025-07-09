@@ -51,18 +51,23 @@ For detailed database configuration and migrations, see: [`libs/database/README.
 
 ### 3. Authentication Setup
 
-The authentication system provides multiple authentication methods:
+The authentication system provides multiple authentication methods， 底层使用 better-auth， 支持各种 Auth 手段:
 
-#### Default Authentication (Email/Password)
+#### 默认 Default Authentication (Email/Password)
+
 Email and password authentication is enabled by default with the following features:
 - User registration with email verification
 - Password reset functionality
 - Account recovery options
 - Session management
 - Remember me functionality
+- 默认会发送验证邮件，验证邮箱以后用户才可以继续使用，你可以在如下的代码位置关闭这个功能
+
+发送邮件需要使用第三方服务，你可以在第五步 ### 5. Email Service Setup 配置具体的方式
 
 #### OAuth Providers (Optional)
 You can enable additional OAuth providers by configuring their environment variables:
+目前我们支持三种 OAuth2 验证手段，启用任何验证方式，可以提供如下的环境变量，你可以按照你的喜好添加对应的验证方式
 
 1. **Google OAuth**
    ```env
@@ -78,12 +83,14 @@ You can enable additional OAuth providers by configuring their environment varia
    ```
    Setup: [GitHub OAuth Apps](https://github.com/settings/developers)
 
-3. **WeChat OAuth**
+3. **WeChat 扫码登录OAuth**
    ```env
    WECHAT_APP_ID="your_app_id"
    WECHAT_APP_SECRET="your_app_secret"
    ```
    Setup: [WeChat Open Platform](https://open.weixin.qq.com/)
+
+如果想添加更多，可以参考 [Better Auth Sign-on](https://www.better-auth.com/docs/authentication/apple)，在 **libs/auth**
 
 #### Authentication Features
 - Multiple authentication methods per user

@@ -1,4 +1,9 @@
 import { pool } from "./client";
+import * as dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 /**
  * 检查数据库连接

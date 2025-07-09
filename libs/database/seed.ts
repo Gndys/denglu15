@@ -1,15 +1,26 @@
-import { pool } from "./client";
 import * as dotenv from "dotenv";
-import * as crypto from "crypto";
-import { role } from "better-auth/plugins/access";
+import * as path from "path";
+import { auth } from "@libs/auth";
+import { db } from "./client";
+import { user, account } from "./schema";
+import { eq } from "drizzle-orm";
 
-dotenv.config({ path: "../../../.env" });
+// 加载环境变量
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 /**
- * 生成随机ID
+ * 生成用户ID
  */
-function generateId(prefix: string = "id"): string {
-  return `${prefix}_${crypto.randomBytes(8).toString("hex")}`;
+function generateUserId(): string {
+  return `user_${Math.random().toString(36).substring(2, 15)}`;
+}
+
+/**
+ * 生成账户ID
+ */
+function generateAccountId(): string {
+  return `account_${Math.random().toString(36).substring(2, 15)}`;
 }
 
 /**
@@ -17,156 +28,108 @@ function generateId(prefix: string = "id"): string {
  */
 async function seedDatabase() {
   try {
-    console.log("正在连接数据库...");
-    const client = await pool.connect();
-    
     console.log("⚙️ 开始填充测试数据...");
     
-    // 检查users表是否存在
-    const { rows: tableCheck } = await client.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
-        AND table_name = 'users'
-      );
-    `);
+    // 获取 Better Auth 上下文以使用密码哈希功能
+    const ctx = await auth.$context;
     
-    if (!tableCheck[0].exists) {
-      console.error("❌ 数据库表不存在，请先运行迁移命令");
-      client.release();
-      return false;
-    }
-    
-    // 开始事务
-    await client.query("BEGIN;");
-    
+    // 创建管理员用户
+    console.log("创建管理员用户...");
     try {
-      // 清空现有数据（可选）
-      await client.query("TRUNCATE users CASCADE;");
+      // 检查管理员是否已存在
+      const existingAdmin = await db.select().from(user).where(eq(user.email, "admin@example.com")).limit(1);
       
-      // 添加测试用户
-      const testUsers = [
-        {
-          id: generateId("user"),
+      if (existingAdmin.length > 0) {
+        console.log("✓ 管理员用户已存在: admin@example.com");
+      } else {
+        // 生成密码哈希
+        const adminPasswordHash = await ctx.password.hash("admin123");
+        const adminUserId = generateUserId();
+        
+        // 插入管理员用户
+        await db.insert(user).values({
+          id: adminUserId,
           email: "admin@example.com",
           name: "管理员",
-          passwordHash: crypto.createHash("sha256").update("adminpassword123").digest("hex"),
           emailVerified: true,
-          avatar: "https://i.pravatar.cc/150?u=admin@example.com",
-          provider: "credentials",
+          role: "admin"
+        });
+        
+        // 插入密码账户记录
+        await db.insert(account).values({
+          id: generateAccountId(),
+          accountId: generateAccountId(),
+          providerId: "credential",
+          userId: adminUserId,
+          password: adminPasswordHash,
           createdAt: new Date(),
           updatedAt: new Date()
-        },
-        {
-          id: generateId("user"),
+        });
+        
+        console.log("✓ 已创建管理员用户: admin@example.com");
+      }
+    } catch (error: any) {
+      if (error.message?.includes("UNIQUE constraint") || error.code === "23505") {
+        console.log("✓ 管理员用户已存在: admin@example.com");
+      } else {
+        console.error("❌ 创建管理员失败:", error.message || error);
+        return false;
+      }
+    }
+
+    // 创建普通用户
+    console.log("创建普通用户...");
+    try {
+      // 检查普通用户是否已存在
+      const existingUser = await db.select().from(user).where(eq(user.email, "user@example.com")).limit(1);
+      
+      if (existingUser.length > 0) {
+        console.log("✓ 普通用户已存在: user@example.com");
+      } else {
+        // 生成密码哈希
+        const userPasswordHash = await ctx.password.hash("user123");
+        const normalUserId = generateUserId();
+        
+        // 插入普通用户
+        await db.insert(user).values({
+          id: normalUserId,
           email: "user@example.com",
           name: "测试用户",
-          passwordHash: crypto.createHash("sha256").update("userpassword123").digest("hex"),
           emailVerified: true,
-          avatar: "https://i.pravatar.cc/150?u=user@example.com",
-          provider: "credentials",
+          role: "user"
+        });
+        
+        // 插入密码账户记录
+        await db.insert(account).values({
+          id: generateAccountId(),
+          accountId: generateAccountId(),
+          providerId: "credential",
+          userId: normalUserId,
+          password: userPasswordHash,
           createdAt: new Date(),
           updatedAt: new Date()
-        },
-        {
-          id: generateId("user"),
-          email: "oauth@example.com",
-          name: "OAuth用户",
-          emailVerified: true,
-          avatar: "https://i.pravatar.cc/150?u=oauth@example.com",
-          provider: "google",
-          providerId: "google_12345",
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-      
-      for (const user of testUsers) {
-        await client.query(`
-          INSERT INTO users (
-            id, email, name, password_hash, email_verified, avatar, provider, provider_id, created_at, updated_at
-          ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-          );
-        `, [
-          user.id,
-          user.email,
-          user.name,
-          user.passwordHash || null,
-          user.emailVerified,
-          user.avatar,
-          user.provider,
-          user.providerId || null,
-          user.createdAt,
-          user.updatedAt
-        ]);
-        console.log(`✓ 已添加用户: ${user.email}`);
+        });
+        
+        console.log("✓ 已创建普通用户: user@example.com");
       }
-      
-      // 添加订阅数据
-      const testSubscriptions = [
-        {
-          id: generateId("sub"),
-          userId: testUsers[0].id,
-          planId: "pro",
-          status: "active",
-          paymentType: "subscription",
-          startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30天后
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: generateId("sub"),
-          userId: testUsers[1].id,
-          planId: "basic",
-          status: "active",
-          paymentType: "one_time",
-          startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30天后
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-      
-      for (const subscription of testSubscriptions) {
-        await client.query(`
-          INSERT INTO subscriptions (
-            id, user_id, plan_id, status, payment_type, start_date, end_date, created_at, updated_at
-          ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9
-          );
-        `, [
-          subscription.id,
-          subscription.userId,
-          subscription.planId,
-          subscription.status,
-          subscription.paymentType,
-          subscription.startDate,
-          subscription.endDate,
-          subscription.createdAt,
-          subscription.updatedAt
-        ]);
-        console.log(`✓ 已添加订阅: ${subscription.id} (用户: ${subscription.userId})`);
+    } catch (error: any) {
+      if (error.message?.includes("UNIQUE constraint") || error.code === "23505") {
+        console.log("✓ 普通用户已存在: user@example.com");
+      } else {
+        console.error("❌ 创建普通用户失败:", error.message || error);
+        return false;
       }
-      
-      // 提交事务
-      await client.query("COMMIT;");
-      console.log("✅ 数据填充完成!");
-      client.release();
-      return true;
-    } catch (err) {
-      // 回滚事务
-      await client.query("ROLLBACK;");
-      console.error("❌ 数据填充失败:", err);
-      client.release();
-      return false;
     }
+    
+    console.log("\n✅ 数据填充完成!");
+    console.log("测试账户信息:");
+    console.log("管理员 - 邮箱: admin@example.com, 密码: admin123");
+    console.log("普通用户 - 邮箱: user@example.com, 密码: user123");
+    
+    return true;
   } catch (error) {
     console.error("❌ 数据填充过程中发生错误:", error);
     return false;
-  } finally {
-    await pool.end();
   }
 }
 

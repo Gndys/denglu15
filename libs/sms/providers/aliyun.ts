@@ -39,11 +39,7 @@ function formatPhoneForAliyun(phoneNumber: string): string {
 /**
  * 验证阿里云短信选项
  */
-function validateAliyunOptions(options: SMSOptions): void {
-  if (!options.templateCode) {
-    throw new Error('Aliyun SMS requires templateCode. Please provide a valid template code.');
-  }
-  
+function validateAliyunOptions(options: SMSOptions): void {  
   // message字段对阿里云不是必需的，因为使用模板机制
   if (options.message) {
     console.warn('Aliyun SMS uses template mechanism. The message field will be ignored.');
@@ -67,7 +63,7 @@ export async function sendSMSByAliyun(options: SMSOptions): Promise<SMSResponse>
     const sendSmsRequest = new $Dysmsapi20170525.SendSmsRequest({
       phoneNumbers: formattedPhone,
       signName: aliyunConfig.signName,
-      templateCode: options.templateCode!,
+      templateCode: options.templateCode! || aliyunConfig.templateCode,
       templateParam: options.templateParams ? JSON.stringify(options.templateParams) : undefined,
     });
 

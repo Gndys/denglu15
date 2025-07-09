@@ -1,5 +1,7 @@
 const { execSync } = require('child_process');
 const path = require('path');
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.local') });
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env') });
 
 /**
  * 执行命令并打印输出
@@ -7,7 +9,11 @@ const path = require('path');
 function runCommand(command, description) {
   console.log(`\n🚀 ${description}...\n`);
   try {
-    execSync(command, { stdio: 'inherit' });
+    execSync(command, { 
+      stdio: 'inherit',
+      env: { ...process.env }, // 确保环境变量传递
+      cwd: process.cwd() // 设置正确的工作目录
+    });
     console.log(`\n✅ ${description}完成\n`);
   } catch (error) {
     console.error(`\n❌ ${description}失败\n`);

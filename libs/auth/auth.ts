@@ -11,7 +11,6 @@ import { sendVerificationEmail, sendResetPasswordEmail } from '@libs/email'
 import { locales, defaultLocale } from '@libs/email/templates'
 import { config } from '@config'
 export { toNextJsHandler } from "better-auth/next-js";
-console.log('env', config.captcha.cloudflare.secretKey)
 /**
  * 从 referer URL 中提取信息
  * @param request 请求对象
@@ -60,7 +59,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
-    requireEmailVerification: true,
+    requireEmailVerification: config.auth.requireEmailVerification,
     sendResetPassword: async ({user, url, token}, request) => {
       // 从 referer 中获取语言信息
       const { locale } = getRefererInfo(request);
@@ -81,7 +80,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    sendOnSignUp: true,
+    sendOnSignUp: config.auth.requireEmailVerification,
     sendVerificationEmail: async ( { user, url, token }, request) => {
       // 从 referer 中获取语言信息和最后的路径段
       const { locale, lastSegment } = getRefererInfo(request);
@@ -155,32 +154,31 @@ export const auth = betterAuth({
       sendOTP: async ({ phoneNumber, code }, request) => { 
         console.log(`Attempting to send OTP to ${phoneNumber} with code ${code}`);
         
-        // try {
-        //   // Implement sending OTP code via SMS
-        //   const result = await sendSMS({
-        //     to: phoneNumber,
-        //     templateCode: 'SMS_235815655',
-        //     templateParams: {
-        //       code
-        //     },
-        //     provider: 'aliyun'
-        //   });
+        try {
+          // Implement sending OTP code via SMS
+          const result = await sendSMS({
+            to: phoneNumber,
+            templateParams: {
+              code
+            },
+            provider: 'aliyun'
+          });
           
-        //   console.log('SMS send result:', result);
+          console.log('SMS send result:', result);
           
-        //   if (!result.success) {
-        //     const errorMessage = result.error?.message || 'Failed to send SMS';
-        //     console.error('SMS sending failed:', errorMessage);
-        //     throw new Error(errorMessage);
-        //   }
+          if (!result.success) {
+            const errorMessage = result.error?.message || 'Failed to send SMS';
+            console.error('SMS sending failed:', errorMessage);
+            throw new Error(errorMessage);
+          }
           
-        //   console.log(`OTP ${code} sent successfully to ${phoneNumber}`);
-        //   // 成功时不需要返回值，better-auth会自动处理
-        // } catch (error) {
-        //   console.error('Failed to send OTP:', error);
-        //   // 重新抛出异常，确保better-auth能捕获到
-        //   throw new Error(`SMS sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        // }
+          console.log(`OTP ${code} sent successfully to ${phoneNumber}`);
+          // 成功时不需要返回值，better-auth会自动处理
+        } catch (error) {
+          console.error('Failed to send OTP:', error);
+          // 重新抛出异常，确保better-auth能捕获到
+          throw new Error(`SMS sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
       },
       signUpOnVerification: {
         getTempEmail: (phoneNumber) => {
