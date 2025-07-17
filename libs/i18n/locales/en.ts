@@ -926,6 +926,238 @@ export const en: Locale = {
       title: "TinyShip - Modern Full-Stack SaaS Development Starter",
       description: "A modern, full-featured monorepo starter kit for building SaaS applications with support for both domestic (China) and international markets. Built with Next.js/Nuxt.js, TypeScript, and comprehensive authentication.",
       keywords: "SaaS, monorepo, starter kit, Next.js, Nuxt.js, TypeScript, authentication, i18n, China market, international"
+    },
+    hero: {
+      title: "Though it's a small boat, it can take you far",
+      titlePrefix: "Though it's a small ",
+      titleHighlight: "boat",
+      titleSuffix: ", it can take you far",
+      subtitle: "Modern full-stack SaaS development platform with dual-market support for both domestic and international markets. One purchase, lifetime use, quickly build your business project.",
+      buttons: {
+        purchase: "Buy Now",
+        demo: "View Demo"
+      },
+      features: {
+        lifetime: "One purchase, lifetime use",
+        earlyBird: "Early bird pricing - limited time"
+      }
+    },
+    features: {
+      title: "Full-Stack SaaS Development Platform",
+      subtitle: "From dual-framework support to AI integration, from globalization to localization, TinyShip provides complete modern technology solutions for your business projects.",
+      items: [
+        {
+          title: "Dual Framework Support",
+          description: "Flexibly choose Next.js or Nuxt.js, both React and Vue developers can find familiar tech stacks while enjoying the same powerful backend capabilities.",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "Comprehensive Authentication",
+          description: "Enterprise-grade authentication system based on Better-Auth, supporting email/phone/OAuth login, 2FA multi-factor authentication, session management and complete authentication system.",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "Global + Localization",
+          description: "Supports international markets with Stripe and OAuth login, also deeply adapts to China's domestic market with WeChat login and WeChat Pay, seamlessly covering dual markets.",
+          className: "col-span-2 row-span-1"
+        },
+        {
+          title: "Modern Technology Stack",
+          description: "Uses latest technologies: TailwindCSS v4, shadcn/ui, Magic UI, TypeScript, Zod type-safe validation, excellent development experience.",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "Monorepo Architecture",
+          description: "Simplified Monorepo structure with libs abstract interface design, easily extend various cloud service providers, high code reuse, clear architecture.",
+          className: "col-span-2 row-span-1"
+        },
+        {
+          title: "Communication Service Integration",
+          description: "Multi-channel communication support: email services (Resend/SendGrid), SMS services (Alibaba Cloud/Twilio), global communication without barriers.",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "AI Development Ready",
+          description: "Integrated Vercel AI SDK, supports multiple AI providers, built-in Cursor development rules, AI-assisted development, intelligent application building.",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "No Vendor Lock-in",
+          description: "Open architecture design, freely choose cloud service providers, databases, payment providers, avoid technology binding, maintain maximum flexibility.",
+          className: "col-span-1 row-span-1"
+        }
+      ],
+      techStack: {
+        title: "Built on Modern Technology Stack",
+        items: [
+          "Next.js / Nuxt.js",
+          "TailwindCSS v4",
+          "Better-Auth",
+          "Vercel AI SDK",
+          "TypeScript + Zod",
+          "shadcn/ui + Magic UI",
+          "Drizzle ORM + PostgreSQL"
+        ]
+      }
+    },
+    applicationFeatures: {
+      title: "Core Application Features",
+      subtitle: "From dual-system support for domestic and international markets to AI integration, TinyShip provides complete technical solutions for your business projects.",
+      items: [
+        {
+          title: "Dual System Support",
+          subtitle: "One codebase, dual market coverage",
+          description: "Perfect adaptation to different market needs domestically and internationally. Domestic support for WeChat login, phone login, WeChat Pay and other localized features; International support for mainstream OAuth login (Google, GitHub, Apple), Stripe and Lemon Squeezy payment systems. One codebase, dual market coverage.",
+          highlights: [
+            "WeChat login & phone login",
+            "OAuth login (Google, GitHub, Apple)",
+            "WeChat Pay & Stripe & Lemon Squeezy",
+            "Seamless domestic and international switching"
+          ],
+          imageTitle: "Dual System Architecture"
+        },
+        {
+          title: "Built-in Admin Panel",
+          subtitle: "Enterprise-grade management backend, ready to use",
+          description: "Ready-to-use management backend providing complete user management, subscription management, data analysis and other functions. Built on modern UI component library, supports role permission control, real-time data monitoring, batch operations and other enterprise-grade functions. Let you focus on business logic, not repetitive management interface development.",
+          highlights: [
+            "User management & subscription management",
+            "Data analysis & real-time monitoring",
+            "Role permission control",
+            "Batch operation functions"
+          ],
+          imageTitle: "Management Backend"
+        },
+        {
+          title: "AI Ready Integration",
+          subtitle: "Based on Vercel AI SDK, plug and play",
+          description: "Complete AI solution based on Vercel AI SDK. Built-in simple AI Chat page, supports multiple AI model switching (OpenAI, Claude, Gemini, etc.). Provides streaming responses, conversation history, usage statistics and other functions, making your application instantly AI-capable.",
+          highlights: [
+            "Vercel AI SDK integration",
+            "Multi-model support (OpenAI, Claude, Gemini)",
+            "Streaming responses & conversation history",
+            "Usage statistics & AI Chat page"
+          ],
+          imageTitle: "AI Integration"
+        }
+      ]
+    },
+    roadmap: {
+      title: "Product Roadmap",
+      subtitle: "Continuous iteration, constant innovation. We are committed to providing developers with more powerful and flexible SaaS development solutions.",
+      items: [
+        {
+          title: "Core Platform Development",
+          description: "Complete TinyShip core platform development, including dual framework support, authentication, payment integration, internationalization and other basic functional modules.",
+          timeline: "2025 Q2",
+          status: "completed",
+          statusText: "Completed",
+          features: ["Dual framework support", "Authentication system", "Payment integration", "Internationalization support", "AI development ready", "Built-in Admin Panel"]
+        },
+        {
+          title: "Third-party Service Expansion",
+          description: "Greatly expand third-party service support, covering more cloud service providers and SaaS tools. Through unified interface design, let you easily switch and integrate various service providers.",
+          timeline: "2025 Q3",
+          status: "in-progress",
+          statusText: "In Development",
+          features: ["More payment gateways", "Cloud storage services", "More SMS service providers"]
+        },
+        {
+          title: "Blog/Documentation System",
+          description: "Built-in complete blog and documentation management system, supporting Markdown editing, SEO optimization, comment system and other functions. Let your SaaS product have complete content marketing capabilities.",
+          timeline: "2025 Q4",
+          status: "planned",
+          statusText: "Planned",
+          features: ["Blog system", "Documentation system", "Knowledge base search"]
+        },
+        {
+          title: "Theme System Upgrade",
+          description: "Launch new theme system providing multiple beautiful UI themes and layout choices. Support deep customization and branding, making your application have unique visual experience.",
+          timeline: "2026 Q1",
+          status: "planned",
+          statusText: "Planned",
+          features: ["Multiple UI themes", "Dark mode support", "Component library expansion"]
+        },
+        {
+          title: "Video Tutorial System",
+          description: "Create complete video tutorial series, from basic usage to advanced customization, helping developers quickly master TinyShip's various functions and best practices.",
+          timeline: "2026 Q2",
+          status: "planned",
+          statusText: "Planned",
+          features: ["Getting started tutorials", "Advanced development", "Deployment guide", "Practical cases"]
+        },
+        {
+          title: "Industry Template Library",
+          description: "For different industries and application scenarios, provide ready-to-use project templates. Each template includes complete business logic, UI design and best practices, allowing you to quickly start projects. As an expansion pack for the basic version, it needs to be purchased separately, but basic version users enjoy significant discounts.",
+          timeline: "2026 Q3",
+          status: "planned",
+          statusText: "Planned",
+          features: ["SaaS application templates", "Software sales templates", "AI project templates", "E-commerce platform templates", "Enterprise website templates", "Exclusive discounts for basic version users"]
+        }
+      ],
+      footer: "Continuously updating, stay tuned for more features..."
+    },
+    stats: {
+      title: "Trusted Choice",
+      items: [
+        {
+          value: "10000",
+          suffix: "+",
+          label: "Users Choice"
+        },
+        {
+          value: "2",
+          suffix: "",
+          label: "Frontend Framework Support"
+        },
+        {
+          value: "50",
+          suffix: "+",
+          label: "Built-in Feature Modules"
+        },
+        {
+          value: "99",
+          suffix: "%",
+          label: "User Satisfaction"
+        }
+      ]
+    },
+    testimonials: {
+      title: "Real User Feedback",
+      items: [
+        {
+          quote: "The early bird price was so worth it! Complete source code and lifetime updates helped me quickly build my own SaaS project, paid back in a month.",
+          author: "Zhang Wei",
+          role: "Independent Developer"
+        },
+        {
+          quote: "Technical support is great, problems are solved quickly. Dual framework support allows the team to choose familiar tech stacks.",
+          author: "Li Xiaoming",
+          role: "Startup CTO"
+        },
+        {
+          quote: "International features are particularly useful, internationalization and payments are all configured, saving us a lot of development time.",
+          author: "Wang Fang",
+          role: "Product Manager"
+        }
+      ]
+    },
+    finalCta: {
+      title: "Ready to start your voyage?",
+      subtitle: "Join thousands of users and use TinyShip to quickly build your next business project. Though it's a small boat, it's enough to take you to the shore of success. Early bird pricing only for first 100 users!",
+      buttons: {
+        purchase: "Buy Now ¥299",
+        demo: "View Demo"
+      }
+    },
+    footer: {
+      copyright: "© {year} TinyShip. All rights reserved.",
+      description: "TinyShip"
+    },
+    common: {
+      demoInterface: "Feature Demo Interface",
+      techArchitecture: "Enterprise-grade technical architecture, production-verified",
+      learnMore: "Learn More"
     }
   },
   ai: {
@@ -1092,6 +1324,10 @@ export const en: Locale = {
       switchLanguage: "Switch Language",
       english: "English",
       chinese: "中文"
+    },
+    mobile: {
+      themeSettings: "Theme Settings",
+      languageSelection: "Language Selection"
     }
   }
 } as const; 

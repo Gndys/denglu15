@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Check, Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { type SupportedLocale, locales } from "@libs/i18n";
 import { useTranslation } from "@/hooks/use-translation";
@@ -43,14 +44,18 @@ export default function Header({ className }: HeaderProps) {
   };
 
   const handleLanguageChange = (locale: SupportedLocale) => {
+    // Don't change if it's the same locale
+    if (locale === currentLocale) return;
+    
     // Get the current path without the locale prefix
     const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/';
     
-    // Navigate to the new locale path
-    router.push(`/${locale}${pathWithoutLocale}`);
-    
-    // Store the preference
+    // Store the preference first
     document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000`;
+    
+    // Navigate to the new locale path using window.location to ensure full page reload
+    // This prevents theme state issues during navigation
+    window.location.href = `/${locale}${pathWithoutLocale}`;
   };
 
   return (
@@ -88,17 +93,21 @@ export default function Header({ className }: HeaderProps) {
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">
-                  {currentLocale === 'en' ? t.header.language.english : t.header.language.chinese}
+                <Button variant="ghost" size="sm" className="h-9 px-3">
+                  <Globe className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">
+                    {currentLocale === 'en' ? t.header.language.english : t.header.language.chinese}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align="end">
                 {locales.map((locale) => (
-                                      <DropdownMenuItem
-                      key={locale}
-                      onClick={() => handleLanguageChange(locale)}
-                    >
-                    {locale === 'en' ? t.header.language.english : t.header.language.chinese}
+                  <DropdownMenuItem
+                    key={locale}
+                    onClick={() => handleLanguageChange(locale)}
+                  >
+                    <span>{locale === 'en' ? t.header.language.english : t.header.language.chinese}</span>
+                    {currentLocale === locale && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -211,6 +220,41 @@ export default function Header({ className }: HeaderProps) {
             <Link href={`/${currentLocale}/pricing`} className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-foreground hover:bg-muted">
               {t.header.navigation.pricing}
             </Link>
+            
+            {/* Mobile Theme and Language Controls */}
+            <div className="border-t border-border pt-3 mt-3 space-y-2">
+              <div className="flex items-center justify-between px-3 py-2">
+                <span className="text-sm font-medium text-foreground">{t.header.mobile.themeSettings}</span>
+                <div className="flex items-center space-x-2">
+                  <ThemeToggle />
+                  <ColorSchemeToggle />
+                </div>
+              </div>
+              <div className="px-3 py-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground">{t.header.mobile.languageSelection}</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Globe className="mr-2 h-4 w-4" />
+                        {currentLocale === 'en' ? t.header.language.english : t.header.language.chinese}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {locales.map((locale) => (
+                        <DropdownMenuItem
+                          key={locale}
+                          onClick={() => handleLanguageChange(locale)}
+                        >
+                          <span>{locale === 'en' ? t.header.language.english : t.header.language.chinese}</span>
+                          {currentLocale === locale && <Check className="ml-auto h-4 w-4" />}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="pt-4 pb-3 border-t border-border">
             {user ? (

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BentoGrid, BentoCard } from "@/components/magicui/bento-grid";
+import { useTranslation } from "@/hooks/use-translation";
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, useAnimation } from "framer-motion";
 import React from "react";
@@ -26,8 +27,32 @@ import {
   BookOpen 
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { translations } from "@libs/i18n";
 
+interface PageProps {
+  params: { lang: string }
+}
+
+// export default async function Home({ params }: PageProps) {
+//   const { lang } = await params;
+//   const t = translations[lang as keyof typeof translations];
+
+//   return (
+//     <>
+//       <ClientHomePage t={t} />
+//     </>
+//   );
+// }
+
+// Icon mappings for features
+const iconMap = [Layers, Shield, Globe, Zap, BarChart3, Smartphone, Brain, Code];
+
+const appIconMap = [Globe, BarChart3, Brain];  
+const roadmapIconMap = [Check, Settings, BookOpen, Palette, Play, FileText];
+
+// Client component for interactive features
 export default function Home() {
+  const { t, locale: currentLocale } = useTranslation();
   const [stats, setStats] = useState({
     developers: 0,
     frameworks: 0,
@@ -87,16 +112,16 @@ export default function Home() {
         }
       `}</style>
       <div className="flex flex-col min-h-screen bg-background">
-      {/* Hero Section */}
+        {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted">
             <div className="absolute top-20 left-10 w-72 h-72 bg-chart-1 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob"></div>
             <div className="absolute top-40 right-10 w-72 h-72 bg-chart-2 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob animation-delay-2000"></div>
             <div className="absolute -bottom-8 left-20 w-72 h-72 bg-chart-4 rounded-full filter blur-3xl opacity-15 dark:opacity-30 animate-blob animation-delay-4000"></div>
-        </div>
+          </div>
         
-        <div className="container px-4 md:px-6 relative z-10">
+          <div className="container px-4 md:px-6 relative z-10">
             <motion.div 
               className="flex flex-col items-center text-center space-y-8 max-w-4xl mx-auto"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -109,11 +134,11 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                虽然是{" "}
+                {t.home.hero.titlePrefix}
                 <span className="text-gradient-chart-warm">
-                  小船
+                  {t.home.hero.titleHighlight}
                 </span>
-                ，也能载你远航
+                {t.home.hero.titleSuffix}
               </motion.h1>
               
               <motion.p 
@@ -122,8 +147,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                现代化全栈 SaaS 开发平台，支持国内外双市场。
-                一次购买，终身使用，快速构建你的商业项目。
+                {t.home.hero.subtitle}
               </motion.p>
 
               <motion.div 
@@ -136,15 +160,15 @@ export default function Home() {
                   size="lg" 
                   className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
-                  立即购买
-                  </Button>
+                  {t.home.hero.buttons.purchase}
+                </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
-                  查看演示
-                  </Button>
+                  {t.home.hero.buttons.demo}
+                </Button>
               </motion.div>
 
               <motion.div 
@@ -155,15 +179,15 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-primary" />
-                  <span>一次购买终身使用</span>
+                  <span>{t.home.hero.features.lifetime}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-primary" />
-                  <span>早鸟价限时优惠</span>
+                  <span>{t.home.hero.features.earlyBird}</span>
                 </div>
               </motion.div>
             </motion.div>
-              </div>
+          </div>
         </section>
 
         {/* Features Section */}
@@ -177,15 +201,15 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                全栈 SaaS 开发平台
+                {t.home.features.title}
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                从双框架支持到 AI 集成，从全球化到本土化，TinyShip 为你的商业项目提供完整的现代化技术解决方案。
+                {t.home.features.subtitle}
               </p>
             </motion.div>
 
             <BentoGrid className="max-w-7xl mx-auto auto-rows-[14rem] grid-cols-4 gap-4">
-              {features.map((feature, index) => (
+              {t.home.features.items.map((feature: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -196,21 +220,21 @@ export default function Home() {
                   <BentoCard
                     name={feature.title}
                     description={feature.description}
-                    Icon={feature.icon}
+                    Icon={iconMap[index]}
                     className={`${feature.className} group hover:scale-[1.02] transition-all duration-300 hover:shadow-xl bg-card border border-border hover:border-border/80 h-full`}
                     background={
                       <div 
                         className="absolute inset-0 opacity-5 dark:opacity-15 group-hover:opacity-10 dark:group-hover:opacity-25 transition-opacity duration-300 rounded-xl bg-gradient-chart-warm"
                       />
                     }
-                    cta="了解更多"
+                    cta={t.home.common.learnMore}
                     href={`/features/${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
                   />
                 </motion.div>
               ))}
             </BentoGrid>
 
-            {/* 技术栈展示 */}
+            {/* Tech Stack Display */}
             <motion.div 
               className="mt-20 text-center"
               initial={{ opacity: 0, y: 20 }}
@@ -218,36 +242,14 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-xl font-semibold text-foreground mb-8">基于现代化技术栈构建</h3>
-                              <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-1 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">Next.js / Nuxt.js</span>
-                </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">TailwindCSS v4</span>
-                </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-3 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">Better-Auth</span>
-              </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-4 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">Vercel AI SDK</span>
-            </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-5 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">TypeScript + Zod</span>
+              <h3 className="text-xl font-semibold text-foreground mb-8">{t.home.features.techStack.title}</h3>
+              <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
+                {t.home.features.techStack.items.map((tech: string, index: number) => (
+                  <div key={index} className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
+                    <div className={`w-2 h-2 bg-chart-${(index % 5) + 1} rounded-full`}></div>
+                    <span className="text-card-foreground font-medium">{tech}</span>
                   </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-1 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">shadcn/ui + Magic UI</span>
-                  </div>
-                <div className="flex items-center space-x-2 px-4 py-2 bg-card rounded-full border border-border shadow-sm">
-                  <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
-                  <span className="text-card-foreground font-medium">Drizzle ORM + PostgreSQL</span>
-                </div>
+                ))}
               </div>
             </motion.div>
           </div>
@@ -264,18 +266,18 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                核心应用特性
+                {t.home.applicationFeatures.title}
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                从国内外双体系支持到 AI 集成，TinyShip 为你的商业项目提供完整的技术解决方案。
+                {t.home.applicationFeatures.subtitle}
               </p>
             </motion.div>
 
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-                {/* 左侧：功能列表 */}
+                {/* Left: Feature List */}
                 <div className="lg:col-span-2 space-y-4">
-                  {applicationFeatures.map((feature, index) => (
+                  {t.home.applicationFeatures.items.map((feature: any, index: number) => (
                     <motion.div
                       key={index}
                       className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
@@ -311,7 +313,7 @@ export default function Home() {
                         }`}>
                           {feature.subtitle}
                         </p>
-                        {/* 显示当前选中项的要点 */}
+                        {/* Show highlights for active item */}
                         {activeFeature === index && (
                           <motion.div 
                             className="pl-13 space-y-2"
@@ -319,20 +321,20 @@ export default function Home() {
                             animate={{ opacity: 1, height: 'auto' }}
                             transition={{ duration: 0.3 }}
                           >
-                            {feature.highlights.slice(0, 3).map((highlight, idx) => (
+                            {feature.highlights.slice(0, 3).map((highlight: string, idx: number) => (
                               <div key={idx} className="flex items-center space-x-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-chart-1"></div>
                                 <span className="text-primary/80 text-xs font-medium">{highlight}</span>
-                      </div>
+                              </div>
                             ))}
                           </motion.div>
                         )}
-                    </div>
+                      </div>
                     </motion.div>
                   ))}
-                  </div>
+                </div>
 
-                {/* 右侧：图片和简要描述 */}
+                {/* Right: Image and Description */}
                 <div className="lg:col-span-3">
                   <motion.div
                     key={activeFeature}
@@ -341,31 +343,31 @@ export default function Home() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                    {/* 图片占位 */}
+                    {/* Image placeholder */}
                     <div className="aspect-[16/10] bg-gradient-to-br from-primary/5 to-muted rounded-2xl border border-border flex items-center justify-center overflow-hidden">
                       <div className="w-full h-full bg-gradient-to-br from-primary/10 to-muted/50 flex items-center justify-center">
                         <div className="text-center space-y-4">
-                          {React.createElement(applicationFeatures[activeFeature].icon, {
+                          {React.createElement(appIconMap[activeFeature], {
                             className: "h-20 w-20 text-primary mx-auto"
                           })}
-                          <div className="text-muted-foreground font-medium text-lg">{applicationFeatures[activeFeature].imageTitle}</div>
-                          <div className="text-sm text-muted-foreground/80">功能演示界面</div>
-                  </div>
-                  </div>
-                  </div>
+                          <div className="text-muted-foreground font-medium text-lg">{t.home.applicationFeatures.items[activeFeature].imageTitle}</div>
+                          <div className="text-sm text-muted-foreground/80">{t.home.common.demoInterface}</div>
+                        </div>
+                      </div>
+                    </div>
 
-                    {/* 简要描述 */}
+                    {/* Description */}
                     <div className="p-6 bg-muted/50 rounded-2xl">
                       <p className="text-muted-foreground leading-relaxed">
-                        {applicationFeatures[activeFeature].description}
+                        {t.home.applicationFeatures.items[activeFeature].description}
                       </p>
-                  </div>
+                    </div>
                   </motion.div>
                 </div>
               </div>
             </div>
 
-            {/* 技术优势提示 */}
+            {/* Technical advantage tip */}
             <motion.div 
               className="mt-20 text-center"
               initial={{ opacity: 0, y: 20 }}
@@ -379,11 +381,11 @@ export default function Home() {
                   <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse animation-delay-2000"></div>
                   <div className="w-2 h-2 bg-chart-3 rounded-full animate-pulse animation-delay-4000"></div>
                 </div>
-                <span className="text-muted-foreground font-medium">企业级技术架构，生产环境验证</span>
+                <span className="text-muted-foreground font-medium">{t.home.common.techArchitecture}</span>
               </div>
             </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
 
         {/* Roadmap Section */}
         <section className="py-24 bg-background">
@@ -396,17 +398,17 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                产品路线图
+                {t.home.roadmap.title}
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                持续迭代，不断创新。我们致力于为开发者提供更强大、更灵活的 SaaS 开发解决方案。
+                {t.home.roadmap.subtitle}
               </p>
             </motion.div>
 
-            {/* 横向滚动容器 */}
+            {/* Horizontal scroll container */}
             <div className="relative">
               <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory scrollbar-hide">
-                {roadmapItems.map((item, index) => (
+                {t.home.roadmap.items.map((item: any, index: number) => (
                   <motion.div
                     key={index}
                     className="flex-shrink-0 w-80 snap-start"
@@ -415,7 +417,7 @@ export default function Home() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    {/* 时间线节点 */}
+                    {/* Timeline node */}
                     <div className="flex items-center mb-4">
                       <div className={`w-4 h-4 rounded-full border-4 ${
                         item.status === 'completed' 
@@ -431,7 +433,7 @@ export default function Home() {
                       <div className="flex-1 h-0.5 bg-chart-1/20"></div>
                     </div>
 
-                    {/* 内容卡片 */}
+                    {/* Content card */}
                     <div className={`p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] h-80 ${
                       item.status === 'completed' 
                         ? 'border-chart-1 bg-chart-1/5' 
@@ -447,7 +449,9 @@ export default function Home() {
                             ? 'bg-chart-2 text-white'
                             : 'bg-muted text-muted-foreground'
                         }`}>
-                          <item.icon className="h-6 w-6" />
+                          {React.createElement(roadmapIconMap[index], {
+                            className: "h-6 w-6"
+                          })}
                         </div>
                         <div className="flex-1">
                           <h3 className="text-lg font-bold text-foreground line-clamp-2">{item.title}</h3>
@@ -463,13 +467,13 @@ export default function Home() {
                             </span>
                             <span className="text-sm text-muted-foreground font-medium">{item.timeline}</span>
                           </div>
-            </div>
-          </div>
-          
+                        </div>
+                      </div>
+                      
                       <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-3">{item.description}</p>
                       
                       <div className="flex flex-wrap gap-2">
-                        {item.features.map((feature, idx) => (
+                        {item.features.map((feature: string, idx: number) => (
                           <span 
                             key={idx} 
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -490,7 +494,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 底部提示 */}
+            {/* Bottom tip */}
             <motion.div 
               className="mt-12 text-center"
               initial={{ opacity: 0, y: 20 }}
@@ -504,11 +508,11 @@ export default function Home() {
                   <div className="w-2 h-2 bg-chart-1/80 rounded-full animate-pulse animation-delay-2000"></div>
                   <div className="w-2 h-2 bg-chart-1/60 rounded-full animate-pulse animation-delay-4000"></div>
                 </div>
-                <span className="text-chart-1 font-medium">持续更新中，敬请期待更多功能...</span>
+                <span className="text-chart-1 font-medium">{t.home.roadmap.footer}</span>
               </div>
             </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
 
         {/* Stats Section */}
         <section className="py-24 bg-background" ref={statsRef}>
@@ -521,7 +525,7 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                值得信赖的选择
+                {t.home.stats.title}
               </h2>
             </motion.div>
 
@@ -536,7 +540,7 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.developers.toLocaleString()}+
                 </div>
-                <div className="text-muted-foreground">用户选择</div>
+                <div className="text-muted-foreground">{t.home.stats.items.users}</div>
               </motion.div>
               
               <motion.div 
@@ -549,7 +553,7 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.frameworks}
                 </div>
-                <div className="text-muted-foreground">前端框架支持</div>
+                <div className="text-muted-foreground">{t.home.stats.items.frameworks}</div>
               </motion.div>
               
               <motion.div 
@@ -562,7 +566,7 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.features}+
                 </div>
-                <div className="text-muted-foreground">内置功能模块</div>
+                <div className="text-muted-foreground">{t.home.stats.items.features}</div>
               </motion.div>
               
               <motion.div 
@@ -574,8 +578,8 @@ export default function Home() {
               >
                 <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
                   {stats.satisfaction}%
-              </div>
-                <div className="text-muted-foreground">用户满意度</div>
+                </div>
+                <div className="text-muted-foreground">{t.home.stats.items.satisfaction}</div>
               </motion.div>
             </div>
           </div>
@@ -592,12 +596,12 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                用户真实反馈
+                {t.home.testimonials.title}
               </h2>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+              {t.home.testimonials.items.map((testimonial: any, index: number) => (
                 <motion.div
                   key={index}
                   className="bg-card p-8 rounded-2xl border border-border hover:shadow-lg transition-all duration-300"
@@ -621,132 +625,14 @@ export default function Home() {
                       }`}
                     >
                       {testimonial.author[0]}
-                  </div>
-                  <div>
+                    </div>
+                    <div>
                       <div className="font-semibold text-foreground">{testimonial.author}</div>
                       <div className="text-muted-foreground text-sm">{testimonial.role}</div>
                     </div>
                   </div>
                 </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-        {/* Pricing */}
-        <section className="py-24 bg-background">
-          <div className="container px-4 md:px-6">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                早鸟价限时优惠
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                一次购买，终身使用。早鸟用户享受超值优惠价格。
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <motion.div
-                className="p-8 rounded-2xl border-2 border-border bg-card hover:border-border/80 transition-all duration-300 hover:scale-105"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">早鸟价</h3>
-                  <div className="text-4xl font-bold text-foreground mb-2">
-                    ¥299
-                  </div>
-                  <div className="text-lg text-muted-foreground line-through mb-2">原价 ¥599</div>
-                  <p className="text-muted-foreground">限时优惠，仅限前 100 名用户</p>
-            </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">完整源代码访问</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">所有功能模块</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">终身免费更新</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">技术支持群</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">商业使用授权</span>
-                  </li>
-                </ul>
-                <Button 
-                  className="w-full py-3 rounded-full transition-all duration-300"
-                >
-                  立即抢购
-                </Button>
-              </motion.div>
-
-              <motion.div
-                className="p-8 rounded-2xl border-2 border-primary bg-primary/5 shadow-lg transition-all duration-300 hover:scale-105"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <div className="text-center mb-4">
-                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                    推荐选择
-                  </span>
-                </div>
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">正式版</h3>
-                  <div className="text-4xl font-bold text-foreground mb-2">
-                    ¥599
-                  </div>
-                  <p className="text-muted-foreground">早鸟期结束后恢复原价</p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">完整源代码访问</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">所有功能模块</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">终身免费更新</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">优先技术支持</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">商业使用授权</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                    <span className="text-muted-foreground">1对1技术咨询</span>
-                  </li>
-                </ul>
-                <Button 
-                  className="w-full py-3 rounded-full transition-all duration-300"
-                >
-                  预约购买
-                </Button>
-              </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -763,41 +649,40 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                准备好开始你的远航了吗？
+                {t.home.finalCta.title}
               </h2>
               <p className="text-xl text-primary-foreground/80 mb-8">
-                加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。
-                虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！
+                {t.home.finalCta.subtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
                   className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
-                  立即抢购 ¥299
-                  </Button>
+                  {t.home.finalCta.buttons.purchase}
+                </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
                 >
-                  查看演示
-                  </Button>
+                  {t.home.finalCta.buttons.demo}
+                </Button>
               </div>
             </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
       
-      {/* Footer */}
+        {/* Footer */}
         <footer className="py-12 bg-muted text-muted-foreground">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center mb-4 md:mb-0">
                 <Logo size="md" />
               </div>
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
                 <div className="text-muted-foreground text-center md:text-left">
-                  © {new Date().getFullYear()} TinyShip. All rights reserved.
+                  {t.home.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
                 </div>
                 <div className="flex space-x-4">
                   <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-muted/50 transition-colors cursor-pointer">
@@ -810,205 +695,11 @@ export default function Home() {
                     <span className="text-xs text-foreground">D</span>
                   </div>
                 </div>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
     </>
   );
 }
-
-// Data
-const features = [
-  {
-    icon: Layers,
-    title: "双框架支持",
-    description: "灵活选择 Next.js 或 Nuxt.js，React 和 Vue 开发者都能找到熟悉的技术栈，同时享受相同的强大后端能力。",
-    className: "col-span-1 row-span-1"
-  },
-  {
-    icon: Shield,
-    title: "全面身份认证",
-    description: "基于 Better-Auth 的企业级认证系统，支持邮箱/手机/OAuth 登录，2FA 多因子认证，会话管理等完整认证体系。",
-    className: "col-span-1 row-span-1"
-  },
-  {
-    icon: Globe,
-    title: "全球化 + 本土化",
-    description: "既支持国际市场的 Stripe、OAuth 登录，也深度适配中国本土市场的微信登录、微信支付，双市场无缝覆盖。",
-    className: "col-span-2 row-span-1"
-  },
-  {
-    icon: Zap,
-    title: "现代化技术栈",
-    description: "采用最新技术：TailwindCSS v4、shadcn/ui、Magic UI、TypeScript、Zod 类型安全验证，开发体验极佳。",
-    className: "col-span-1 row-span-1"
-  },
-  {
-    icon: BarChart3,
-    title: "Monorepo 架构",
-    description: "简化的 Monorepo 结构，libs 抽象接口设计，轻松扩展各种云服务商，代码复用率高，架构清晰。",
-    className: "col-span-2 row-span-1"
-  },
-  {
-    icon: Smartphone,
-    title: "通信服务集成",
-    description: "多渠道通信支持：邮件服务（Resend/SendGrid）、短信服务（阿里云/Twilio），全球化通信无障碍。",
-    className: "col-span-1 row-span-1"
-  },
-  {
-    icon: Brain,
-    title: "AI 开发就绪",
-    description: "集成 Vercel AI SDK，支持多 AI 提供商，内置 Cursor 开发规则，AI 辅助开发，智能化构建应用。",
-    className: "col-span-1 row-span-1"
-  },
-  {
-    icon: Code,
-    title: "无厂商锁定",
-    description: "开放架构设计，可自由选择云服务商、数据库、支付提供商等，避免技术绑定，保持最大灵活性。",
-    className: "col-span-1 row-span-1"
-  }
-];
-
-const roadmapItems = [
-  {
-    title: "核心平台搭建",
-    description: "完成 TinyShip 核心平台的开发，包括双框架支持、身份认证、支付集成、国际化等基础功能模块。",
-    timeline: "2025 Q2",
-    status: "completed" as const,
-    statusText: "已完成",
-    icon: Check,
-    features: ["双框架支持", "身份认证系统", "支付集成", "国际化支持", "AI 开发就绪", "内置 Admin Panel"]
-  },
-  {
-    title: "第三方服务扩展",
-    description: "大幅扩展第三方服务支持，覆盖更多云服务商和 SaaS 工具。通过统一的接口设计，让你轻松切换和集成各种服务提供商。",
-    timeline: "2025 Q3",
-    status: "in-progress" as const,
-    statusText: "开发中",
-    icon: Settings,
-    features: ["更多支付网关", "云存储服务", "更多短信服务商"]
-  },
-  {
-    title: "博客/文档系统",
-    description: "内置完整的博客和文档管理系统，支持 Markdown 编辑、SEO 优化、评论系统等功能。让你的 SaaS 产品拥有完整的内容营销能力。",
-    timeline: "2025 Q4",
-    status: "planned" as const,
-    statusText: "计划中",
-    icon: BookOpen,
-    features: ["博客系统", "文档系统", "知识库搜索"]
-  },
-  {
-    title: "主题系统升级",
-    description: "推出全新的主题系统，提供多种精美的 UI 主题和布局选择。支持深度定制和品牌化，让你的应用拥有独特的视觉体验。",
-    timeline: "2026 Q1",
-    status: "planned" as const,
-    statusText: "计划中",
-    icon: Palette,
-    features: ["多套 UI 主题", "深色模式支持", "组件库扩展"]
-  },
-  {
-    title: "视频教程体系",
-    description: "制作完整的视频教程系列，从基础使用到高级定制，帮助开发者快速掌握 TinyShip 的各项功能和最佳实践。",
-    timeline: "2026 Q2",
-    status: "planned" as const,
-    statusText: "计划中",
-    icon: Play,
-    features: ["入门教程", "进阶开发", "部署指南", "实战案例"]
-  },
-  {
-    title: "行业模板库",
-    description: "针对不同行业和应用场景，提供开箱即用的项目模板。每个模板都包含完整的业务逻辑、UI 设计和最佳实践，让你快速启动项目。作为基础版本的扩展包，需要单独购买，但基础版本用户享受大力度优惠。",
-    timeline: "2026 Q3",
-    status: "planned" as const,
-    statusText: "计划中",
-    icon: FileText,
-    features: ["SaaS 应用模板", "软件售卖模板", "AI 项目模板", "电商平台模板", "企业官网模板", "基础版用户专享优惠"]
-  }
-];
-
-const useCases = [
-  {
-    title: "SaaS 应用开发",
-    description: "用户认证、订阅管理、支付集成等核心功能，快速构建 SaaS 产品。",
-    icon: CreditCard,
-    gradient: "bg-gradient-to-br from-blue-500 to-purple-600",
-    href: "/solutions/saas"
-  },
-  {
-    title: "出海项目",
-    description: "多语言支持、国际化支付、全球部署，助力产品出海。",
-    icon: Globe,
-    gradient: "bg-gradient-to-br from-purple-500 to-pink-500",
-    href: "/solutions/global"
-  },
-  {
-    title: "AI 驱动开发",
-    description: "集成 Vercel AI SDK，支持多 AI 提供商，智能化开发。",
-    icon: Brain,
-    gradient: "bg-gradient-to-br from-orange-500 to-red-500",
-    href: "/features/ai"
-  }
-];
-
-const testimonials = [
-  {
-    quote: "早鸟价太值了！完整的源码和终身更新，帮我快速搭建了自己的 SaaS 项目，一个月就回本了。",
-    author: "张伟",
-    role: "独立开发者"
-  },
-  {
-    quote: "技术支持很给力，遇到问题都能快速解决。双框架支持让团队可以选择熟悉的技术栈。",
-    author: "李小明",
-    role: "创业公司 CTO"
-  },
-  {
-    quote: "出海功能特别实用，国际化和支付都配置好了，省了我们大量的开发时间。",
-    author: "王芳",
-    role: "产品经理"
-  }
-];
-
-
-const applicationFeatures = [
-  {
-    title: "国内外双体系支持",
-    subtitle: "一套代码，双市场覆盖",
-    description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe 和 Lemon Squeezy 支付体系。一套代码，双市场覆盖。",
-    highlights: [
-      "微信登录 & 手机号登录",
-      "OAuth 登录（Google、GitHub、Apple）",
-      "微信支付 & Stripe & Lemon Squeezy",
-      "国内外无缝切换"
-    ],
-    imageTitle: "双体系架构",
-    icon: Globe
-  },
-  {
-    title: "内置 Admin Panel",
-    subtitle: "企业级管理后台，开箱即用",
-    description: "开箱即用的管理后台，提供完整的用户管理、订阅管理、数据分析等功能。基于现代化 UI 组件库构建，支持角色权限控制、实时数据监控、批量操作等企业级功能。让你专注于业务逻辑，而非重复的管理界面开发。",
-    highlights: [
-      "用户管理 & 订阅管理",
-      "数据分析 & 实时监控",
-      "角色权限控制",
-      "批量操作功能"
-    ],
-    imageTitle: "管理后台",
-    icon: BarChart3
-  },
-  {
-    title: "AI Ready 集成",
-    subtitle: "基于 Vercel AI SDK，即插即用",
-    description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。内置简易的 AI Chat 页面，支持多种 AI 模型切换（OpenAI、Claude、Gemini 等）。提供流式响应、对话历史、使用量统计等功能，让你的应用瞬间具备 AI 能力。",
-    highlights: [
-      "Vercel AI SDK 集成",
-      "多模型支持（OpenAI、Claude、Gemini）",
-      "流式响应 & 对话历史",
-      "使用量统计 & AI Chat 页面"
-    ],
-    imageTitle: "AI 集成",
-    icon: Brain
-  }
-];

@@ -1031,9 +1031,241 @@ export const zhCN: Locale = {
   },
   home: {
     metadata: {
-      title: "TinyShip - 现代全栈 SaaS 开发脚手架",
-      description: "现代化的全功能 Monorepo 脚手架，用于构建支持国内（中国）和国际市场的 SaaS 应用程序。采用 Next.js/Nuxt.js、TypeScript 和完整的身份验证系统构建。",
-              keywords: "SaaS, monorepo, 脚手架, Next.js, Nuxt.js, TypeScript, 身份验证, 国际化, 中国市场, 国际市场"
+      title: "TinyShip - 现代化全栈 SaaS 开发启动器",
+      description: "现代化、功能齐全的 monorepo 启动套件，用于构建支持国内外双市场的 SaaS 应用程序。基于 Next.js/Nuxt.js、TypeScript 和完整认证系统构建。",
+      keywords: "SaaS, monorepo, 启动套件, Next.js, Nuxt.js, TypeScript, 认证, 国际化, 中国市场, 国际市场"
+    },
+    hero: {
+      title: "虽然是小船，也能载你远航",
+      titlePrefix: "虽然是",
+      titleHighlight: "小船",
+      titleSuffix: "，也能载你远航",
+      subtitle: "现代化全栈 SaaS 开发平台，支持国内外双市场。一次购买，终身使用，快速构建你的商业项目。",
+      buttons: {
+        purchase: "立即购买",
+        demo: "查看演示"
+      },
+      features: {
+        lifetime: "一次购买终身使用",
+        earlyBird: "早鸟价限时优惠"
+      }
+    },
+    features: {
+      title: "全栈 SaaS 开发平台",
+      subtitle: "从双框架支持到 AI 集成，从全球化到本土化，TinyShip 为你的商业项目提供完整的现代化技术解决方案。",
+      items: [
+        {
+          title: "双框架支持",
+          description: "灵活选择 Next.js 或 Nuxt.js，React 和 Vue 开发者都能找到熟悉的技术栈，同时享受相同的强大后端能力。",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "全面身份认证",
+          description: "基于 Better-Auth 的企业级认证系统，支持邮箱/手机/OAuth 登录，2FA 多因子认证，会话管理等完整认证体系。",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "全球化 + 本土化",
+          description: "既支持国际市场的 Stripe、OAuth 登录，也深度适配中国本土市场的微信登录、微信支付，双市场无缝覆盖。",
+          className: "col-span-2 row-span-1"
+        },
+        {
+          title: "现代化技术栈",
+          description: "采用最新技术：TailwindCSS v4、shadcn/ui、Magic UI、TypeScript、Zod 类型安全验证，开发体验极佳。",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "Monorepo 架构",
+          description: "简化的 Monorepo 结构，libs 抽象接口设计，轻松扩展各种云服务商，代码复用率高，架构清晰。",
+          className: "col-span-2 row-span-1"
+        },
+        {
+          title: "通信服务集成",
+          description: "多渠道通信支持：邮件服务（Resend/SendGrid）、短信服务（阿里云/Twilio），全球化通信无障碍。",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "AI 开发就绪",
+          description: "集成 Vercel AI SDK，支持多 AI 提供商，内置 Cursor 开发规则，AI 辅助开发，智能化构建应用。",
+          className: "col-span-1 row-span-1"
+        },
+        {
+          title: "无厂商锁定",
+          description: "开放架构设计，可自由选择云服务商、数据库、支付提供商等，避免技术绑定，保持最大灵活性。",
+          className: "col-span-1 row-span-1"
+        }
+      ],
+      techStack: {
+        title: "基于现代化技术栈构建",
+        items: [
+          "Next.js / Nuxt.js",
+          "TailwindCSS v4",
+          "Better-Auth",
+          "Vercel AI SDK",
+          "TypeScript + Zod",
+          "shadcn/ui + Magic UI",
+          "Drizzle ORM + PostgreSQL"
+        ]
+      }
+    },
+    applicationFeatures: {
+      title: "核心应用特性",
+      subtitle: "从国内外双体系支持到 AI 集成，TinyShip 为你的商业项目提供完整的技术解决方案。",
+      items: [
+        {
+          title: "国内外双体系支持",
+          subtitle: "一套代码，双市场覆盖",
+          description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe 和 Lemon Squeezy 支付体系。一套代码，双市场覆盖。",
+          highlights: [
+            "微信登录 & 手机号登录",
+            "OAuth 登录（Google、GitHub、Apple）",
+            "微信支付 & Stripe & Lemon Squeezy",
+            "国内外无缝切换"
+          ],
+          imageTitle: "双体系架构"
+        },
+        {
+          title: "内置 Admin Panel",
+          subtitle: "企业级管理后台，开箱即用",
+          description: "开箱即用的管理后台，提供完整的用户管理、订阅管理、数据分析等功能。基于现代化 UI 组件库构建，支持角色权限控制、实时数据监控、批量操作等企业级功能。让你专注于业务逻辑，而非重复的管理界面开发。",
+          highlights: [
+            "用户管理 & 订阅管理",
+            "数据分析 & 实时监控",
+            "角色权限控制",
+            "批量操作功能"
+          ],
+          imageTitle: "管理后台"
+        },
+        {
+          title: "AI Ready 集成",
+          subtitle: "基于 Vercel AI SDK，即插即用",
+          description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。内置简易的 AI Chat 页面，支持多种 AI 模型切换（OpenAI、Claude、Gemini 等）。提供流式响应、对话历史、使用量统计等功能，让你的应用瞬间具备 AI 能力。",
+          highlights: [
+            "Vercel AI SDK 集成",
+            "多模型支持（OpenAI、Claude、Gemini）",
+            "流式响应 & 对话历史",
+            "使用量统计 & AI Chat 页面"
+          ],
+          imageTitle: "AI 集成"
+        }
+      ]
+    },
+    roadmap: {
+      title: "产品路线图",
+      subtitle: "持续迭代，不断创新。我们致力于为开发者提供更强大、更灵活的 SaaS 开发解决方案。",
+      items: [
+        {
+          title: "核心平台搭建",
+          description: "完成 TinyShip 核心平台的开发，包括双框架支持、身份认证、支付集成、国际化等基础功能模块。",
+          timeline: "2025 Q2",
+          status: "completed",
+          statusText: "已完成",
+          features: ["双框架支持", "身份认证系统", "支付集成", "国际化支持", "AI 开发就绪", "内置 Admin Panel"]
+        },
+        {
+          title: "第三方服务扩展",
+          description: "大幅扩展第三方服务支持，覆盖更多云服务商和 SaaS 工具。通过统一的接口设计，让你轻松切换和集成各种服务提供商。",
+          timeline: "2025 Q3",
+          status: "in-progress",
+          statusText: "开发中",
+          features: ["更多支付网关", "云存储服务", "更多短信服务商"]
+        },
+        {
+          title: "博客/文档系统",
+          description: "内置完整的博客和文档管理系统，支持 Markdown 编辑、SEO 优化、评论系统等功能。让你的 SaaS 产品拥有完整的内容营销能力。",
+          timeline: "2025 Q4",
+          status: "planned",
+          statusText: "计划中",
+          features: ["博客系统", "文档系统", "知识库搜索"]
+        },
+        {
+          title: "主题系统升级",
+          description: "推出全新的主题系统，提供多种精美的 UI 主题和布局选择。支持深度定制和品牌化，让你的应用拥有独特的视觉体验。",
+          timeline: "2026 Q1",
+          status: "planned",
+          statusText: "计划中",
+          features: ["多套 UI 主题", "深色模式支持", "组件库扩展"]
+        },
+        {
+          title: "视频教程体系",
+          description: "制作完整的视频教程系列，从基础使用到高级定制，帮助开发者快速掌握 TinyShip 的各项功能和最佳实践。",
+          timeline: "2026 Q2",
+          status: "planned",
+          statusText: "计划中",
+          features: ["入门教程", "进阶开发", "部署指南", "实战案例"]
+        },
+        {
+          title: "行业模板库",
+          description: "针对不同行业和应用场景，提供开箱即用的项目模板。每个模板都包含完整的业务逻辑、UI 设计和最佳实践，让你快速启动项目。作为基础版本的扩展包，需要单独购买，但基础版本用户享受大力度优惠。",
+          timeline: "2026 Q3",
+          status: "planned",
+          statusText: "计划中",
+          features: ["SaaS 应用模板", "软件售卖模板", "AI 项目模板", "电商平台模板", "企业官网模板", "基础版用户专享优惠"]
+        }
+      ],
+      footer: "持续更新中，敬请期待更多功能..."
+    },
+    stats: {
+      title: "值得信赖的选择",
+      items: [
+        {
+          value: "10000",
+          suffix: "+",
+          label: "用户选择"
+        },
+        {
+          value: "2",
+          suffix: "",
+          label: "前端框架支持"
+        },
+        {
+          value: "50",
+          suffix: "+",
+          label: "内置功能模块"
+        },
+        {
+          value: "99",
+          suffix: "%",
+          label: "用户满意度"
+        }
+      ]
+    },
+    testimonials: {
+      title: "用户真实反馈",
+      items: [
+        {
+          quote: "早鸟价太值了！完整的源码和终身更新，帮我快速搭建了自己的 SaaS 项目，一个月就回本了。",
+          author: "张伟",
+          role: "独立开发者"
+        },
+        {
+          quote: "技术支持很给力，遇到问题都能快速解决。双框架支持让团队可以选择熟悉的技术栈。",
+          author: "李小明",
+          role: "创业公司 CTO"
+        },
+        {
+          quote: "出海功能特别实用，国际化和支付都配置好了，省了我们大量的开发时间。",
+          author: "王芳",
+          role: "产品经理"
+        }
+      ]
+    },
+    finalCta: {
+      title: "准备好开始你的远航了吗？",
+      subtitle: "加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！",
+      buttons: {
+        purchase: "立即抢购 ¥299",
+        demo: "查看演示"
+      }
+    },
+    footer: {
+      copyright: "© {year} TinyShip. All rights reserved.",
+      description: "TinyShip"
+    },
+    common: {
+      demoInterface: "功能演示界面",
+      techArchitecture: "企业级技术架构，生产环境验证",
+      learnMore: "了解更多"
     }
   },
   validators: {
@@ -1099,6 +1331,10 @@ export const zhCN: Locale = {
       switchLanguage: "切换语言",
       english: "English",
       chinese: "中文"
+    },
+    mobile: {
+      themeSettings: "主题设置",
+      languageSelection: "语言选择"
     }
   }
 } as const; 

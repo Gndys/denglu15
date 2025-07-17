@@ -40,23 +40,35 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement
+    
+    // Try to get stored preferences
     const stored = localStorage.getItem(storageKey)
     
     if (stored) {
       try {
         const { theme: storedTheme, colorScheme: storedColorScheme } = JSON.parse(stored)
-        if (storedTheme) setTheme(storedTheme)
-        if (storedColorScheme) setColorScheme(storedColorScheme)
+        if (storedTheme && storedTheme !== theme) {
+          setTheme(storedTheme)
+        }
+        if (storedColorScheme && storedColorScheme !== colorScheme) {
+          setColorScheme(storedColorScheme)
+        }
       } catch (error) {
+        console.warn('Failed to parse stored theme preferences:', error)
         // Fallback to system preference
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        setTheme(systemTheme)
+        if (systemTheme !== theme) {
+          setTheme(systemTheme)
+        }
       }
     } else {
+      // No stored preferences, use system preference
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      setTheme(systemTheme)
+      if (systemTheme !== theme) {
+        setTheme(systemTheme)
+      }
     }
-  }, [storageKey])
+  }, [storageKey]) // Remove theme and colorScheme from dependencies to prevent loops
 
   useEffect(() => {
     const root = window.document.documentElement
