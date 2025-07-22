@@ -12,7 +12,6 @@
     "dev:nuxt": "turbo run dev --filter=@shipeasy/nuxt-app",
     "build:next": "turbo run build --filter=@shipeasy/next-app",
     "build:nuxt": "turbo run build --filter=@shipeasy/nuxt-app",
-    "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
     "db:check": "node libs/database/scripts.js check",
     "db:push": "node libs/database/scripts.js push",
@@ -34,17 +33,13 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@eslint/js": "9.22.0",
     "@types/mjml": "4.7.4",
     "@types/node": "^20.10.5",
     "@types/pg": "8.15.4",
     "@vitest/ui": "3.0.9",
     "drizzle-kit": "0.30.5",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "10.1.1",
     "turbo": "^1.11.2",
     "typescript": "^5.3.3",
-    "typescript-eslint": "8.27.0",
     "vitest": "3.0.9"
   },
   "dependencies": {

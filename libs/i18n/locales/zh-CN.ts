@@ -267,7 +267,7 @@ export const zhCN: Locale = {
       description: "使用微信扫码登录",
       scanQRCode: "请使用微信扫描二维码",
       orUseOtherMethods: "或使用其他登录方式",
-      loadingQRCode: "正在加载二维码...",
+      loadingQRCode: "加载二维码中...",
       termsNotice: "点击继续即表示您同意我们的",
       termsOfService: "服务条款",
       privacyPolicy: "隐私政策",
@@ -275,6 +275,26 @@ export const zhCN: Locale = {
         loadingFailed: "微信二维码加载失败",
         networkError: "网络错误，请重试"
       }
+    },
+    // Better Auth 错误代码映射
+    authErrors: {
+      USER_ALREADY_EXISTS: "该邮箱已被注册",
+      INVALID_EMAIL_OR_PASSWORD: "邮箱或密码错误",
+      EMAIL_NOT_VERIFIED: "请先验证您的邮箱地址",
+      USER_NOT_FOUND: "未找到该邮箱对应的账户",
+      INVALID_CREDENTIALS: "提供的凭据无效",
+      ACCOUNT_BLOCKED: "您的账户已被临时冻结",
+      TOO_MANY_REQUESTS: "登录尝试次数过多，请稍后重试",
+      INVALID_TOKEN: "无效或已过期的令牌",
+      SESSION_EXPIRED: "您的会话已过期，请重新登录",
+      PHONE_NUMBER_ALREADY_EXISTS: "该手机号已被注册",
+      INVALID_PHONE_NUMBER: "手机号格式无效",
+      OTP_EXPIRED: "验证码已过期",
+      INVALID_OTP: "验证码错误",
+      OTP_TOO_MANY_ATTEMPTS: "验证尝试次数过多，请重新获取验证码",
+      CAPTCHA_REQUIRED: "请完成验证码验证",
+      CAPTCHA_INVALID: "验证码验证失败",
+      UNKNOWN_ERROR: "发生未知错误"
     }
   },
   admin: {

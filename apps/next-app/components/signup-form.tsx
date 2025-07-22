@@ -46,7 +46,7 @@ export function SignupForm({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
       email: '',
-      password: '12345678',
+      password: '',
       name: '',
       image: ''
     },
@@ -79,8 +79,10 @@ export function SignupForm({
     );
 
     if (error) {
-      if (error.code && error.message) {
-        setErrorMessage(error.message);
+      if (error.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t.auth.authErrors[error.code as keyof typeof t.auth.authErrors] || t.auth.authErrors.UNKNOWN_ERROR;
+        setErrorMessage(authErrorMessage);
         setErrorCode(error.code);
       } else {
         setErrorMessage(t.common.unexpectedError);

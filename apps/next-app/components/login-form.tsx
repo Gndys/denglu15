@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClientReact } from "@libs/auth/authClient";
@@ -21,14 +20,13 @@ export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const router = useRouter();
   const { t, locale, tWithParams } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0); // 用于强制重新渲染 Turnstile
-
+  
   // 创建国际化验证器
   const { loginFormSchema } = createValidators(tWithParams);
   
@@ -74,8 +72,10 @@ export function LoginForm({
     });
 
     if (error) {
-      if (error.code && error.message) {
-        setErrorMessage(t.auth.signin.errors.invalidCredentials);
+      if (error.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t.auth.authErrors[error.code as keyof typeof t.auth.authErrors] || t.auth.authErrors.UNKNOWN_ERROR;
+        setErrorMessage(authErrorMessage);
         setErrorCode(error.code);
       } else {
         setErrorMessage(t.auth.signin.errors.invalidCredentials);

@@ -275,6 +275,26 @@ export const en: Locale = {
         loadingFailed: "Failed to load WeChat QR code",
         networkError: "Network error, please try again"
       }
+    },
+    // Auth error codes mapping for Better Auth
+    authErrors: {
+      USER_ALREADY_EXISTS: "User with this email already exists",
+      INVALID_EMAIL_OR_PASSWORD: "Invalid email or password",
+      EMAIL_NOT_VERIFIED: "Please verify your email address",
+      USER_NOT_FOUND: "No account found with this email",
+      INVALID_CREDENTIALS: "Invalid credentials provided",
+      ACCOUNT_BLOCKED: "Your account has been temporarily blocked",
+      TOO_MANY_REQUESTS: "Too many login attempts. Please try again later",
+      INVALID_TOKEN: "Invalid or expired token",
+      SESSION_EXPIRED: "Your session has expired. Please sign in again",
+      PHONE_NUMBER_ALREADY_EXISTS: "Phone number is already registered",
+      INVALID_PHONE_NUMBER: "Invalid phone number format",
+      OTP_EXPIRED: "Verification code has expired",
+      INVALID_OTP: "Invalid verification code",
+      OTP_TOO_MANY_ATTEMPTS: "Too many verification attempts. Please request a new code",
+      CAPTCHA_REQUIRED: "Please complete the captcha verification",
+      CAPTCHA_INVALID: "Captcha verification failed",
+      UNKNOWN_ERROR: "An unexpected error occurred"
     }
   },
   admin: {

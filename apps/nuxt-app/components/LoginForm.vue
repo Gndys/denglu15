@@ -221,8 +221,10 @@ const onSubmit = handleSubmit(async (values) => {
     // Check for errors
     if (result && 'error' in result && result.error) {
       const error = result.error
-      if (error.code && error.message) {
-        errorMessage.value = t('auth.signin.errors.invalidCredentials')
+      if (error.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t('auth.authErrors.' + error.code) || t('auth.authErrors.UNKNOWN_ERROR')
+        errorMessage.value = authErrorMessage
         errorCode.value = error.code
       } else {
         errorMessage.value = t('auth.signin.errors.invalidCredentials')
