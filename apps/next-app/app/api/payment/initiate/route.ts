@@ -11,15 +11,11 @@ const ORDER_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
 
 export async function POST(req: Request) {
   try {
-    // 1. Verify user authentication status
+    // 1. Get user session (authMiddleware已验证用户已登录)
     const requestHeaders = new Headers(req.headers);
     const session = await auth.api.getSession({
       headers: requestHeaders
     });
-
-    if (!session?.user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     // 2. Get request parameters
     const { planId, provider = paymentProviders.STRIPE } = await req.json();
@@ -36,7 +32,7 @@ export async function POST(req: Request) {
 
     await db.insert(order).values({
       id: orderId,
-      userId: session.user.id,
+      userId: session!.user!.id,
       planId,
       amount: plan.amount.toString(), // Convert to string for numeric field
       currency: plan.currency,
@@ -85,7 +81,7 @@ export async function POST(req: Request) {
     
     const result = await paymentProvider.createPayment({
       orderId,
-      userId: session.user.id,
+      userId: session!.user!.id,
       planId,
       amount: plan.amount,
       currency: plan.currency,

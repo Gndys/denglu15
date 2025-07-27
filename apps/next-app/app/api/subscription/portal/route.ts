@@ -8,21 +8,13 @@ import { config } from '@config';
 
 export async function POST(request: Request) {
   try {
-    // 获取用户会话信息
+    // 获取用户会话信息 (authMiddleware已验证用户已登录)
     const requestHeaders = new Headers(request.headers);
     const session = await auth.api.getSession({
         headers: requestHeaders
     });
 
-    // 检查用户是否已登录
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: '未授权访问' },
-        { status: 401 }
-      );
-    }
-
-    const userId = session.user.id;
+    const userId = session!.user!.id;
 
     // 获取请求体
     const body = await request.json().catch(() => ({}));

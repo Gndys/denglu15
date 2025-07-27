@@ -7,23 +7,17 @@ import { config } from '@config'
 
 export default defineEventHandler(async (event) => {
   try {
-    // Get user session
-    const headers = new Headers()
-    Object.entries(getHeaders(event)).forEach(([key, value]) => {
-      if (value) headers.set(key, value)
-    })
-    const session = await auth.api.getSession({
-      headers
-    })
-    // Check if user is authenticated
-    if (!session?.user?.id) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Unauthorized'
+    // Get current user session (authMiddleware已验证用户已登录)
+    const user = event.context.user || await (async () => {
+      const headers = new Headers()
+      Object.entries(getHeaders(event)).forEach(([key, value]) => {
+        if (value) headers.set(key, value)
       })
-    }
+      const session = await auth.api.getSession({ headers })
+      return session?.user
+    })()
 
-    const userId = session.user.id
+    const userId = user!.id
 
     // Get request body
     const body = await readBody(event).catch(() => ({}))

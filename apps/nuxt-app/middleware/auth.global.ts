@@ -4,6 +4,7 @@
  */
 import { authClientVue } from '@libs/auth/authClient'
 import { Action, Subject, can, createAppUser } from '@libs/permissions'
+import { locales } from '@libs/i18n'
 
 
 // Route configuration interface
@@ -19,66 +20,85 @@ interface ProtectedRouteConfig {
   }
   // Subscription requirements
   requiresSubscription?: boolean
+  // Auth route that should redirect logged-in users
+  isAuthRoute?: boolean
 }
 
-// Unified protected routes configuration
+// Unified protected routes configuration - using Next.js style for consistency
 const protectedRoutes: ProtectedRouteConfig[] = [
-  // Admin routes - require admin permissions (support locale prefixes)
+  // Auth routes - redirect logged-in users to dashboard
   {
-    pattern: /^\/(?:en|zh-CN)?\/admin(\/.*)?$/,
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/signin$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/signup$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/forgot-password$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/reset-password$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/cellphone$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/wechat$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  
+  // Admin routes - require admin permissions (require locale prefix)
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/admin(\\/.*)?$`),
     type: 'page',
     requiresAuth: true,
     requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
   },
   
-  // Settings pages - require authentication only (support locale prefixes)
+  // Settings pages - require authentication only (require locale prefix)
   {
-    pattern: /^\/(?:en|zh-CN)?\/settings(\/.*)?$/,
-    type: 'page',
-    requiresAuth: true
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/settings(\\/.*)?$`),
+    type: 'page'
   },
   
-  // Dashboard - require authentication only (support locale prefixes)
+  // Dashboard - require authentication only (require locale prefix)
   {
-    pattern: /^\/(?:en|zh-CN)?\/dashboard(\/.*)?$/,
-    type: 'page',
-    requiresAuth: true
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/dashboard(\\/.*)?$`),
+    type: 'page'
   },
   
-  // Premium features - require active subscription (support locale prefixes)
+  // Premium features - require active subscription (require locale prefix)
   {
-    pattern: /^\/(?:en|zh-CN)?\/premium-features(\/.*)?$/,
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/premium-features(\\/.*)?$`),
     type: 'page',
-    requiresAuth: true,
     requiresSubscription: true
   },
   
-  // AI features - require authentication (support locale prefixes)
+  // AI features - require authentication (require locale prefix)
   {
-    pattern: /^\/(?:en|zh-CN)?\/ai(\/.*)?$/,
-    type: 'page',
-    requiresAuth: true
-  },
-
-  // API routes protection (no locale prefix needed)
-  {
-    pattern: /^\/api\/admin\/(.*)?$/,
-    type: 'api',
-    requiresAuth: true,
-    requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/ai(\\/.*)?$`),
+    type: 'page'
   },
   
+  // Payment pages - require authentication (require locale prefix)
   {
-    pattern: /^\/api\/chat(\/.*)?$/,
-    type: 'api',
-    requiresAuth: true
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/payment-success$`),
+    type: 'page'
   },
-  
   {
-    pattern: /^\/api\/premium(\/.*)?$/,
-    type: 'api',
-    requiresAuth: true,
-    requiresSubscription: true
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/payment-cancel$`),
+    type: 'page'
   }
 ]
 
@@ -86,20 +106,14 @@ const protectedRoutes: ProtectedRouteConfig[] = [
  * Check if user has valid subscription
  */
 async function hasValidSubscription(userId: string): Promise<boolean> {
-  // TODO: Implement actual subscription checking
-  // For now, return true to allow access during development
-  return true
-  
-  // Example implementation:
-  // try {
-  //   const { data: subscription } = await $fetch('/api/subscription/status', {
-  //     method: 'POST',
-  //     body: { userId }
-  //   })
-  //   return subscription?.status === 'active'
-  // } catch {
-  //   return false
-  // }
+  try {
+    const { checkSubscriptionStatus } = await import('@libs/database/utils/subscription')
+    const subscription = await checkSubscriptionStatus(userId)
+    return !!subscription
+  } catch (error) {
+    console.error('Failed to check subscription status:', error)
+    return false
+  }
 }
 
 /**
@@ -130,53 +144,59 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Add debug logging to see if middleware is triggered
   console.log(`🚀 Auth middleware triggered for: ${to.path}`)
   
-  // Skip middleware on server-side - let client handle authentication
+  // Handle server-side checks for better UX
   if (import.meta.server) {
-    console.log(`🖥️ Skipping auth middleware on server for: ${to.path}`)
-    return
+    console.log(`🖥️ Server-side auth check for: ${to.path}`)
+    
+    // Get headers for server-side session check
+    const headers = useRequestHeaders(['cookie'])
+    
+    // Quick check for session cookie
+    const hasCookie = headers.cookie?.includes('better-auth.session_token') || 
+                     headers.cookie?.includes('better-auth-session')
+    
+    if (!hasCookie) {
+      // Check if this route needs protection
+      const matchedRoute = protectedRoutes.find(route => route.pattern.test(to.path))
+      
+      if (matchedRoute && !matchedRoute.isAuthRoute) {
+        console.log(`🔒 No session cookie found for protected route: ${to.path}`)
+        // Server-side redirect for better UX
+        return navigateTo('/signin')
+      }
+    }
+    
+    return // Let client-side handle detailed checks
   }
 
   console.log(`🌐 Processing auth middleware on client for: ${to.path}`)
 
-  // Skip middleware for auth pages and public routes (support locale prefixes)
-  const authRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password', '/cellphone', '/wechat']
-  const publicRoutes = ['/', '/pricing', '/payment-success', '/payment-cancel']
-  
-  // Check if path matches auth or public routes (with or without locale prefix)
-  let pathWithoutLocale = to.path
-  
-  // Remove locale prefix if present
-  if (pathWithoutLocale.startsWith('/en/') || pathWithoutLocale.startsWith('/zh-CN/')) {
-    pathWithoutLocale = pathWithoutLocale.replace(/^\/(?:en|zh-CN)/, '')
-  } else if (pathWithoutLocale === '/en' || pathWithoutLocale === '/zh-CN') {
-    pathWithoutLocale = '/'
-  }
-  
-  // Ensure we always have a leading slash for non-root paths
-  if (pathWithoutLocale && !pathWithoutLocale.startsWith('/') && pathWithoutLocale !== '') {
-    pathWithoutLocale = '/' + pathWithoutLocale
-  }
-  
-  console.log(`🔍 Checking path: ${to.path} → without locale: ${pathWithoutLocale}`)
-  
-  if (authRoutes.includes(pathWithoutLocale) || publicRoutes.includes(pathWithoutLocale)) {
-    console.log(`✅ Skipping middleware for public/auth route: ${pathWithoutLocale}`)
-    return
-  }
+  console.log(`🔍 Checking path: ${to.path}`)
 
-  // Skip API routes in client-side navigation
-  if (import.meta.client && to.path.startsWith('/api/')) {
-    return
-  }
-
-  // Check if current route matches any protected route
+  // Check if current route matches any configured route
   const matchedRoute = protectedRoutes.find(route => route.pattern.test(to.path))
   
   if (!matchedRoute) {
-    return // Route is not protected
+    return // Route is not configured
   }
 
-  console.log(`🔒 Protected route accessed: ${to.path} (Type: ${matchedRoute.type})`)
+  console.log(`🔒 Configured route accessed: ${to.path} (Type: ${matchedRoute.type})`)
+
+  // Handle auth routes: redirect logged-in users to dashboard
+  if (matchedRoute.isAuthRoute) {
+    console.log(`🔐 Auth route detected: ${to.path}`)
+    
+    // Get user session to check if already logged in
+    const { user, isAuthenticated } = await getUserSession()
+    
+    if (isAuthenticated) {
+      console.log(`↩️ User already authenticated, redirecting from ${to.path} to dashboard`)
+      return navigateTo('/dashboard')
+    }
+    
+    console.log(`✅ Guest user accessing auth route: ${to.path}`)
+    return // Allow access to auth route
+  }
 
   // On client-side, wait for auth to be ready before checking
   console.log(`⏳ Ensuring auth is ready on client-side for: ${to.path}`)
@@ -187,7 +207,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   console.log(`🔍 Session result: isAuthenticated=${isAuthenticated}, user=${user ? user.id : 'null'}`)
 
   // --- 1. Authentication Check ---
-  if (matchedRoute.requiresAuth && !isAuthenticated) {
+  if (!isAuthenticated) {
     console.log(`❌ Authentication failed for: ${to.path}`)
     
     if (matchedRoute.type === 'page') {
@@ -202,11 +222,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  // If no authentication required, allow access
-  if (!matchedRoute.requiresAuth) {
-    console.log(`✅ Public access allowed for: ${to.path}`)
-    return
-  }
+  // User is authenticated, continue with other checks
 
   // --- 2. Subscription Check (if required) ---
   if (matchedRoute.requiresSubscription) {

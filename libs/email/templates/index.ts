@@ -10,6 +10,55 @@ import { zhCN } from '../../i18n/locales/zh-CN';
 // Get directory name for the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Find project root directory by looking for the libs/email/templates directory
+ */
+const findProjectRoot = (startPath: string): string => {
+  let currentPath = startPath;
+  while (currentPath !== path.dirname(currentPath)) {
+    if (fs.existsSync(path.join(currentPath, 'libs', 'email', 'templates'))) {
+      return currentPath;
+    }
+    currentPath = path.dirname(currentPath);
+  }
+  throw new Error('Could not find project root directory with libs/email/templates');
+};
+
+/**
+ * Get template file path using project root detection
+ */
+function getTemplatePath(templateName: string): string {
+  try {
+    // Find project root starting from current working directory
+    const projectRoot = findProjectRoot(process.cwd());
+    const templatePath = path.join(projectRoot, 'libs', 'email', 'templates', templateName);
+    
+    if (fs.existsSync(templatePath)) {
+      console.log(`📧 Found email template at: ${templatePath}`);
+      return templatePath;
+    }
+    
+    throw new Error(`Template file ${templateName} does not exist at ${templatePath}`);
+  } catch (error) {
+    // Fallback: try starting from __dirname
+    try {
+      const projectRoot = findProjectRoot(__dirname);
+      const templatePath = path.join(projectRoot, 'libs', 'email', 'templates', templateName);
+      
+      if (fs.existsSync(templatePath)) {
+        console.log(`📧 Found email template at: ${templatePath} (fallback)`);
+        return templatePath;
+      }
+      
+      throw new Error(`Template file ${templateName} does not exist at ${templatePath}`);
+    } catch (fallbackError) {
+      console.error('❌ Failed to find project root from process.cwd():', process.cwd());
+      console.error('❌ Failed to find project root from __dirname:', __dirname);
+      throw new Error(`Could not locate email template ${templateName}. Ensure libs/email/templates directory exists.`);
+    }
+  }
+}
+
 // 支持的语言包
 export const locales: Record<string, Locale> = {
   en,
@@ -84,7 +133,7 @@ function prepareTranslationData(params: VerificationEmailParams | ResetPasswordE
  */
 export function generateVerificationEmail(params: VerificationEmailParams): EmailTemplate {
   // 读取MJML模板
-  const templatePath = path.resolve(__dirname, './verification.mjml');
+  const templatePath = getTemplatePath('verification.mjml');
   const mjmlTemplate = fs.readFileSync(templatePath, 'utf8');
   
   // 准备翻译数据
@@ -115,7 +164,7 @@ export function generateVerificationEmail(params: VerificationEmailParams): Emai
  */
 export function generateResetPasswordEmail(params: ResetPasswordEmailParams): EmailTemplate {
   // 读取MJML模板
-  const templatePath = path.resolve(__dirname, './reset-password.mjml');
+  const templatePath = getTemplatePath('reset-password.mjml');
   const mjmlTemplate = fs.readFileSync(templatePath, 'utf8');
   
   // 准备翻译数据

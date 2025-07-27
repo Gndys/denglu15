@@ -639,7 +639,7 @@ export default function Home() {
 
         {/* Final CTA */}
         <section className="py-24 bg-gradient-chart-warm text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
+          <div className="absolute inset-0 bg-repeat opacity-10"></div>
           <div className="container px-4 md:px-6 relative z-10">
             <motion.div 
               className="text-center max-w-3xl mx-auto"

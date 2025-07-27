@@ -17,11 +17,44 @@ interface ProtectedRouteConfig {
     subject: Subject; // Subject must be from the Subject enum
   };
   requiresSubscription?: boolean; // New field to indicate if route requires subscription
+  isAuthRoute?: boolean; // Auth route that should redirect logged-in users
 }
 
 // --- Configuration for Protected Routes ---
 // TODO: Adjust Subject values based on your @libs/permissions definitions.
 const protectedRoutes: ProtectedRouteConfig[] = [
+  // Auth routes - redirect logged-in users to dashboard
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/signin$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/signup$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/forgot-password$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/reset-password$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/cellphone$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/wechat$`),
+    type: 'page',
+    isAuthRoute: true
+  },
+  
   {
     pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/admin(\\/.*)?$`), 
     type: 'page',
@@ -40,6 +73,16 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/premium-features(\\/.*)?$`), 
     type: 'page',
     requiresSubscription: true // 高级功能区域
+  },
+  
+  // Payment pages - require authentication
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/payment-success$`),
+    type: 'page',
+  },
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/payment-cancel$`),
+    type: 'page',
   },
   {
     pattern: new RegExp('^/api/users(\\/.*)?$'),
@@ -60,6 +103,26 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     pattern: new RegExp('^/api/premium(\\/.*)?$'), 
     type: 'api',
     requiresSubscription: true
+  },
+  {
+    pattern: new RegExp('^/api/subscription(\\/.*)?$'),
+    type: 'api',
+    // 订阅相关API都需要登录状态
+  },
+  {
+    pattern: new RegExp('^/api/orders(\\/.*)?$'),
+    type: 'api',
+    // 订单相关API需要登录状态
+  },
+  {
+    pattern: new RegExp('^/api/payment/initiate(\\/.*)?$'),
+    type: 'api',
+    // 支付发起API需要登录状态
+  },
+  {
+    pattern: new RegExp('^/api/payment/query(\\/.*)?$'),
+    type: 'api',
+    // 支付查询API需要登录状态
   },
   {
     pattern: new RegExp('^/api/chat(\\/.*)?$'), 
@@ -83,6 +146,26 @@ export async function authMiddleware(request: NextRequest): Promise<NextResponse
 
   if (!matchedRoute) {
     return undefined; 
+  }
+
+  // Handle auth routes: redirect logged-in users to dashboard
+  if (matchedRoute.isAuthRoute) {
+    console.log(`🔐 Auth route detected: ${pathname}`);
+    
+    const requestHeaders = new Headers(request.headers);
+    const session = await auth.api.getSession({
+        headers: requestHeaders
+    });
+
+    if (session && session.user) {
+      console.log(`↩️ User already authenticated, redirecting from ${pathname} to dashboard`);
+      const currentLocale = pathname.split('/')[1]; 
+      const dashboardUrl = new URL(`/${currentLocale}/dashboard`, request.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+    
+    console.log(`✅ Guest user accessing auth route: ${pathname}`);
+    return undefined; // Allow access to auth route
   }
 
   console.log(`Protected route accessed: ${pathname}, Type: ${matchedRoute.type}`);

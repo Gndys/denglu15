@@ -36,6 +36,12 @@ type Theme = 'light' | 'dark';
 type ColorScheme = 'default' | 'claude' | 'cosmic-night' | 'modern-minimal' | 'ocean-breeze';
 type Locale = 'en' | 'zh-CN';
 
+// Route configuration
+type RouteConfig = {
+  authRoutes: string[];
+  publicRoutes: string[];
+};
+
 // 计划类型定义
 
 type BasePlan = {

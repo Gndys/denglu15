@@ -34,9 +34,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   runtime: 'nodejs',
-  // Matcher包含API路径以便进行权限检查
+  // Matcher包含API路径以便进行权限检查，以及auth路径以便重定向已登录用户
   matcher: [
-    // Skip all internal paths (_next) but include API routes for auth check
+    // Skip all internal paths (_next) but include API routes for auth check and auth pages for redirect
     '/((?!_next|images|[\\w-]+\\.\\w+).*)',
   ],
 };

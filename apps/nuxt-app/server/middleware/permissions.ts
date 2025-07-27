@@ -21,6 +21,12 @@ const protectedApiRoutes: ProtectedApiRouteConfig[] = [
     requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
   },
   
+  // User management APIs - require admin permissions
+  {
+    pattern: /^\/api\/users(\/.*)?$/,
+    requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
+  },
+  
   // Chat API - require authentication
   {
     pattern: /^\/api\/chat(\/.*)?$/
@@ -33,42 +39,38 @@ const protectedApiRoutes: ProtectedApiRouteConfig[] = [
     requiresSubscription: true
   },
 
-  // User management APIs
+  // 🔒 添加缺失的认证路由 - 与Next.js保持一致
   {
-    pattern: /^\/api\/users(\/.*)?$/,
-    requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
+    pattern: /^\/api\/subscription(\/.*)?$/,
+    // 订阅相关API都需要登录状态
   },
-
-  // Subscription management APIs
   {
-    pattern: /^\/api\/subscription\/(cancel|upgrade|downgrade)(\/.*)?$/,
-    // Users can manage their own subscriptions, admins can manage all
-    // This will be handled in the specific route handlers
+    pattern: /^\/api\/orders(\/.*)?$/,
+    // 订单相关API需要登录状态
+  },
+  {
+    pattern: /^\/api\/payment\/initiate(\/.*)?$/,
+    // 支付发起API需要登录状态
+  },
+  {
+    pattern: /^\/api\/payment\/query(\/.*)?$/,
+    // 支付查询API需要登录状态
   }
 ]
 
 /**
  * Check if user has valid subscription
- * This would integrate with the actual subscription service
+ * This integrates with the actual subscription service
  */
 async function hasValidSubscription(userId: string): Promise<boolean> {
-  // TODO: Implement actual subscription checking
-  // For now, return true to allow access during development
-  return true
-  
-  // Example implementation:
-  // try {
-  //   const subscription = await db.subscription.findFirst({
-  //     where: {
-  //       userId,
-  //       status: 'active',
-  //       expiresAt: { gt: new Date() }
-  //     }
-  //   })
-  //   return !!subscription
-  // } catch {
-  //   return false
-  // }
+  try {
+    const { checkSubscriptionStatus } = await import('@libs/database/utils/subscription')
+    const subscription = await checkSubscriptionStatus(userId)
+    return !!subscription
+  } catch (error) {
+    console.error('Failed to check subscription status:', error)
+    return false
+  }
 }
 
 export default defineEventHandler(async (event) => {

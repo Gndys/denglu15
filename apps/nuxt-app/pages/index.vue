@@ -498,7 +498,7 @@
 
       <!-- Final CTA -->
       <section class="py-24 bg-gradient-chart-warm text-white relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
+        <div class="absolute inset-0 bg-repeat opacity-10"></div>
         <div class="container px-4 md:px-6 relative z-10">
           <motion.div 
             class="text-center max-w-3xl mx-auto"

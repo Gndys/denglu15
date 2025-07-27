@@ -10,20 +10,16 @@ const ORDER_EXPIRATION_TIME = 2 * 60 * 60 * 1000
 
 export default defineEventHandler(async (event) => {
   try {
-    // Check authentication using Better Auth
-    const headers = new Headers()
-    for (const [key, value] of Object.entries(getHeaders(event))) {
-      if (value) headers.set(key, value)
-    }
-    
-    const session = await auth.api.getSession({ headers })
-    
-    if (!session?.user) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Unauthorized'
-      })
-    }
+    // Get current user session (authMiddleware已验证用户已登录)
+    const user = event.context.user || await (async () => {
+      const headers = new Headers()
+      for (const [key, value] of Object.entries(getHeaders(event))) {
+        if (value) headers.set(key, value)
+      }
+      
+      const session = await auth.api.getSession({ headers })
+      return session?.user
+    })()
 
     // Parse request body
     const body = await readBody(event)
@@ -52,7 +48,7 @@ export default defineEventHandler(async (event) => {
     // Create order record in database
     await db.insert(order).values({
       id: orderId,
-      userId: session.user.id,
+      userId: user!.id,
       planId,
       amount: plan.amount.toString(), // Convert to string for numeric field
       currency: plan.currency,
@@ -104,13 +100,13 @@ export default defineEventHandler(async (event) => {
     // Initiate payment using the payment library
     const result = await paymentProvider.createPayment({
       orderId,
-      userId: session.user.id,
+      userId: user!.id,
       planId,
       amount: plan.amount,
       currency: plan.currency,
       metadata: {
-        clientIp,
-        description: `${plan.name} - ${plan.duration.description}`
+        clientIp
+        // description: `${plan.name} - ${plan.duration.description}`
       }
     })
     console.log('Payment initiation result:', result)
