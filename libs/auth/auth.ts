@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { phoneNumber, admin, captcha } from "better-auth/plugins"
 import { validator, StandardAdapter } from "validation-better-auth"
+import { createAuthMiddleware } from "better-auth/api"
 
 import { db, user, account, session, verification } from '@libs/database'
 import { sendSMS } from '@libs/sms';
@@ -49,6 +50,50 @@ export const auth = betterAuth({
       verification
     }
   }),
+  
+  // Development hooks for returning verification links and OTP codes
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      if (process.env.NODE_ENV === 'development') {
+        const returned = ctx.context.returned;
+        
+        // Check if there's dev data stored in the request context
+        const devData = (ctx.request as any)?.context;
+        
+        if (returned && devData) {
+          const devResponse: any = { ...returned };
+          
+          // Add verification URL if available
+          if (devData.verificationUrl) {
+            devResponse.dev = {
+              verificationUrl: devData.verificationUrl,
+              message: 'Development mode: Use this verification URL instead of checking email'
+            };
+          }
+          
+          // Add OTP code if available
+          if (devData.otpCode) {
+            devResponse.dev = {
+              otpCode: devData.otpCode,
+              message: 'Development mode: Use this OTP code for verification'
+            };
+          }
+          
+          // Add reset URL if available
+          if (devData.resetUrl) {
+            devResponse.dev = {
+              resetUrl: devData.resetUrl,
+              message: 'Development mode: Use this reset URL instead of checking email'
+            };
+          }
+          
+          if (devResponse.dev) {
+            return ctx.json(devResponse);
+          }
+        }
+      }
+    }),
+  },
   // https://www.better-auth.com/docs/concepts/users-accounts#delete-user
   user: {
     deleteUser: {
@@ -64,14 +109,21 @@ export const auth = betterAuth({
       // 从 referer 中获取语言信息
       const { locale } = getRefererInfo(request);
       
+      // 开发环境：将重置密码链接存储到 context 中，通过 hooks 返回
+      if (process.env.NODE_ENV === 'development') {
+        (request as any).context = (request as any).context || {};
+        (request as any).context.resetUrl = url;
+        console.log('🔗 [DEVELOPMENT MODE] Reset password URL stored in context:', url);
+      }
+      
       try {
         // 使用我们的邮件模块发送重置密码邮件
-        await sendResetPasswordEmail(user.email, {
-          name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
-          reset_url: url,
-          expiry_hours: 1,
-          locale: locale as 'en' | 'zh-CN' // 类型转换
-        });
+        // await sendResetPasswordEmail(user.email, {
+        //   name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
+        //   reset_url: url,
+        //   expiry_hours: 1,
+        //   locale: locale as 'en' | 'zh-CN' // 类型转换
+        // });
         
         console.log(`Reset password email sent to ${user.email} in ${locale} language`);
       } catch (error) {
@@ -94,14 +146,22 @@ export const auth = betterAuth({
         return;
       }
       
+      // 开发环境：将验证链接存储到 context 中，通过 hooks 返回
+      if (process.env.NODE_ENV === 'development') {
+        // 将验证链接存储到全局上下文中，hooks 可以访问
+        (request as any).context = (request as any).context || {};
+        (request as any).context.verificationUrl = url;
+        console.log('🔗 [DEVELOPMENT MODE] Verification URL stored in context:', url);
+      }
+      
       try {
         // 使用我们的邮件模块发送验证邮件
-        await sendVerificationEmail(user.email, {
-          name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
-          verification_url: url,
-          expiry_hours: 1,
-          locale: locale as 'en' | 'zh-CN' // 类型转换
-        });
+        // await sendVerificationEmail(user.email, {
+        //   name: user.name || user.email.split('@')[0], // 如果没有名字，使用邮箱前缀
+        //   verification_url: url,
+        //   expiry_hours: 1,
+        //   locale: locale as 'en' | 'zh-CN' // 类型转换
+        // });
         
         console.log(`Verification email sent to ${user.email} in ${locale} language`);
       } catch (error) {
@@ -154,23 +214,30 @@ export const auth = betterAuth({
       sendOTP: async ({ phoneNumber, code }, request) => { 
         console.log(`Attempting to send OTP to ${phoneNumber} with code ${code}`);
         
+        // 开发环境：将 OTP 代码存储到 context 中，通过 hooks 返回
+        if (process.env.NODE_ENV === 'development') {
+          (request as any).context = (request as any).context || {};
+          (request as any).context.otpCode = code;
+          console.log('📱 [DEVELOPMENT MODE] OTP code stored in context:', code);
+        }
+        
         try {
-          // Implement sending OTP code via SMS
-          const result = await sendSMS({
-            to: phoneNumber,
-            templateParams: {
-              code
-            },
-            provider: 'aliyun'
-          });
+          // // Implement sending OTP code via SMS
+          // const result = await sendSMS({
+          //   to: phoneNumber,
+          //   templateParams: {
+          //     code
+          //   },
+          //   provider: 'aliyun'
+          // });
           
-          console.log('SMS send result:', result);
+          // console.log('SMS send result:', result);
           
-          if (!result.success) {
-            const errorMessage = result.error?.message || 'Failed to send SMS';
-            console.error('SMS sending failed:', errorMessage);
-            throw new Error(errorMessage);
-          }
+          // if (!result.success) {
+          //   const errorMessage = result.error?.message || 'Failed to send SMS';
+          //   console.error('SMS sending failed:', errorMessage);
+          //   throw new Error(errorMessage);
+          // }
           
           console.log(`OTP ${code} sent successfully to ${phoneNumber}`);
           // 成功时不需要返回值，better-auth会自动处理

@@ -77,7 +77,9 @@ export class StripeProvider implements PaymentProvider {
   }
 
   private async createOneTimePayment(params: PaymentParams, plan: PaymentPlan): Promise<PaymentResult> {
+    const customer = await this.getOrCreateCustomer(params.userId);
     const session = await this.stripe.checkout.sessions.create({
+      customer: customer.id,
       line_items: [{
         price: plan.stripePriceId!,
         quantity: 1,

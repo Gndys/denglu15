@@ -37,8 +37,7 @@
    - **API密钥 (API Key)**: 在商户平台的账户设置中生成
 
 3. **配置回调域名**
-   - 在商户平台配置支付回调URL
-   - 设置为：`https://yourdomain.com/api/payment/webhook/wechat`
+  - 在环境变量中设置，请看环境变量配置环节
 
 #### 🔑 环境变量配置
 
@@ -49,6 +48,9 @@
 WECHAT_PAY_APP_ID=wx1234567890abcdef    # 微信应用ID
 WECHAT_PAY_MCH_ID=1234567890            # 商户号
 WECHAT_PAY_API_KEY=your-32-char-api-key # API密钥
+# 需要设置成为公网地址，使用内网穿透工具, 后面的 endpoint /api/payment/webhook/wechat 不需要修改
+# 具体工具教程请参看，下面的 本地开发测试 环节
+WECHAT_PAY_NOTIFY_URL=https://yourdomain.com/api/payment/webhook/wechat
 ```
 
 #### ⚠️ 注意事项
@@ -122,6 +124,10 @@ Creem 是新兴的支付平台，提供灵活的定价和订阅管理功能。�
    - 配置价格和订阅周期
    - 记录产品ID，用于配置 `creemProductId`
 
+4. **配置 Webhook**
+   - 前往 "Developers" → "Webhooks"
+   - 添加 Webhook URL：`https://yourdomain.com/api/payment/webhook/stripe`
+
 #### 🔑 环境变量配置
 
 在 `.env` 文件中添加：
@@ -153,6 +159,7 @@ CREEM_WEBHOOK_SECRET=whsec_xxxxxxxx      # Webhook 签名秘钥
 WECHAT_PAY_APP_ID=wx1234567890abcdef
 WECHAT_PAY_MCH_ID=1234567890
 WECHAT_PAY_API_KEY=your-32-char-api-key
+WECHAT_PAY_NOTIFY_URL=https://yourdomain.com/api/payment/webhook/wechat
 
 # Stripe (全球)
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

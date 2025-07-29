@@ -112,7 +112,7 @@ export class WechatPayProvider implements PaymentProvider {
     this.appId = config.payment.providers.wechat.appId;
     this.mchId = config.payment.providers.wechat.mchId;
     this.apiKey = config.payment.providers.wechat.apiKey;
-    this.notifyUrl = `${config.app.baseUrl}/api/payment/webhook/wechat`;
+    this.notifyUrl = config.payment.providers.wechat.notifyUrl;
     
     console.log('Certificate path:', certPath);
     

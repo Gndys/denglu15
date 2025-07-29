@@ -795,12 +795,18 @@ export const zhCN: Locale = {
         lifetime: "终身会员",
         active: "有效",
         canceled: "已取消",
+        cancelAtPeriodEnd: "期末取消",
         pastDue: "逾期",
         unknown: "未知",
         noSubscription: "无订阅"
       },
+      paymentType: {
+        recurring: "循环订阅",
+        oneTime: "一次性"
+      },
       lifetimeAccess: "您拥有终身访问权限",
       expires: "到期时间:",
+      cancelingNote: "您的订阅将不会续订，并将在以下时间结束:",
       noActiveSubscription: "您当前没有有效的订阅",
       manageSubscription: "管理订阅",
       viewPlans: "查看套餐"

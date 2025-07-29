@@ -165,9 +165,18 @@ export function SubscriptionCard({}: SubscriptionCardProps) {
               <Package className="h-5 w-5 mr-2 text-primary" />
               <span className="font-medium">{t.subscription.overview.planType}</span>
             </div>
-            <span className="font-medium text-primary">
-              {isLifetime ? t.subscription.management.lifetime.title : getPlanName(planId)}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-primary">
+                {isLifetime ? t.dashboard.subscription.status.lifetime : getPlanName(planId)}
+              </span>
+              {!isLifetime && sub && (
+                <span className="px-2 py-1 rounded-full border text-xs">
+                  {sub.paymentType === 'recurring' 
+                    ? t.dashboard.subscription.paymentType.recurring 
+                    : t.dashboard.subscription.paymentType.oneTime}
+                </span>
+              )}
+            </div>
           </div>
           
           <div className="flex items-center justify-between">
@@ -175,9 +184,16 @@ export function SubscriptionCard({}: SubscriptionCardProps) {
               <CreditCard className="h-5 w-5 mr-2 text-primary" />
               <span className="font-medium">{t.subscription.overview.status}</span>
             </div>
-            <span className="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-              {t.subscription.overview.active}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                {t.subscription.overview.active}
+              </span>
+              {sub?.cancelAtPeriodEnd && (
+                <span className="px-2 py-1 rounded-full  bg-accent text-xs">
+                  {t.dashboard.subscription.status.cancelAtPeriodEnd}
+                </span>
+              )}
+            </div>
           </div>
           
           {!isLifetime && sub && (
@@ -210,28 +226,29 @@ export function SubscriptionCard({}: SubscriptionCardProps) {
         </div>
 
         {/* 分割线 */}
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-medium mb-4">{t.subscription.management.title}</h3>
-          <div className="rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              {t.subscription.management.description}
-            </p>
-            <div className="flex gap-3">
-              {/* 只有Stripe和Creem用户才显示管理按钮，微信支付用户没有客户门户 */}
-              {(sub?.stripeCustomerId || sub?.creemCustomerId) && (
-                <Button 
-                  variant="default" 
-                  className="flex items-center gap-1"
-                  onClick={() => openCustomerPortal()}
-                  disabled={redirecting}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  {redirecting ? t.subscription.management.redirecting : t.subscription.management.manageSubscription}
-                </Button>
-              )}
+        {/* 只有Stripe和Creem用户才显示管理按钮，微信支付用户没有客户门户 */}
+        {(sub?.stripeCustomerId || sub?.creemCustomerId) && (
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">{t.subscription.management.title}</h3>
+            <div className="rounded-lg border p-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                {t.subscription.management.description}
+              </p>
+              <div className="flex gap-3">
+
+                  <Button 
+                    variant="default" 
+                    className="flex items-center gap-1"
+                    onClick={() => openCustomerPortal()}
+                    disabled={redirecting}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {redirecting ? t.subscription.management.redirecting : t.subscription.management.manageSubscription}
+                  </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

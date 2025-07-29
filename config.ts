@@ -31,16 +31,6 @@ function requireEnvForService(key: string, service: string, devDefault?: string)
   return value;
 }
 
-// Theme and i18n type definitions
-type Theme = 'light' | 'dark';
-type ColorScheme = 'default' | 'claude' | 'cosmic-night' | 'modern-minimal' | 'ocean-breeze';
-type Locale = 'en' | 'zh-CN';
-
-// Route configuration
-type RouteConfig = {
-  authRoutes: string[];
-  publicRoutes: string[];
-};
 
 // 计划类型定义
 
@@ -236,6 +226,10 @@ export const config = {
         },
         get apiKey() {
           return requireEnvForService('WECHAT_PAY_API_KEY', 'WeChat Pay');
+        },
+        get notifyUrl() {
+          // 需要设置成为公网地址，使用内网穿透工具
+          return requireEnvForService('WECHAT_PAY_NOTIFY_URL', 'WeChat Pay');
         }
       },
 
@@ -285,8 +279,8 @@ export const config = {
         },
         i18n: {
           'en': {
-            name: 'Monthly Plan',
-            description: 'Perfect for short-term projects',
+            name: 'Wechat Monthly Plan',
+            description: 'Monthly one time pay via WeChat Pay',
             duration: 'month',
             features: [
               'All premium features',
@@ -294,8 +288,8 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '月度订阅wechat',
-            description: '每月订阅，灵活管理',
+            name: '微信支付月度',
+            description: '通过微信支付的月度一次性支付',
             duration: '月',
             features: [
               '所有高级功能',
@@ -318,8 +312,8 @@ export const config = {
         stripePriceId: 'price_1RL2GgDjHLfDWeHDBHjoZaap',
         i18n: {
           'en': {
-            name: 'Monthly Plan',
-            description: 'Perfect for short-term projects',
+            name: 'Stripe Monthly Plan',
+            description: 'Monthly recurring subscription via Stripe',
             duration: 'month',
             features: [
               'All premium features',
@@ -327,8 +321,8 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '月度订阅',
-            description: '每月订阅，灵活管理',
+            name: 'Stripe 月度订阅',
+            description: '通过 Stripe 的月度循环订阅',
             duration: '月',
             features: [
               '所有高级功能',
@@ -349,8 +343,8 @@ export const config = {
         stripePriceId: 'price_1RMmc4DjHLfDWeHDp9Xhpn5X',
         i18n: {
           'en': {
-            name: 'Monthly Pro Plan',
-            description: 'Enhanced monthly plan with extra features',
+            name: 'Stripe Monthly Pro Plan',
+            description: 'Premium monthly subscription with higher pricing',
             duration: 'month',
             features: [
               'All premium features',
@@ -359,8 +353,8 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '月度专业版',
-            description: '每月订阅，专业功能',
+            name: 'Stripe 月度专业版',
+            description: '高价位的月度专业订阅',
             duration: '月',
             features: [
               '所有高级功能',
@@ -383,8 +377,8 @@ export const config = {
         stripePriceId: 'price_1RL2IcDjHLfDWeHDMCmobkzb',
         i18n: {
           'en': {
-            name: 'Lifetime',
-            description: 'One-time payment, lifetime access',
+            name: 'Stripe Lifetime',
+            description: 'One-time payment for permanent access',
             duration: 'lifetime',
             features: [
               'All premium features',
@@ -393,8 +387,8 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '终身会员',
-            description: '一次付费，永久使用',
+            name: 'Stripe 终身会员',
+            description: '一次性付费永久访问',
             duration: '终身',
             features: [
               '所有高级功能',
@@ -416,8 +410,8 @@ export const config = {
         creemProductId: 'prod_1M1c4ktVmvLgrNtpVB9oQf', // Will be set after creating product in Creem
         i18n: {
           'en': {
-            name: 'Monthly Plan (Creem)',
-            description: 'Perfect for short-term projects via Creem',
+            name: 'Creem Monthly Plan',
+            description: 'Monthly recurring subscription via Creem',
             duration: 'month',
             features: [
               'All premium features',
@@ -425,8 +419,39 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '月度订阅 (Creem)',
-            description: '每月订阅，通过Creem支付',
+            name: 'Creem 月度订阅',
+            description: '通过Creem的月度循环订阅',
+            duration: '月',
+            features: [
+              '所有高级功能',
+              '优先支持'
+            ]
+          }
+        }
+      },
+      monthlyCreemOneTime: {
+        provider: 'creem',
+        id: 'monthlyCreemOneTime',
+        amount: 10,
+        currency: 'USD',
+        duration: {
+          months: 1,
+          type: 'one_time'
+        },
+        creemProductId: 'prod_5BeCtf2LS6KcOvtLuPIpHz', // Will be set after creating product in Creem
+        i18n: {
+          'en': {
+            name: 'Creem Monthly Plan (One Time)',
+            description: 'One-time payment for monthly access via Creem',
+            duration: 'month',
+            features: [
+              'All premium features',
+              'Priority support'
+            ]
+          },
+          'zh-CN': {
+            name: 'Creem 月度订阅 (一次性)',
+            description: '通过Creem的一次性月度付费',
             duration: '月',
             features: [
               '所有高级功能',

@@ -270,7 +270,7 @@ export function DashboardTabs({
   };
 
   return (
-    <Card>
+    <Card className="p-0">
       <CardContent className="p-0">
         <div className="flex min-h-[600px] overflow-hidden">
           {/* 左侧导航 - 固定宽度 */}

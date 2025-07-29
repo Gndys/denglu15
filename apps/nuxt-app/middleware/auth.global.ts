@@ -22,6 +22,8 @@ interface ProtectedRouteConfig {
   requiresSubscription?: boolean
   // Auth route that should redirect logged-in users
   isAuthRoute?: boolean
+  // Redirect subscribed users (e.g., pricing page)
+  redirectIfSubscribed?: boolean
 }
 
 // Unified protected routes configuration - using Next.js style for consistency
@@ -83,6 +85,13 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     pattern: new RegExp(`^\\/(${locales.join('|')})\\/premium-features(\\/.*)?$`),
     type: 'page',
     requiresSubscription: true
+  },
+  
+  // Pricing page - redirect subscribed users to dashboard (require locale prefix)
+  {
+    pattern: new RegExp(`^\\/(${locales.join('|')})\\/pricing$`),
+    type: 'page',
+    redirectIfSubscribed: true
   },
   
   // AI features - require authentication (require locale prefix)
@@ -245,6 +254,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     
     console.log(`✅ Subscription check passed for: ${to.path}`)
+  }
+
+  // --- 2.5. Redirect If Subscribed Check (e.g., pricing page) ---
+  if (matchedRoute.redirectIfSubscribed) {
+    console.log(`💰 Checking if subscribed user should be redirected from: ${to.path}, User: ${user!.id}`)
+    
+    const hasSubscription = await hasValidSubscription(user!.id)
+    
+    if (hasSubscription) {
+      console.log(`↩️ User is subscribed, redirecting from ${to.path} to dashboard`)
+      return navigateTo('/dashboard')
+    }
+    
+    console.log(`✅ User is not subscribed, allowing access to: ${to.path}`)
   }
 
   // --- 3. Authorization Check (RBAC-Based) ---

@@ -81,6 +81,7 @@ const formatDateTime = (date: string | Date | null) => {
 }
 
 const getProviderDisplay = (subscription: Subscription) => {
+  console.log('subscription', subscription)
   if (subscription.stripeCustomerId || subscription.stripeSubscriptionId) {
     return 'Stripe'
   }
@@ -270,48 +271,48 @@ export const useSubscriptionColumns = (): ColumnDef<Subscription>[] => {
         return <div className="text-sm text-muted-foreground">{formatDateTime(date)}</div>
       },
     },
-    {
-      id: "actions",
-      header: () => <div className="text-center">{t.admin.subscriptions.table.columns.actions}</div>,
-      cell: ({ row }) => {
-        const subscription = row.original
+    // {
+    //   id: "actions",
+    //   header: () => <div className="text-center">{t.admin.subscriptions.table.columns.actions}</div>,
+    //   cell: ({ row }) => {
+    //     const subscription = row.original
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">{t.admin.subscriptions.table.actions.openMenu}</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t.admin.subscriptions.table.actions.actions}</DropdownMenuLabel>
-              <DropdownMenuItem 
-                onClick={() => {
-                  // TODO: Implement view subscription functionality
-                  console.log('View subscription:', subscription.id)
-                }}
-              >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                {t.admin.subscriptions.table.actions.viewSubscription}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {
-                  // TODO: Implement cancel functionality
-                  console.log('Cancel subscription:', subscription.id)
-                }}
-                disabled={subscription.status === 'canceled' || subscription.status === 'cancelled'}
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                {t.admin.subscriptions.table.actions.cancelSubscription}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-      enableHiding: false,
-      enableSorting: false,
-    },
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="h-8 w-8 p-0">
+    //             <span className="sr-only">{t.admin.subscriptions.table.actions.openMenu}</span>
+    //             <MoreHorizontal className="h-4 w-4" />
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>{t.admin.subscriptions.table.actions.actions}</DropdownMenuLabel>
+    //           <DropdownMenuItem 
+    //             onClick={() => {
+    //               // TODO: Implement view subscription functionality
+    //               console.log('View subscription:', subscription.id)
+    //             }}
+    //           >
+    //             <ExternalLink className="mr-2 h-4 w-4" />
+    //             {t.admin.subscriptions.table.actions.viewSubscription}
+    //           </DropdownMenuItem>
+    //           <DropdownMenuItem 
+    //             onClick={() => {
+    //               // TODO: Implement cancel functionality
+    //               console.log('Cancel subscription:', subscription.id)
+    //             }}
+    //             disabled={subscription.status === 'canceled' || subscription.status === 'cancelled'}
+    //           >
+    //             <RefreshCw className="mr-2 h-4 w-4" />
+    //             {t.admin.subscriptions.table.actions.cancelSubscription}
+    //           </DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     )
+    //   },
+    //   enableHiding: false,
+    //   enableSorting: false,
+    // },
   ]
 }
 

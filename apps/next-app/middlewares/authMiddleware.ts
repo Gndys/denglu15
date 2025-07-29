@@ -18,6 +18,7 @@ interface ProtectedRouteConfig {
   };
   requiresSubscription?: boolean; // New field to indicate if route requires subscription
   isAuthRoute?: boolean; // Auth route that should redirect logged-in users
+  redirectIfSubscribed?: boolean; // New field to redirect subscribed users (e.g., pricing page)
 }
 
 // --- Configuration for Protected Routes ---
@@ -65,6 +66,10 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     type: 'page',
   },
   {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/ai(\\/.*)?$`), 
+    type: 'page',
+  },
+  {
     pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/dashboard(\\/.*)?$`), 
     type: 'page',
     // requiresSubscription: true // 付费区域
@@ -73,6 +78,13 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/premium-features(\\/.*)?$`), 
     type: 'page',
     requiresSubscription: true // 高级功能区域
+  },
+  
+  // Pricing page - redirect subscribed users to dashboard
+  {
+    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/pricing$`),
+    type: 'page',
+    redirectIfSubscribed: true // 已订阅用户访问定价页面时重定向到仪表板
   },
   
   // Payment pages - require authentication
@@ -117,12 +129,14 @@ const protectedRoutes: ProtectedRouteConfig[] = [
   {
     pattern: new RegExp('^/api/payment/initiate(\\/.*)?$'),
     type: 'api',
-    // 支付发起API需要登录状态
   },
   {
     pattern: new RegExp('^/api/payment/query(\\/.*)?$'),
     type: 'api',
-    // 支付查询API需要登录状态
+  },
+  {
+    pattern: new RegExp('^/api/payment/verify(\\/.*)?$'),
+    type: 'api',
   },
   {
     pattern: new RegExp('^/api/chat(\\/.*)?$'), 
@@ -202,6 +216,22 @@ export async function authMiddleware(request: NextRequest): Promise<NextResponse
         return new NextResponse('Subscription required', { status: 402 });
       }
     }
+  }
+
+  // --- 2.5. Redirect If Subscribed Check (e.g., pricing page) ---
+  if (matchedRoute.redirectIfSubscribed) {
+    console.log(`Checking if subscribed user should be redirected from: ${pathname}, User: ${session!.user?.id}`);
+    const hasSubscription = await hasValidSubscription(session!.user?.id!);
+    console.log('hasSubscription for redirect check', hasSubscription);
+    
+    if (hasSubscription) {
+      console.log(`User is subscribed, redirecting from ${pathname} to dashboard`);
+      const currentLocale = pathname.split('/')[1];
+      const dashboardUrl = new URL(`/${currentLocale}/dashboard`, request.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+    
+    console.log(`User is not subscribed, allowing access to: ${pathname}`);
   }
 
   // --- 3. Authorization Check (Ability-Based) ---

@@ -324,7 +324,7 @@ export class CreemProvider implements PaymentProvider {
         creemCustomerId: webhookData.object.customer?.id || null,
         periodStart: now,
         periodEnd: periodEnd,
-        cancelAtPeriodEnd: false,
+        cancelAtPeriodEnd: true,
         metadata: JSON.stringify({
           checkoutId: webhookData.object.id,
           isLifetime: isLifetime
@@ -430,10 +430,9 @@ export class CreemProvider implements PaymentProvider {
         return { success: false };
       }
       
-      // 更新订阅状态为取消
+      // 更新订阅状态为期末取消（保持active状态，用户仍可使用到期末）
       await db.update(userSubscription)
         .set({
-          status: subscriptionStatus.CANCELLED,
           cancelAtPeriodEnd: true,
           updatedAt: new Date()
         })

@@ -788,12 +788,18 @@ export const en: Locale = {
         lifetime: "Lifetime",
         active: "Active",
         canceled: "Canceled",
+        cancelAtPeriodEnd: "Canceling at Period End",
         pastDue: "Past Due",
         unknown: "Unknown",
         noSubscription: "No Subscription"
       },
+      paymentType: {
+        recurring: "Recurring",
+        oneTime: "One-time"
+      },
       lifetimeAccess: "You have lifetime access",
       expires: "Expires:",
+      cancelingNote: "Your subscription will not renew and will end on:",
       noActiveSubscription: "You currently have no active subscription",
       manageSubscription: "Manage Subscription",
       viewPlans: "View Plans"

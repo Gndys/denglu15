@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@libs/database';
 import { subscription } from '@libs/database/schema/subscription';
 import { user } from '@libs/database/schema/user';
-import { eq, and, or, like, desc, asc, count } from 'drizzle-orm';
+import { eq, and, or, like, desc, asc, count, isNotNull, isNull } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     // 筛选参数
     const statusFilter = searchParams.get('status');
     const paymentTypeFilter = searchParams.get('paymentType');
+    const providerFilter = searchParams.get('provider');
     
     // 排序参数
     const sortBy = searchParams.get('sortBy') || 'createdAt';
@@ -32,13 +33,29 @@ export async function GET(request: NextRequest) {
     if (searchValue && searchField) {
       switch (searchField) {
         case 'id':
-          whereConditions.push(eq(subscription.id, searchValue));
+          whereConditions.push(like(subscription.id, `%${searchValue}%`));
           break;
         case 'userId':
           whereConditions.push(eq(subscription.userId, searchValue));
           break;
         case 'planId':
           whereConditions.push(like(subscription.planId, `%${searchValue}%`));
+          break;
+        case 'stripeSubscriptionId':
+          whereConditions.push(
+            and(
+              isNotNull(subscription.stripeSubscriptionId),
+              like(subscription.stripeSubscriptionId, `%${searchValue}%`)
+            )
+          );
+          break;
+        case 'creemSubscriptionId':
+          whereConditions.push(
+            and(
+              isNotNull(subscription.creemSubscriptionId),
+              like(subscription.creemSubscriptionId, `%${searchValue}%`)
+            )
+          );
           break;
         case 'userEmail':
           whereConditions.push(like(user.email, `%${searchValue}%`));
@@ -54,6 +71,37 @@ export async function GET(request: NextRequest) {
     // 支付类型筛选
     if (paymentTypeFilter && paymentTypeFilter !== 'all') {
       whereConditions.push(eq(subscription.paymentType, paymentTypeFilter));
+    }
+
+    // 支付提供商筛选
+    if (providerFilter && providerFilter !== 'all') {
+      if (providerFilter === 'stripe') {
+        whereConditions.push(
+          or(
+            isNotNull(subscription.stripeCustomerId),
+            isNotNull(subscription.stripeSubscriptionId)
+          )
+        );
+      } else if (providerFilter === 'creem') {
+        whereConditions.push(
+          or(
+            isNotNull(subscription.creemCustomerId),
+            isNotNull(subscription.creemSubscriptionId)
+          )
+        );
+      } else if (providerFilter === 'wechat') {
+        // WeChat provider: neither Stripe nor Creem identifiers
+        whereConditions.push(
+          and(
+            // No Stripe identifiers
+            isNull(subscription.stripeCustomerId),
+            isNull(subscription.stripeSubscriptionId),
+            // No Creem identifiers
+            isNull(subscription.creemCustomerId),
+            isNull(subscription.creemSubscriptionId)
+          )
+        );
+      }
     }
 
     // 构建最终的where条件
@@ -102,6 +150,8 @@ export async function GET(request: NextRequest) {
         paymentType: subscription.paymentType,
         stripeCustomerId: subscription.stripeCustomerId,
         stripeSubscriptionId: subscription.stripeSubscriptionId,
+        creemCustomerId: subscription.creemCustomerId,
+        creemSubscriptionId: subscription.creemSubscriptionId,
         periodStart: subscription.periodStart,
         periodEnd: subscription.periodEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,

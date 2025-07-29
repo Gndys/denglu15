@@ -138,9 +138,19 @@ onMounted(() => {
             <Package class="h-5 w-5 mr-2 text-primary" />
             <span class="font-medium">{{ t('subscription.overview.planType') }}</span>
           </div>
-          <span class="font-medium text-primary">
-            {{ isLifetime ? t('dashboard.subscription.status.lifetime') : getPlanName(planId) }}
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="font-medium text-primary">
+              {{ isLifetime ? t('dashboard.subscription.status.lifetime') : getPlanName(planId) }}
+            </span>
+            <span 
+              v-if="!isLifetime && sub" 
+              class="px-2 py-1 rounded-full border text-xs"
+            >
+              {{ sub.paymentType === 'recurring' 
+                ? t('dashboard.subscription.paymentType.recurring') 
+                : t('dashboard.subscription.paymentType.oneTime') }}
+            </span>
+          </div>
         </div>
         
         <div class="flex items-center justify-between">
@@ -148,9 +158,14 @@ onMounted(() => {
             <CreditCard class="h-5 w-5 mr-2 text-primary" />
             <span class="font-medium">{{ t('subscription.overview.status') }}</span>
           </div>
-          <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-            {{ t('subscription.overview.active') }}
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+              {{ t('subscription.overview.active') }}
+            </span>
+            <span v-if="sub?.cancelAtPeriodEnd" class="px-2 py-1 rounded-full bg-accent text-xs">
+              {{ t('dashboard.subscription.status.cancelAtPeriodEnd') }}
+            </span>
+          </div>
         </div>
         
         <template v-if="!isLifetime && sub">
@@ -181,7 +196,7 @@ onMounted(() => {
       </div>
 
       <!-- 分割线 -->
-      <div class="border-t pt-6">
+      <div class="border-t pt-6" v-if="sub?.stripeCustomerId || sub?.creemCustomerId">
         <h3 class="text-lg font-medium mb-4">{{ t('subscription.management.title') }}</h3>
         <div class="rounded-lg border p-4">
           <p class="text-sm text-muted-foreground mb-4">
@@ -190,7 +205,6 @@ onMounted(() => {
           <div class="flex gap-3">
             <!-- 只有Stripe和Creem用户才显示管理按钮，微信支付用户没有客户门户 -->
             <Button 
-              v-if="sub?.stripeCustomerId || sub?.creemCustomerId"
               variant="default" 
               class="flex items-center gap-1"
               @click="openCustomerPortal()"

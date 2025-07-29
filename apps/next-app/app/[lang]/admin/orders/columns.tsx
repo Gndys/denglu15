@@ -250,48 +250,48 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
         return <div className="text-sm text-muted-foreground">{formatDate(date)}</div>
       },
     },
-    {
-      id: "actions",
-      header: () => <div className="text-center">{t.admin.orders.table.columns.actions}</div>,
-      cell: ({ row }) => {
-        const order = row.original
+    // {
+    //   id: "actions",
+    //   header: () => <div className="text-center">{t.admin.orders.table.columns.actions}</div>,
+    //   cell: ({ row }) => {
+    //     const order = row.original
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">{t.admin.orders.table.actions.openMenu}</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t.admin.orders.table.actions.actions}</DropdownMenuLabel>
-              <DropdownMenuItem 
-                onClick={() => {
-                  // TODO: Implement view order functionality
-                  console.log('View order:', order.id)
-                }}
-              >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                {t.admin.orders.table.actions.viewOrder}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => {
-                  // TODO: Implement refund functionality
-                  console.log('Refund order:', order.id)
-                }}
-                disabled={order.status !== 'paid'}
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                {t.admin.orders.table.actions.refundOrder}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-      enableHiding: false,
-      enableSorting: false,
-    },
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="h-8 w-8 p-0">
+    //             <span className="sr-only">{t.admin.orders.table.actions.openMenu}</span>
+    //             <MoreHorizontal className="h-4 w-4" />
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>{t.admin.orders.table.actions.actions}</DropdownMenuLabel>
+    //           <DropdownMenuItem 
+    //             onClick={() => {
+    //               // TODO: Implement view order functionality
+    //               console.log('View order:', order.id)
+    //             }}
+    //           >
+    //             <ExternalLink className="mr-2 h-4 w-4" />
+    //             {t.admin.orders.table.actions.viewOrder}
+    //           </DropdownMenuItem>
+    //           <DropdownMenuItem 
+    //             onClick={() => {
+    //               // TODO: Implement refund functionality
+    //               console.log('Refund order:', order.id)
+    //             }}
+    //             disabled={order.status !== 'paid'}
+    //           >
+    //             <RefreshCw className="mr-2 h-4 w-4" />
+    //             {t.admin.orders.table.actions.refundOrder}
+    //           </DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     )
+    //   },
+    //   enableHiding: false,
+    //   enableSorting: false,
+    // },
   ]
 }
 
