@@ -35,24 +35,24 @@ npm install -g pnpm
 # 或使用 corepack (Node.js 16.10+)
 corepack enable
 corepack prepare pnpm@latest --activate
-```
-
-### 3. 安装项目依赖
-
-```bash
-# 安装所有依赖
-pnpm install
-
 # 验证安装
 pnpm --version
 ```
 
-### 4. 配置环境变量
+### 3. 复制环境变量模板
 
 ```bash
 # 复制环境变量模板
 cp env.example .env
 ```
+
+### 4. 安装项目依赖
+
+```bash
+# 安装所有依赖
+pnpm install
+```
+
 
 下一步 [数据库配置指南](./database.md)
 
