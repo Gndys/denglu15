@@ -264,6 +264,46 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { user, isAuthenticated } = await getUserSession()
   console.log(`🔍 Client session result: isAuthenticated=${isAuthenticated}, user=${user ? user.id : 'null'}`)
 
+  // --- Client-side authentication check ---
+  if (!isAuthenticated && matchedRoute.requiresAuth !== false && !matchedRoute.isAuthRoute) {
+    console.log(`🔒 Client-side authentication failed for: ${to.path}`)
+    const localePath = useLocalePath()
+    return navigateTo(localePath('/signin'))
+  }
+
+  // --- Handle auth routes for authenticated users (client-side) ---
+  if (matchedRoute.isAuthRoute && isAuthenticated) {
+    console.log(`↩️ Client-side: authenticated user accessing auth route, redirecting to dashboard`)
+    const localePath = useLocalePath()
+    return navigateTo(localePath('/dashboard'))
+  }
+
+  // --- Client-side permission check ---
+  if (matchedRoute.requiredPermission && isAuthenticated) {
+    console.log(`🛡️ Client-side permission check for: ${to.path}`)
+    
+    try {
+      const appUser = createAppUser(user!)
+      const hasPermission = can(appUser, matchedRoute.requiredPermission.action, matchedRoute.requiredPermission.subject)
+      
+      if (!hasPermission) {
+        console.log(`❌ Client-side permission denied for: ${to.path}`)
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'Access Denied: Insufficient permissions'
+        })
+      }
+      
+      console.log(`✅ Client-side permission granted for: ${to.path}`)
+    } catch (error) {
+      console.error('Client-side permission check failed:', error)
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Access Denied'
+      })
+    }
+  }
+
   // --- 客户端订阅检查（体验优化）---
   if (matchedRoute.requiresSubscription && isAuthenticated) {
     console.log(`💳 Client-side subscription check for: ${to.path}, User: ${user!.id}`)
