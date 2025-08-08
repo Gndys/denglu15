@@ -7,7 +7,7 @@
     </div>
 
     <!-- Data Table -->
-    <div class="rounded-md border">
+    <div class="rounded-md border bg-card">
       <Table>
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">

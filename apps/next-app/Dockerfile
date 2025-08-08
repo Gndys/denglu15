@@ -1,0 +1,65 @@
+# Next.js Production Dockerfile
+FROM node:22-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@9.4.0 --activate
+
+# Copy package files (从根目录构建时的路径)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json config.ts tsconfig.json ./
+COPY apps/next-app/package.json ./apps/next-app/
+COPY libs ./libs
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@9.4.0 --activate
+
+# Copy dependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/libs ./libs
+
+# Copy source code
+COPY apps/next-app ./apps/next-app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json config.ts tsconfig.json ./
+
+# Build the application
+ENV BUILD_TIME=true
+RUN pnpm build:next
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built application
+COPY --from=builder /app/apps/next-app/.next/standalone ./
+COPY --from=builder /app/apps/next-app/.next/static ./apps/next-app/.next/static
+COPY --from=builder /app/apps/next-app/public ./apps/next-app/public
+
+# Set correct permissions
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+EXPOSE 7001
+
+ENV PORT=7001
+ENV NODE_ENV=production
+ENV HOSTNAME="0.0.0.0"
+
+# Start the application
+CMD ["node", "apps/next-app/server.js"] 

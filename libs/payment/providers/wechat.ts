@@ -293,9 +293,9 @@ export class WechatPayProvider implements PaymentProvider {
     const authTag = _ciphertext.subarray(_ciphertext.length - 16);
     const data = _ciphertext.subarray(0, _ciphertext.length - 16);
     const decipher = crypto.createDecipheriv('aes-256-gcm', this.apiKey, nonce);
-    decipher.setAuthTag(authTag);
-    decipher.setAAD(Buffer.from(associated_data));
-    const decoded = decipher.update(data, undefined, 'utf8');
+    decipher.setAuthTag(new Uint8Array(authTag));
+    decipher.setAAD(new Uint8Array(Buffer.from(associated_data)));
+    const decoded = decipher.update(new Uint8Array(data), undefined, 'utf8');
 
     try {
       return JSON.parse(decoded);

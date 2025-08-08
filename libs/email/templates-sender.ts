@@ -1,6 +1,6 @@
-import { sendEmailByResend, ShipEasyEmailOptions, ResendResponse } from './resend';
+import { sendEmailByResend } from './providers/resend';
 import { templates, VerificationEmailParams, ResetPasswordEmailParams, EmailTemplate } from './templates/index';
-import { EmailProvider, EmailResponse } from './types';
+import { EmailProvider, EmailResponse, EmailOptions } from './types';
 import { config } from '@config';
 
 /**
@@ -9,9 +9,9 @@ import { config } from '@config';
 const DEFAULT_FROM = config.email.defaultFrom || 'noreply@tinyship.co';
 
 /**
- * 基础发送邮件配置，扩展自ShipEasyEmailOptions
+ * 基础发送邮件配置，扩展自EmailOptions
  */
-export interface SendEmailOptions extends Omit<ShipEasyEmailOptions, 'to' | 'from' | 'subject' | 'html'> {
+export interface SendEmailOptions extends Omit<EmailOptions, 'to' | 'from' | 'subject' | 'html'> {
   to: string;
   from?: string;
   subject: string;
@@ -34,7 +34,7 @@ async function sendEmail(options: SendEmailOptions): Promise<EmailResponse> {
   switch (provider) {
     case 'resend': {
       // 为Resend构建参数
-      const resendOptions: ShipEasyEmailOptions = {
+      const resendOptions: EmailOptions = {
         to: emailOptions.to,
         from: emailOptions.from,
         subject: emailOptions.subject,
@@ -48,11 +48,7 @@ async function sendEmail(options: SendEmailOptions): Promise<EmailResponse> {
       if (emailOptions.text) resendOptions.text = emailOptions.text;
       
       const response = await sendEmailByResend(resendOptions);
-      return {
-        success: !response.error,
-        id: response.id,
-        error: response.error ? { ...response.error, provider: 'resend' } : null
-      };
+      return response;
     }
       
     case 'sendgrid':

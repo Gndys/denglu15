@@ -37,6 +37,12 @@ export default defineNuxtConfig({
         'test.vikingship.uk'
       ]
     },
+    // External Next.js modules to avoid build conflicts
+    build: {
+      rollupOptions: {
+        external: ['next/headers', 'next/server', 'next/navigation']
+      }
+    },
     // Enable JSX support for Vue
     esbuild: {
       jsx: 'preserve',

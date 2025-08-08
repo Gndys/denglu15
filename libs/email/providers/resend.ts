@@ -2,13 +2,21 @@ import { Resend } from 'resend';
 import { EmailOptions, EmailResponse } from '../types';
 import { config } from '@config';
 
-const resend = new Resend(config.email.resend.apiKey);
+let resendInstance: Resend | null = null;
+
+function getResendInstance(): Resend {
+  if (!resendInstance) {
+    resendInstance = new Resend(config.email.resend.apiKey);
+  }
+  return resendInstance;
+}
 
 /**
  * 使用Resend发送邮件
  */
 export async function sendEmailByResend(options: EmailOptions): Promise<EmailResponse> {
   try {
+    const resend = getResendInstance();
     const { data: responseData, error } = await resend.emails.send({
       from: options.from || config.email.defaultFrom!,
       to: options.to,

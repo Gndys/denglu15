@@ -43,7 +43,7 @@ importers:
         version: 4.3.4(react@19.0.0)(zod@3.24.2)
       better-auth:
         specifier: 1.2.4
-        version: 1.2.4(typescript@5.3.3)
+        version: 1.2.4(typescript@5.8.3)
       chalk:
         specifier: 5.4.1
         version: 5.4.1
@@ -79,7 +79,7 @@ importers:
         version: 4.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       stripe:
         specifier: 18.1.0
-        version: 18.1.0(@types/node@20.10.5)
+        version: 18.1.0(@types/node@22.16.0)
       tsx:
         specifier: ^4.19.3
         version: 4.19.3
@@ -88,17 +88,14 @@ importers:
         version: 5.5.2
       validation-better-auth:
         specifier: 1.1.1
-        version: 1.1.1(typescript@5.3.3)
-      wechatpay-node-v3:
-        specifier: 2.2.1
-        version: 2.2.1
+        version: 1.1.1(typescript@5.8.3)
     devDependencies:
       '@types/mjml':
         specifier: 4.7.4
         version: 4.7.4
       '@types/node':
-        specifier: ^20.10.5
-        version: 20.10.5
+        specifier: ^22.16.0
+        version: 22.16.0
       '@types/pg':
         specifier: 8.15.4
         version: 8.15.4
@@ -112,11 +109,14 @@ importers:
         specifier: ^1.11.2
         version: 1.11.2
       typescript:
-        specifier: ^5.3.3
-        version: 5.3.3
+        specifier: ^5.8.3
+        version: 5.8.3
       vitest:
         specifier: 3.0.9
-        version: 3.0.9(@types/debug@4.1.12)(@types/node@20.10.5)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+        version: 3.0.9(@types/debug@4.1.12)(@types/node@22.16.0)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      zod:
+        specifier: 3.24.2
+        version: 3.24.2
 
   apps/next-app:
     dependencies:
@@ -195,6 +195,9 @@ importers:
       motion:
         specifier: 12.6.2
         version: 12.6.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      nanoid:
+        specifier: 5.1.5
+        version: 5.1.5
       next:
         specifier: 15.3.1-canary.7
         version: 15.3.1-canary.7(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -271,6 +274,9 @@ importers:
       tailwindcss:
         specifier: ^4.0.15
         version: 4.0.15
+      vue:
+        specifier: ^3.5.17
+        version: 3.5.17(typescript@5.8.3)
 
   apps/nuxt-app:
     dependencies:
@@ -1604,14 +1610,6 @@ packages:
   '@fastify/busboy@3.1.1':
     resolution: {integrity: sha512-5DGmA8FTdB2XbDeEwc/5ZXBl6UbBAyBOOLlPuBnZ/N1SwdH9Ii+cOX3tBROlDgcTXxjOYnLMVoKk9+FXAw0CJw==}
 
-  '@fidm/asn1@1.0.4':
-    resolution: {integrity: sha512-esd1jyNvRb2HVaQGq2Gg8Z0kbQPXzV9Tq5Z14KNIov6KfFD6PTaRIO8UpcsYiTNzOqJpmyzWgVTrUwFV3UF4TQ==}
-    engines: {node: '>= 8'}
-
-  '@fidm/x509@1.2.1':
-    resolution: {integrity: sha512-nwc2iesjyc9hkuzcrMCBXQRn653XuAUKorfWM8PZyJawiy1QzLj4vahwzaI25+pfpwOLvMzbJ0uKpWLDNmo16w==}
-    engines: {node: '>= 8'}
-
   '@floating-ui/core@1.7.2':
     resolution: {integrity: sha512-wNB5ooIKHQc+Kui96jE/n69rHFWAVoxn5CAzL1Xdd8FG03cgY3MLO+GF9U3W737fYDSgPWA6MReKhBQBop6Pcw==}
 
@@ -2394,9 +2392,6 @@ packages:
 
   '@oxc-project/types@0.75.0':
     resolution: {integrity: sha512-QMW+06WOXs7+F301Y3X0VpmWhwuQVc/X/RP2zF9OIwvSMmsif3xURS2wxbakFIABYsytgBcHpUcFepVS0Qnd3A==}
-
-  '@paralleldrive/cuid2@2.2.2':
-    resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -4391,9 +4386,6 @@ packages:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
     engines: {node: '>= 0.4'}
 
-  asap@2.0.6:
-    resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
-
   asn1js@3.0.6:
     resolution: {integrity: sha512-UOCGPYbl0tv8+006qks/dTgV9ajs97X2p0FAbyS2iyCRrmLSRolDaHdp+v/CLgnzHc3fVB+CwYiUmei7ndFcgA==}
     engines: {node: '>=12.0.0'}
@@ -4856,9 +4848,6 @@ packages:
   cookie@1.0.2:
     resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
     engines: {node: '>=18'}
-
-  cookiejar@2.1.4:
-    resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
 
   copy-anything@3.0.5:
     resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
@@ -5380,9 +5369,6 @@ packages:
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
-
-  dezalgo@1.0.4:
-    resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
 
   diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
@@ -5975,9 +5961,6 @@ packages:
   fast-npm-meta@0.4.4:
     resolution: {integrity: sha512-cq8EVW3jpX1U3dO1AYanz2BJ6n9ITQgCwE1xjNwI5jO2a9erE369OZNO8Wt/Wbw8YHhCD/dimH9BxRsY+6DinA==}
 
-  fast-safe-stringify@2.1.1:
-    resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
-
   fast-uri@3.0.6:
     resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
 
@@ -6099,9 +6082,6 @@ packages:
   formidable@1.2.6:
     resolution: {integrity: sha512-KcpbcpuLNOwrEjnbpMC0gS+X8ciDoZE1kkqzat4a8vrprf+s9pKNQ/QIwWfbfs4ltgmFl3MD177SNTkve3BwGQ==}
     deprecated: 'Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau'
-
-  formidable@2.1.5:
-    resolution: {integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==}
 
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
@@ -7373,10 +7353,6 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
-
-  methods@1.1.2:
-    resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
-    engines: {node: '>= 0.6'}
 
   micro-api-client@3.3.0:
     resolution: {integrity: sha512-y0y6CUB9RLVsy3kfgayU28746QrNMpSm9O/AYGNsBgOkJr/X/Jk0VLGoO8Ude7Bpa8adywzF+MzXNZRFRsNPhg==}
@@ -9261,11 +9237,6 @@ packages:
   stylis@4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
 
-  superagent@8.0.6:
-    resolution: {integrity: sha512-HqSe6DSIh3hEn6cJvCkaM1BLi466f1LHi4yubR0tpewlMpk4RUFFy35bKz8SsPBwYfIIJy5eclp+3tCYAuX0bw==}
-    engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
-
   supercluster@7.1.5:
     resolution: {integrity: sha512-EulshI3pGUM66o6ZdH3ReiFcvHpM3vAigyK+vcxdjpJyEbIIrtbmBdY23mGgnI24uXiGFvrGq9Gkum/8U7vJWg==}
 
@@ -9568,9 +9539,6 @@ packages:
   tw-animate-css@1.2.4:
     resolution: {integrity: sha512-yt+HkJB41NAvOffe4NweJU6fLqAlVx/mBX6XmHRp15kq0JxTtOKaIw8pVSWM1Z+n2nXtyi7cW6C9f0WG/F/QAQ==}
 
-  tweetnacl@1.0.3:
-    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
-
   twilio@5.5.2:
     resolution: {integrity: sha512-yrRh6immcL5xEVX7VmHsl3vU01x/fmqxf38kvxMrrtvEtAkYARYOPor9lt5T7964zC7l31k5sTrnLJmd2jjeOA==}
     engines: {node: '>=14.0'}
@@ -9606,11 +9574,6 @@ packages:
   typedarray.prototype.slice@1.0.5:
     resolution: {integrity: sha512-q7QNVDGTdl702bVFiI5eY4l/HkgCM6at9KhcFbgUAzezHFbOVy4+0O/lCjsABEQwbZPravVfBIiBVGo89yzHFg==}
     engines: {node: '>= 0.4'}
-
-  typescript@5.3.3:
-    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
@@ -10180,9 +10143,6 @@ packages:
     peerDependenciesMeta:
       webpack-cli:
         optional: true
-
-  wechatpay-node-v3@2.2.1:
-    resolution: {integrity: sha512-z+n8Mrzn0UNoLJPBRrY8ZG6yo9xxNihlGvwvAbV8Nlnm4tTap2UjwIikGkhryC8gOmwrlvJfSUd+x1cK3ks1hA==}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -11671,13 +11631,6 @@ snapshots:
 
   '@fastify/busboy@3.1.1': {}
 
-  '@fidm/asn1@1.0.4': {}
-
-  '@fidm/x509@1.2.1':
-    dependencies:
-      '@fidm/asn1': 1.0.4
-      tweetnacl: 1.0.3
-
   '@floating-ui/core@1.7.2':
     dependencies:
       '@floating-ui/utils': 0.2.10
@@ -12552,10 +12505,6 @@ snapshots:
   '@oxc-project/types@0.72.3': {}
 
   '@oxc-project/types@0.75.0': {}
-
-  '@paralleldrive/cuid2@2.2.2':
-    dependencies:
-      '@noble/hashes': 1.8.0
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
@@ -14181,13 +14130,13 @@ snapshots:
       chai: 5.2.0
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.0.9(vite@6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0))':
+  '@vitest/mocker@3.0.9(vite@6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0))':
     dependencies:
       '@vitest/spy': 3.0.9
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
 
   '@vitest/pretty-format@3.0.9':
     dependencies:
@@ -14221,7 +14170,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
-      vitest: 3.0.9(@types/debug@4.1.12)(@types/node@20.10.5)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      vitest: 3.0.9(@types/debug@4.1.12)(@types/node@22.16.0)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
 
   '@vitest/utils@3.0.9':
     dependencies:
@@ -14734,8 +14683,6 @@ snapshots:
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
 
-  asap@2.0.6: {}
-
   asn1js@3.0.6:
     dependencies:
       pvtsutils: 1.3.6
@@ -14867,7 +14814,7 @@ snapshots:
       mixin-deep: 1.3.2
       pascalcase: 0.1.1
 
-  better-auth@1.2.4(typescript@5.3.3):
+  better-auth@1.2.4(typescript@5.8.3):
     dependencies:
       '@better-auth/utils': 0.2.3
       '@better-fetch/fetch': 1.1.18
@@ -14880,7 +14827,7 @@ snapshots:
       jose: 5.10.0
       kysely: 0.27.6
       nanostores: 0.11.4
-      valibot: 1.0.0-beta.15(typescript@5.3.3)
+      valibot: 1.0.0-beta.15(typescript@5.8.3)
       zod: 3.24.2
     transitivePeerDependencies:
       - typescript
@@ -15263,8 +15210,6 @@ snapshots:
   cookie-es@2.0.0: {}
 
   cookie@1.0.2: {}
-
-  cookiejar@2.1.4: {}
 
   copy-anything@3.0.5:
     dependencies:
@@ -15792,11 +15737,6 @@ snapshots:
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
-
-  dezalgo@1.0.4:
-    dependencies:
-      asap: 2.0.6
-      wrappy: 1.0.2
 
   diff-match-patch@1.0.5: {}
 
@@ -16565,8 +16505,6 @@ snapshots:
 
   fast-npm-meta@0.4.4: {}
 
-  fast-safe-stringify@2.1.1: {}
-
   fast-uri@3.0.6: {}
 
   fastq@1.19.1:
@@ -16680,13 +16618,6 @@ snapshots:
       fetch-blob: 3.2.0
 
   formidable@1.2.6: {}
-
-  formidable@2.1.5:
-    dependencies:
-      '@paralleldrive/cuid2': 2.2.2
-      dezalgo: 1.0.4
-      once: 1.4.0
-      qs: 6.14.0
 
   fraction.js@4.3.7: {}
 
@@ -17456,7 +17387,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.10.5
+      '@types/node': 22.16.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -18053,8 +17984,6 @@ snapshots:
   merge-stream@2.0.0: {}
 
   merge2@1.4.1: {}
-
-  methods@1.1.2: {}
 
   micro-api-client@3.3.0: {}
 
@@ -20556,11 +20485,11 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  stripe@18.1.0(@types/node@20.10.5):
+  stripe@18.1.0(@types/node@22.16.0):
     dependencies:
       qs: 6.14.0
     optionalDependencies:
-      '@types/node': 20.10.5
+      '@types/node': 22.16.0
 
   striptags@3.2.0: {}
 
@@ -20588,21 +20517,6 @@ snapshots:
       postcss-selector-parser: 7.1.0
 
   stylis@4.2.0: {}
-
-  superagent@8.0.6:
-    dependencies:
-      component-emitter: 1.3.1
-      cookiejar: 2.1.4
-      debug: 4.4.1
-      fast-safe-stringify: 2.1.1
-      form-data: 4.0.3
-      formidable: 2.1.5
-      methods: 1.1.2
-      mime: 2.6.0
-      qs: 6.14.0
-      semver: 7.7.2
-    transitivePeerDependencies:
-      - supports-color
 
   supercluster@7.1.5:
     dependencies:
@@ -20911,8 +20825,6 @@ snapshots:
 
   tw-animate-css@1.2.4: {}
 
-  tweetnacl@1.0.3: {}
-
   twilio@5.5.2:
     dependencies:
       axios: 1.10.0
@@ -20977,8 +20889,6 @@ snapshots:
       math-intrinsics: 1.1.0
       typed-array-buffer: 1.0.3
       typed-array-byte-offset: 1.0.4
-
-  typescript@5.3.3: {}
 
   typescript@5.8.3: {}
 
@@ -21302,9 +21212,9 @@ snapshots:
 
   v8-compile-cache@2.4.0: {}
 
-  valibot@1.0.0-beta.15(typescript@5.3.3):
+  valibot@1.0.0-beta.15(typescript@5.8.3):
     optionalDependencies:
-      typescript: 5.3.3
+      typescript: 5.8.3
 
   valid-data-url@3.0.1: {}
 
@@ -21313,10 +21223,10 @@ snapshots:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
 
-  validation-better-auth@1.1.1(typescript@5.3.3):
+  validation-better-auth@1.1.1(typescript@5.8.3):
     dependencies:
       '@standard-schema/spec': 1.0.0
-      better-auth: 1.2.4(typescript@5.3.3)
+      better-auth: 1.2.4(typescript@5.8.3)
     transitivePeerDependencies:
       - typescript
 
@@ -21363,13 +21273,13 @@ snapshots:
     dependencies:
       vite: 6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
 
-  vite-node@3.0.9(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
+  vite-node@3.0.9(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -21454,23 +21364,6 @@ snapshots:
       svgo: 3.3.2
       vue: 3.5.17(typescript@5.8.3)
 
-  vite@6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
-    dependencies:
-      esbuild: 0.25.5
-      fdir: 6.4.6(picomatch@4.0.2)
-      picomatch: 4.0.2
-      postcss: 8.5.6
-      rollup: 4.44.1
-      tinyglobby: 0.2.14
-    optionalDependencies:
-      '@types/node': 20.10.5
-      fsevents: 2.3.3
-      jiti: 2.4.2
-      lightningcss: 1.30.1
-      terser: 5.43.1
-      tsx: 4.19.3
-      yaml: 2.8.0
-
   vite@6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.5
@@ -21488,10 +21381,10 @@ snapshots:
       tsx: 4.19.3
       yaml: 2.8.0
 
-  vitest@3.0.9(@types/debug@4.1.12)(@types/node@20.10.5)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
+  vitest@3.0.9(@types/debug@4.1.12)(@types/node@22.16.0)(@vitest/ui@3.0.9)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0):
     dependencies:
       '@vitest/expect': 3.0.9
-      '@vitest/mocker': 3.0.9(vite@6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0))
+      '@vitest/mocker': 3.0.9(vite@6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.0.9
       '@vitest/snapshot': 3.0.9
@@ -21507,12 +21400,12 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 6.3.5(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
-      vite-node: 3.0.9(@types/node@20.10.5)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      vite: 6.3.5(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
+      vite-node: 3.0.9(@types/node@22.16.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.19.3)(yaml@2.8.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/debug': 4.1.12
-      '@types/node': 20.10.5
+      '@types/node': 22.16.0
       '@vitest/ui': 3.0.9(vitest@3.0.9)
     transitivePeerDependencies:
       - jiti
@@ -21648,13 +21541,6 @@ snapshots:
       - '@swc/core'
       - esbuild
       - uglify-js
-
-  wechatpay-node-v3@2.2.1:
-    dependencies:
-      '@fidm/x509': 1.2.1
-      superagent: 8.0.6
-    transitivePeerDependencies:
-      - supports-color
 
   whatwg-url@5.0.0:
     dependencies:

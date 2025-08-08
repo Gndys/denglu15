@@ -26,6 +26,11 @@ function requireEnvForService(key: string, service: string, devDefault?: string)
       console.warn(`Warning: Using default value for ${key} in development. Set ${key} in .env file for production.`);
       return devDefault;
     }
+    // During build time, return a placeholder to avoid build failures
+    if (process.env.BUILD_TIME === 'true') {
+      console.warn(`Warning: Missing ${key} for ${service} service during build. This will be validated at runtime.`);
+      return `__BUILD_TIME_PLACEHOLDER_${key}__`;
+    }
     throw new Error(`Missing required environment variable: ${key} for ${service} service. This service is required for the application to function.`);
   }
   return value;

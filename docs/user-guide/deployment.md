@@ -24,7 +24,7 @@
 
 **基础环境：**
 - **Node.js**: v22+ (LTS 推荐)
-- **pnpm**: v8.6.0+
+- **pnpm**: v9.4.0+
 - **Git**: 用于代码拉取
 - **PM2**: 进程管理 (可选，推荐)
 
@@ -142,13 +142,16 @@ FROM node:22-alpine
 
 2. **构建和运行**
    ```bash
+   # ⚠️ 重要：必须在项目根目录运行构建命令
+   cd /path/to/shipeasy
+   
    # 构建镜像
-   docker build -t shipeasy-next ./apps/next-app
+   docker build -t shipeasy-next -f apps/next-app/Dockerfile .
    
    # 运行容器（通过环境变量传入配置）
    docker run -p 7001:7001 \
      -e NODE_ENV=production \
-     -e DATABASE_URL="postgresql://user:password@host:5432/database" \
+     -e DATABASE_URL="postgresql://user:password@host.docker.internal:5432/database" \
      -e BETTER_AUTH_SECRET="your-secret" \
      -e BETTER_AUTH_URL="https://yourdomain.com" \
      shipeasy-next
@@ -248,8 +251,17 @@ CMD ["pnpm", "start:nuxt"]
 
 **构建和运行：**
 ```bash
+# ⚠️ 重要：必须在项目根目录运行构建命令
+cd /path/to/shipeasy
+
 # 构建镜像
-docker build -t shipeasy-nuxt ./apps/nuxt-app
+docker build -t shipeasy-nuxt -f apps/nuxt-app/Dockerfile .
+
+# 运行容器
+docker run -p 7001:7001 \
+  -e NODE_ENV=production \
+  -e DATABASE_URL="postgresql://user:password@host.docker.internal:5432/database" \
+  shipeasy-nuxt
 
 # 或使用 .env 文件
 docker run -p 7001:7001 --env-file .env shipeasy-nuxt
@@ -405,3 +417,6 @@ tail -f /var/log/nginx/error.log
 ---
 
 选择适合您需求的部署方式，确保在生产环境中正确配置所有环境变量和安全设置。 
+
+sudo curl -fsSL http://mirrors.aliyuncs.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] http://mirrors.aliyuncs.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"

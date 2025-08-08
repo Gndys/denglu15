@@ -110,7 +110,7 @@ export function DataTable<TData, TValue>({
         <ColumnToggle table={table} />
       </div>
       
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

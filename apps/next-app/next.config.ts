@@ -40,6 +40,8 @@ const nextConfig: NextConfig= {
   },
   // https://github.com/vercel/next.js/issues/50042
   serverExternalPackages: ['mjml', 'handlebars'],
+  // Enable standalone mode for Docker deployment
+  output: 'standalone',
   experimental: {
     // 允许导入外部目录
     externalDir: true,
