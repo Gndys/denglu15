@@ -1,35 +1,53 @@
 # Docker 部署快速指南
 
-## 🚀 快速开始
+## 🚀 推荐方式：Docker Compose
+
+使用项目根目录的 `docker compose.yml` 文件：
+
+```bash
+# 启动 Next.js 应用
+docker compose --profile next up -d
+
+# 启动 Nuxt.js 应用  
+docker compose --profile nuxt up -d
+
+# 查看日志
+docker compose logs -f
+
+# 停止应用
+docker compose down
+```
+
+## 🔧 手动 Docker 部署
 
 ### Next.js 部署
 
 ```bash
 # 1. 在项目根目录构建镜像
-docker build -t shipeasy-next -f apps/next-app/Dockerfile .
+docker build -t tinyship-next -f apps/next-app/Dockerfile .
 
 # 2. 运行容器
 docker run -d \
-  --name shipeasy-next \
+  --name tinyship-next \
   -p 7001:7001 \
   --env-file .env \
   --restart unless-stopped \
-  shipeasy-next
+  tinyship-next
 ```
 
 ### Nuxt.js 部署
 
 ```bash
 # 1. 在项目根目录构建镜像
-docker build -t shipeasy-nuxt -f apps/nuxt-app/Dockerfile .
+docker build -t tinyship-nuxt -f apps/nuxt-app/Dockerfile .
 
 # 2. 运行容器
 docker run -d \
-  --name shipeasy-nuxt \
+  --name tinyship-nuxt \
   -p 7001:7001 \
   --env-file .env \
   --restart unless-stopped \
-  shipeasy-nuxt
+  tinyship-nuxt
 ```
 
 ## ⚠️ 重要提醒
@@ -58,18 +76,26 @@ Dockerfile 会自动复制这些必要的配置文件：
 - 实际部署时仍会在运行时验证必要的环境变量
 
 ### 数据库连接
-Docker 容器中**不能使用 `localhost`** 连接外部服务：
+Docker 容器中**不能使用 `localhost`** 连接宿主机服务：
 
 ```bash
-# ❌ 错误
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
+# ❌ 错误 - 容器内访问不到宿主机的 localhost
+DATABASE_URL=postgresql://localhost:5432/db
 
-# ✅ 正确 (连接宿主机)
-DATABASE_URL=postgresql://user:pass@host.docker.internal:5432/db
+# ✅ 正确 - 连接宿主机数据库（需要明确指定用户名）
+DATABASE_URL=postgresql://viking@host.docker.internal:5432/tinyship_dev
 
-# ✅ 正确 (连接远程数据库)
+# ✅ 正确 - 带密码的连接
+DATABASE_URL=postgresql://user:password@host.docker.internal:5432/db
+
+# ✅ 正确 - 连接远程数据库
 DATABASE_URL=postgresql://user:pass@your-db-server.com:5432/db
 ```
+
+**重要提示**：
+- 必须明确指定用户名，即使本地不需要用户名也要在 Docker 中指定
+- 对于 Homebrew 安装的 PostgreSQL，用户名通常是你的系统用户名
+- 只有数据库等后端服务需要修改为 `host.docker.internal`，应用的对外 URL (如 `APP_BASE_URL`) 不需要修改
 
 ## 🔧 常用命令
 
@@ -78,17 +104,17 @@ DATABASE_URL=postgresql://user:pass@your-db-server.com:5432/db
 docker ps
 
 # 查看日志
-docker logs shipeasy-next
-docker logs shipeasy-nuxt
+docker logs tinyship-next
+docker logs tinyship-nuxt
 
 # 停止容器
-docker stop shipeasy-next
+docker stop tinyship-next
 
 # 删除容器
-docker rm shipeasy-next
+docker rm tinyship-next
 
 # 删除镜像
-docker rmi shipeasy-next
+docker rmi tinyship-next
 ```
 
 ## 📋 环境变量示例
@@ -97,7 +123,10 @@ docker rmi shipeasy-next
 
 ```bash
 NODE_ENV=production
-DATABASE_URL=postgresql://user:password@host.docker.internal:5432/shipeasy
+# 数据库连接 - 使用 host.docker.internal 连接宿主机，必须指定用户名
+DATABASE_URL=postgresql://viking@host.docker.internal:5432/tinyship_dev
+# 应用 URL - 保持实际访问地址，不使用 host.docker.internal
+APP_BASE_URL=https://yourdomain.com
 BETTER_AUTH_SECRET=your-production-secret-key
 BETTER_AUTH_URL=https://yourdomain.com
 RESEND_API_KEY=your-resend-api-key
