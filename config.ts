@@ -245,6 +245,21 @@ export const config = {
         get publicKey() {
           const pemKey = requireEnvForService('WECHAT_PAY_PUBLIC_KEY', 'WeChat Pay');
           return Buffer.from(pemKey, 'utf8');
+        },
+        /**
+         * WeChat Pay Payment Public Key (for signature verification)
+         * This is the official WeChat Pay public key for verifying signatures
+         */
+        get paymentPublicKey() {
+          const pemKey = getEnvForService('WECHAT_PAY_PAYMENT_PUBLIC_KEY', 'WeChat Pay Payment Public Key');
+          return pemKey ? Buffer.from(pemKey, 'utf8') : undefined;
+        },
+        /**
+         * WeChat Pay Public Key ID
+         * This is used to identify which WeChat Pay public key to use for verification
+         */
+        get publicKeyId() {
+          return getEnvForService('WECHAT_PAY_PUBLIC_KEY_ID', 'WeChat Pay Public Key ID');
         }
       },
 
