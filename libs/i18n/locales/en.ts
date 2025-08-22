@@ -1032,8 +1032,8 @@ export const en: Locale = {
           className: "col-span-1 row-span-1"
         },
         {
-          title: "Monorepo Architecture",
-          description: "Simplified Monorepo structure with libs abstract interface design, easily extend various cloud service providers, high code reuse, clear architecture.",
+          title: "No Vendor Lock-in Architecture",
+          description: "Open Monorepo architecture with libs abstract interface design, freely choose any cloud service providers, databases, payment providers, avoid technology binding.",
           className: "col-span-2 row-span-1"
         },
         {
@@ -1047,8 +1047,8 @@ export const en: Locale = {
           className: "col-span-1 row-span-1"
         },
         {
-          title: "No Vendor Lock-in",
-          description: "Open architecture design, freely choose cloud service providers, databases, payment providers, avoid technology binding, maintain maximum flexibility.",
+          title: "Theme System",
+          description: "Modern theme system based on shadcn/ui with dark mode support, deep customization and branding, making applications have unique visual experience.",
           className: "col-span-1 row-span-1"
         }
       ],
@@ -1072,11 +1072,11 @@ export const en: Locale = {
         {
           title: "Dual System Support",
           subtitle: "One codebase, dual market coverage",
-          description: "Perfect adaptation to different market needs domestically and internationally. Domestic support for WeChat login, phone login, WeChat Pay and other localized features; International support for mainstream OAuth login (Google, GitHub, Apple), Stripe and Lemon Squeezy payment systems. One codebase, dual market coverage.",
+          description: "Perfect adaptation to different market needs domestically and internationally. Domestic support for WeChat login, phone login, WeChat Pay and other localized features; International support for mainstream OAuth login (Google, GitHub, Apple), Stripe and Creem payment systems. One codebase, dual market coverage.",
           highlights: [
             "WeChat login & phone login",
             "OAuth login (Google, GitHub, Apple)",
-            "WeChat Pay & Stripe & Lemon Squeezy",
+            "WeChat Pay & Stripe & Creem",
             "Seamless domestic and international switching"
           ],
           imageTitle: "Dual System Architecture"
@@ -1084,24 +1084,23 @@ export const en: Locale = {
         {
           title: "Built-in Admin Panel",
           subtitle: "Enterprise-grade management backend, ready to use",
-          description: "Ready-to-use management backend providing complete user management, subscription management, data analysis and other functions. Built on modern UI component library, supports role permission control, real-time data monitoring, batch operations and other enterprise-grade functions. Let you focus on business logic, not repetitive management interface development.",
+          description: "Ready-to-use management backend providing lightweight user management, subscription management, order management and other functions. Built on modern UI component library, supports role permission control, real-time data monitoring and other functions. Let you focus on business logic, not repetitive management interface development.",
           highlights: [
-            "User management & subscription management",
-            "Data analysis & real-time monitoring",
+            "User management",
+            "Subscription management",
             "Role permission control",
-            "Batch operation functions"
+            "Order management"
           ],
           imageTitle: "Management Backend"
         },
         {
           title: "AI Ready Integration",
           subtitle: "Based on Vercel AI SDK, plug and play",
-          description: "Complete AI solution based on Vercel AI SDK. Built-in simple AI Chat page, supports multiple AI model switching (OpenAI, Claude, Gemini, etc.). Provides streaming responses, conversation history, usage statistics and other functions, making your application instantly AI-capable.",
+          description: "Complete AI solution based on Vercel AI SDK. Built-in simple AI Chat page, supports multiple AI model switching (OpenAI, Claude, Gemini, etc.), making your application instantly AI-capable.",
           highlights: [
             "Vercel AI SDK integration",
-            "Multi-model support (OpenAI, Claude, Gemini)",
-            "Streaming responses & conversation history",
-            "Usage statistics & AI Chat page"
+            "Multi-model support (OpenAI, Claude, Gemini, etc.)",
+            "Streaming responses",
           ],
           imageTitle: "AI Integration"
         }
@@ -1120,6 +1119,14 @@ export const en: Locale = {
           features: ["Dual framework support", "Authentication system", "Payment integration", "Internationalization support", "AI development ready", "Built-in Admin Panel"]
         },
         {
+          title: "Theme System Upgrade",
+          description: "Launch new theme system providing multiple beautiful UI themes and layout choices. Support deep customization and branding, making your application have unique visual experience.",
+          timeline: "2025 Q2",
+          status: "completed",
+          statusText: "Completed",
+          features: ["Multiple UI themes", "Dark mode support", "Component library expansion"]
+        },
+        {
           title: "Third-party Service Expansion",
           description: "Greatly expand third-party service support, covering more cloud service providers and SaaS tools. Through unified interface design, let you easily switch and integrate various service providers.",
           timeline: "2025 Q3",
@@ -1134,14 +1141,6 @@ export const en: Locale = {
           status: "planned",
           statusText: "Planned",
           features: ["Blog system", "Documentation system", "Knowledge base search"]
-        },
-        {
-          title: "Theme System Upgrade",
-          description: "Launch new theme system providing multiple beautiful UI themes and layout choices. Support deep customization and branding, making your application have unique visual experience.",
-          timeline: "2026 Q1",
-          status: "planned",
-          statusText: "Planned",
-          features: ["Multiple UI themes", "Dark mode support", "Component library expansion"]
         },
         {
           title: "Video Tutorial System",

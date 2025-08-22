@@ -1141,8 +1141,8 @@ export const zhCN: Locale = {
           className: "col-span-1 row-span-1"
         },
         {
-          title: "Monorepo 架构",
-          description: "简化的 Monorepo 结构，libs 抽象接口设计，轻松扩展各种云服务商，代码复用率高，架构清晰。",
+          title: "无厂商锁定架构",
+          description: "开放式 Monorepo 架构，libs 抽象接口设计，可自由选择任何云服务商、数据库、支付提供商，避免技术绑定。",
           className: "col-span-2 row-span-1"
         },
         {
@@ -1156,8 +1156,8 @@ export const zhCN: Locale = {
           className: "col-span-1 row-span-1"
         },
         {
-          title: "无厂商锁定",
-          description: "开放架构设计，可自由选择云服务商、数据库、支付提供商等，避免技术绑定，保持最大灵活性。",
+          title: "主题系统",
+          description: "基于 shadcn/ui 的现代化主题系统，支持暗黑模式，深度定制和品牌化，让应用拥有独特视觉体验。",
           className: "col-span-1 row-span-1"
         }
       ],
@@ -1181,11 +1181,11 @@ export const zhCN: Locale = {
         {
           title: "国内外双体系支持",
           subtitle: "一套代码，双市场覆盖",
-          description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe 和 Lemon Squeezy 支付体系。一套代码，双市场覆盖。",
+          description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe 和 Creem 支付体系。一套代码，双市场覆盖。",
           highlights: [
             "微信登录 & 手机号登录",
             "OAuth 登录（Google、GitHub、Apple）",
-            "微信支付 & Stripe & Lemon Squeezy",
+            "微信支付 & Stripe & Creem",
             "国内外无缝切换"
           ],
           imageTitle: "双体系架构"
@@ -1193,24 +1193,23 @@ export const zhCN: Locale = {
         {
           title: "内置 Admin Panel",
           subtitle: "企业级管理后台，开箱即用",
-          description: "开箱即用的管理后台，提供完整的用户管理、订阅管理、数据分析等功能。基于现代化 UI 组件库构建，支持角色权限控制、实时数据监控、批量操作等企业级功能。让你专注于业务逻辑，而非重复的管理界面开发。",
+          description: "开箱即用的管理后台，提供轻量级的用户管理、订阅管理、订单管理等功能。基于现代化 UI 组件库构建，支持角色权限控制、实时数据监控等功能。让你专注于业务逻辑，而非重复的管理界面开发。",
           highlights: [
-            "用户管理 & 订阅管理",
-            "数据分析 & 实时监控",
+            "用户管理",
+            "订阅管理",
             "角色权限控制",
-            "批量操作功能"
+            "订单管理"
           ],
           imageTitle: "管理后台"
         },
         {
           title: "AI Ready 集成",
           subtitle: "基于 Vercel AI SDK，即插即用",
-          description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。内置简易的 AI Chat 页面，支持多种 AI 模型切换（OpenAI、Claude、Gemini 等）。提供流式响应、对话历史、使用量统计等功能，让你的应用瞬间具备 AI 能力。",
+          description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。内置简易的 AI Chat 页面，支持多种 AI 模型切换（OpenAI、Claude、Gemini 等），让你的应用瞬间具备 AI 能力。",
           highlights: [
             "Vercel AI SDK 集成",
-            "多模型支持（OpenAI、Claude、Gemini）",
-            "流式响应 & 对话历史",
-            "使用量统计 & AI Chat 页面"
+            "多模型支持（OpenAI、Claude、Gemini 等）",
+            "流式响应",
           ],
           imageTitle: "AI 集成"
         }
@@ -1229,6 +1228,14 @@ export const zhCN: Locale = {
           features: ["双框架支持", "身份认证系统", "支付集成", "国际化支持", "AI 开发就绪", "内置 Admin Panel"]
         },
         {
+          title: "主题系统升级",
+          description: "推出全新的主题系统，提供多种精美的 UI 主题和布局选择。支持深度定制和品牌化，让你的应用拥有独特的视觉体验。",
+          timeline: "2025 Q2",
+          status: "completed",
+          statusText: "已完成",
+          features: ["多套 UI 主题", "深色模式支持", "组件库扩展"]
+        },
+        {
           title: "第三方服务扩展",
           description: "大幅扩展第三方服务支持，覆盖更多云服务商和 SaaS 工具。通过统一的接口设计，让你轻松切换和集成各种服务提供商。",
           timeline: "2025 Q3",
@@ -1244,14 +1251,7 @@ export const zhCN: Locale = {
           statusText: "计划中",
           features: ["博客系统", "文档系统", "知识库搜索"]
         },
-        {
-          title: "主题系统升级",
-          description: "推出全新的主题系统，提供多种精美的 UI 主题和布局选择。支持深度定制和品牌化，让你的应用拥有独特的视觉体验。",
-          timeline: "2026 Q1",
-          status: "planned",
-          statusText: "计划中",
-          features: ["多套 UI 主题", "深色模式支持", "组件库扩展"]
-        },
+
         {
           title: "视频教程体系",
           description: "制作完整的视频教程系列，从基础使用到高级定制，帮助开发者快速掌握 TinyShip 的各项功能和最佳实践。",

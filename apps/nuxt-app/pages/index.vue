@@ -373,7 +373,7 @@
                   
                   <div class="flex flex-wrap gap-2">
                     <span 
-                      v-for="(feature, idx) in tm(item.features) as any"
+                      v-for="(feature, idx) in item.features"
                       :key="idx" 
                       :class="[
                         'px-2 py-1 rounded-full text-xs font-medium',

@@ -344,6 +344,8 @@ export class WechatPayProvider implements PaymentProvider {
       'Accept': 'application/json',
       'Accept-Language': 'zh-CN',
       'Authorization': `WECHATPAY2-SHA256-RSA2048 mchid="${this.mchId}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${this.serialNo}"`,
+      // https://pay.weixin.qq.com/doc/v3/merchant/4012154180#5.2-%E5%88%87%E6%8D%A2%E9%AA%8C%E7%AD%BE%E5%92%8C%E5%AE%9E%E7%8E%B0%E5%9B%9E%E8%B0%83%E5%85%BC%E5%AE%B9
+      'Wechatpay-Serial': this.publicKeyId ? this.publicKeyId : this.serialNo
     };
 
     console.log('Request details:', {
