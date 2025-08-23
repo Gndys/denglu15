@@ -168,6 +168,28 @@ export default defineNuxtConfig({
      * @default "./components/ui"
      */
     componentDir: './components/ui'
+  },
+
+  // App configuration including favicon and metadata
+  app: {
+    head: {
+      link: [
+        // Favicon configuration - matching Next.js app
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/android-chrome-192x192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/android-chrome-512x512.png' },
+        { rel: 'mask-icon', href: '/logo.svg', color: '#3b82f6' },
+        { rel: 'manifest', href: '/site.webmanifest' }
+      ],
+      meta: [
+        { name: 'theme-color', content: '#3b82f6' },
+        { name: 'msapplication-TileColor', content: '#3b82f6' },
+        { name: 'msapplication-config', content: 'none' }
+      ]
+    }
   }
 
 })
