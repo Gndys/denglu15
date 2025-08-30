@@ -2,7 +2,8 @@
 export { 
   createValidators,
   createValidators as createUserValidators, 
-  countryCodes, 
+  countryCodes,
+  getCountriesWithNames,
   type CountryCode 
 } from './user';
 

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { userRoles } from '../database/constants';
-
+import { getTranslation } from '../i18n';
 // 手机号码数据类型
 export interface CountryCode {
   code: string;
-  name: string;
+  nameKey: string; // i18n key instead of hardcoded name
   flag: string;
   phoneLength: number[];
   format?: string;
@@ -12,21 +12,31 @@ export interface CountryCode {
 
 // 常用国家/地区代码
 export const countryCodes: CountryCode[] = [
-  { code: '+86', name: '中国', flag: '🇨🇳', phoneLength: [11], format: 'XXX XXXX XXXX' },
-  { code: '+1', name: '美国', flag: '🇺🇸', phoneLength: [10], format: 'XXX XXX XXXX' },
-  { code: '+44', name: '英国', flag: '🇬🇧', phoneLength: [10, 11], format: 'XXXX XXX XXXX' },
-  { code: '+81', name: '日本', flag: '🇯🇵', phoneLength: [10, 11], format: 'XX XXXX XXXX' },
-  { code: '+82', name: '韩国', flag: '🇰🇷', phoneLength: [10, 11], format: 'XX XXXX XXXX' },
-  { code: '+65', name: '新加坡', flag: '🇸🇬', phoneLength: [8], format: 'XXXX XXXX' },
-  { code: '+852', name: '香港', flag: '🇭🇰', phoneLength: [8], format: 'XXXX XXXX' },
-  { code: '+853', name: '澳门', flag: '🇲🇴', phoneLength: [8], format: 'XXXX XXXX' },
-  { code: '+61', name: '澳大利亚', flag: '🇦🇺', phoneLength: [9], format: 'XXX XXX XXX' },
-  { code: '+33', name: '法国', flag: '🇫🇷', phoneLength: [10], format: 'X XX XX XX XX' },
-  { code: '+49', name: '德国', flag: '🇩🇪', phoneLength: [10, 11], format: 'XXX XXXXXXX' },
-  { code: '+91', name: '印度', flag: '🇮🇳', phoneLength: [10], format: 'XXXXX XXXXX' },
-  { code: '+60', name: '马来西亚', flag: '🇲🇾', phoneLength: [9, 10], format: 'XX XXXX XXXX' },
-  { code: '+66', name: '泰国', flag: '🇹🇭', phoneLength: [9], format: 'X XXXX XXXX' },
+  { code: '+86', nameKey: 'china', flag: '🇨🇳', phoneLength: [11], format: 'XXX XXXX XXXX' },
+  { code: '+1', nameKey: 'usa', flag: '🇺🇸', phoneLength: [10], format: 'XXX XXX XXXX' },
+  { code: '+44', nameKey: 'uk', flag: '🇬🇧', phoneLength: [10, 11], format: 'XXXX XXX XXXX' },
+  { code: '+81', nameKey: 'japan', flag: '🇯🇵', phoneLength: [10, 11], format: 'XX XXXX XXXX' },
+  { code: '+82', nameKey: 'korea', flag: '🇰🇷', phoneLength: [10, 11], format: 'XX XXXX XXXX' },
+  { code: '+65', nameKey: 'singapore', flag: '🇸🇬', phoneLength: [8], format: 'XXXX XXXX' },
+  { code: '+852', nameKey: 'hongkong', flag: '🇭🇰', phoneLength: [8], format: 'XXXX XXXX' },
+  { code: '+853', nameKey: 'macau', flag: '🇲🇴', phoneLength: [8], format: 'XXXX XXXX' },
+  { code: '+61', nameKey: 'australia', flag: '🇦🇺', phoneLength: [9], format: 'XXX XXX XXX' },
+  { code: '+33', nameKey: 'france', flag: '🇫🇷', phoneLength: [10], format: 'X XX XX XX XX' },
+  { code: '+49', nameKey: 'germany', flag: '🇩🇪', phoneLength: [10, 11], format: 'XXX XXXXXXX' },
+  { code: '+91', nameKey: 'india', flag: '🇮🇳', phoneLength: [10], format: 'XXXXX XXXXX' },
+  { code: '+60', nameKey: 'malaysia', flag: '🇲🇾', phoneLength: [9, 10], format: 'XX XXXX XXXX' },
+  { code: '+66', nameKey: 'thailand', flag: '🇹🇭', phoneLength: [9], format: 'X XXXX XXXX' },
 ];
+
+// 简单的辅助函数：获取带翻译的国家列表
+export function getCountriesWithNames(locale: 'en' | 'zh-CN') {
+  const t = getTranslation(locale);
+  
+  return countryCodes.map(country => ({
+    ...country,
+    name: t.countries[country.nameKey as keyof typeof t.countries]
+  }));
+}
 
 // 根据手机号长度和国家代码验证手机号
 function validatePhoneNumber(phone: string, countryCode: string): boolean {

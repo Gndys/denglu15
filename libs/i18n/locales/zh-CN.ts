@@ -141,11 +141,11 @@ export const zhCN: Locale = {
       termsOfService: "服务条款",
       privacyPolicy: "隐私政策",
       socialProviders: {
-        google: "使用 Google 账号继续",
-        github: "使用 GitHub 账号继续",
-        apple: "使用 Apple 账号继续",
-        wechat: "使用微信账号继续",
-        phone: "使用手机号继续"
+        google: "Google",
+        github: "GitHub",
+        apple: "Apple",
+        wechat: "微信",
+        phone: "手机号码"
       },
       errors: {
         invalidEmail: "请输入有效的邮箱地址",
@@ -1374,6 +1374,22 @@ export const zhCN: Locale = {
         confirmRequired: "您必须确认删除账户"
       }
     }
+  },
+  countries: {
+    china: "中国",
+    usa: "美国", 
+    uk: "英国",
+    japan: "日本",
+    korea: "韩国",
+    singapore: "新加坡",
+    hongkong: "香港",
+    macau: "澳门",
+    australia: "澳大利亚",
+    france: "法国",
+    germany: "德国",
+    india: "印度",
+    malaysia: "马来西亚",
+    thailand: "泰国"
   },
   header: {
     navigation: {

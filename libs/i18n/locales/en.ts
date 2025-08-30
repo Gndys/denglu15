@@ -141,11 +141,11 @@ export const en: Locale = {
       termsOfService: "Terms of Service",
       privacyPolicy: "Privacy Policy",
       socialProviders: {
-        google: "Continue with Google",
-        github: "Continue with GitHub",
-        apple: "Continue with Apple",
-        wechat: "Continue with WeChat",
-        phone: "Continue with Phone"
+        google: "Google",
+        github: "GitHub",
+        apple: "Apple",
+        wechat: "WeChat",
+        phone: "Phone"
       },
       errors: {
         invalidEmail: "Please enter a valid email",
@@ -1366,6 +1366,22 @@ export const en: Locale = {
         confirmRequired: "You must confirm account deletion"
       }
     }
+  },
+  countries: {
+    china: "China",
+    usa: "United States",
+    uk: "United Kingdom",
+    japan: "Japan",
+    korea: "South Korea",
+    singapore: "Singapore",
+    hongkong: "Hong Kong",
+    macau: "Macau",
+    australia: "Australia",
+    france: "France",
+    germany: "Germany",
+    india: "India",
+    malaysia: "Malaysia",
+    thailand: "Thailand"
   },
   header: {
     navigation: {

@@ -14,7 +14,7 @@
     </SelectTrigger>
     <SelectContent>
       <SelectItem 
-        v-for="country in countryCodes" 
+        v-for="country in countriesWithNames" 
         :key="country.code" 
         :value="country.code"
       >
@@ -40,7 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { countryCodes } from '@libs/validators'
+import { getCountriesWithNames } from '@libs/validators'
 
 interface CountrySelectProps {
   modelValue?: string
@@ -60,6 +60,14 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
+// Get current locale
+const { locale } = useI18n()
+
+// Get countries with localized names
+const countriesWithNames = computed(() => 
+  getCountriesWithNames(locale.value as 'en' | 'zh-CN')
+)
+
 // Handle value changes
 const handleValueChange = (value: any) => {
   if (value && typeof value === 'string') {
@@ -69,6 +77,6 @@ const handleValueChange = (value: any) => {
 
 // Find selected country based on current value
 const selectedCountry = computed(() => 
-  countryCodes.find((country) => country.code === props.modelValue)
+  countriesWithNames.value.find((country) => country.code === props.modelValue)
 )
 </script> 

@@ -1,5 +1,5 @@
 <template>
-  <div :class="cn('flex flex-col gap-4', className)">
+  <div :class="cn('grid grid-cols-2 gap-3', className)">
     <SocialButton 
       v-for="provider in providers" 
       :key="provider" 

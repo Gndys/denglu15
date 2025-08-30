@@ -37,7 +37,7 @@ export function SocialAuth({
   };
 
   return (
-    <div className={cn("flex flex-col gap-4", className)} {...props}>
+    <div className={cn("grid grid-cols-2 gap-3", className)} {...props}>
       {providers.map((provider) => (
         <SocialButton 
           key={provider} 

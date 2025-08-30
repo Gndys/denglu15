@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { countryCodes, type CountryCode } from "@libs/validators"
+import { getCountriesWithNames } from "@libs/validators"
+import { useTranslation } from "@/hooks/use-translation"
 
 interface CountrySelectProps {
   value?: string
@@ -26,7 +27,13 @@ export function CountrySelect({
   disabled = false,
   className,
 }: CountrySelectProps) {
-  const selectedCountry = countryCodes.find((country) => country.code === value)
+  const { locale } = useTranslation()
+  
+  // Get countries with localized names
+  const countriesWithNames = getCountriesWithNames(locale as 'en' | 'zh-CN')
+  
+  // Find selected country
+  const selectedCountry = countriesWithNames.find((country) => country.code === value)
 
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
@@ -41,7 +48,7 @@ export function CountrySelect({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {countryCodes.map((country) => (
+        {countriesWithNames.map((country) => (
           <SelectItem key={country.code} value={country.code}>
             <div className="flex items-center gap-3">
               <span className="text-lg">{country.flag}</span>
