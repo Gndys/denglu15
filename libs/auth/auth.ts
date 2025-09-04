@@ -183,6 +183,11 @@ export const auth = betterAuth({
     github: {
       clientId: config.auth.socialProviders.github.clientId!,
       clientSecret: config.auth.socialProviders.github.clientSecret!,
+      mapProfileToUser(profile) {
+        return {
+          emailVerified: true,
+        }
+      },
     }
   },
   account: {
