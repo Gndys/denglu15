@@ -30,19 +30,23 @@ export function DeleteAccountDialog({ open, onOpenChange }: DeleteAccountDialogP
   // 处理账户删除
   const handleDeleteAccount = async () => {
     setDeleteLoading(true);
-    try {
-      await authClientReact.deleteUser({});
-      
-      toast.success(t.dashboard.accountManagement.deleteAccount.success);
-      // 删除成功后会自动登出，重定向到首页
-      router.push(`/${currentLocale}`);
-    } catch (error) {
+    
+    const { data, error } = await authClientReact.deleteUser({});
+    
+    if (error) {
       console.error('Failed to delete account:', error);
-      toast.error(t.dashboard.accountManagement.deleteAccount.errors.failed);
-    } finally {
+      toast.error(error.message || t.dashboard.accountManagement.deleteAccount.errors.failed);
       setDeleteLoading(false);
       onOpenChange(false);
+      return;
     }
+    
+    toast.success(t.dashboard.accountManagement.deleteAccount.success);
+    // 删除成功后会自动登出，重定向到首页
+    router.push(`/${currentLocale}`);
+    
+    setDeleteLoading(false);
+    onOpenChange(false);
   };
 
   return (

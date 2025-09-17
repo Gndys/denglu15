@@ -119,33 +119,33 @@ const getRoleBadgeVariant = (role: string) => {
 const handleUpdateProfile = handleSubmit(async (values) => {
   if (!user.value) return
   
-  try {
-    await authClientVue.updateUser({
-      name: values.name?.trim() || undefined,
-      image: values.image?.trim() || undefined,
-    })
-    
-    isEditing.value = false
-    // Show success message
-    toast.success(t('dashboard.profile.updateSuccess'))
-    
-    // Force refresh component state to ensure latest data is displayed
-    refreshKey.value = refreshKey.value + 1
-    
-    // Actively fetch latest session data
-    setTimeout(async () => {
-      try {
-        await authClientVue.getSession()
-      } catch (error) {
-        console.error('Failed to refresh session:', error)
-      }
-    }, 100)
-    
-  } catch (error) {
+  const { data, error } = await authClientVue.updateUser({
+    name: values.name?.trim() || undefined,
+    image: values.image?.trim() || undefined,
+  })
+  
+  if (error) {
     console.error('Failed to update profile:', error)
     // Show error message
-    toast.error(t('dashboard.profile.updateError'))
+    toast.error(error.message || t('dashboard.profile.updateError'))
+    return
   }
+  
+  isEditing.value = false
+  // Show success message
+  toast.success(t('dashboard.profile.updateSuccess'))
+  
+  // Force refresh component state to ensure latest data is displayed
+  refreshKey.value = refreshKey.value + 1
+  
+  // Actively fetch latest session data
+  setTimeout(async () => {
+    try {
+      await authClientVue.getSession()
+    } catch (error) {
+      console.error('Failed to refresh session:', error)
+    }
+  }, 100)
 })
 
 // Cancel edit and reset form to original values

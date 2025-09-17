@@ -154,18 +154,19 @@ const onSubmit = handleSubmit(async (values) => {
   errorMessage.value = ''
   errorCode.value = ''
 
-  try {
-    await authClientVue.resetPassword({
-      newPassword: values.password,
-      token: token.value
-    })
+  const { data, error } = await authClientVue.resetPassword({
+    newPassword: values.password,
+    token: token.value
+  })
 
-    resetSuccess.value = true
-  } catch (err: any) {
-    errorMessage.value = err.message || t('common.unexpectedError')
-    errorCode.value = err.code || 'UNKNOWN_ERROR'
-  } finally {
+  if (error) {
+    errorMessage.value = error.message || t('common.unexpectedError')
+    errorCode.value = error.code || 'UNKNOWN_ERROR'
     loading.value = false
+    return
   }
+
+  resetSuccess.value = true
+  loading.value = false
 })
 </script> 

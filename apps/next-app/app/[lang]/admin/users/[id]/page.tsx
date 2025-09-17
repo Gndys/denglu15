@@ -128,7 +128,7 @@ export default function UserPage({ params }: UserPageProps) {
       } else {
         // Create user
         const createData = data as CreateUserFormData;
-        await authClientReact.admin.createUser({
+        const { data: result, error } = await authClientReact.admin.createUser({
           name: createData.name,
           email: createData.email,
           password: createData.password,
@@ -143,6 +143,13 @@ export default function UserPage({ params }: UserPageProps) {
           },
         });
 
+        if (error) {
+          const errorMessage = error.message || t.admin.users.messages.operationFailed;
+          setError(errorMessage);
+          toast.error(errorMessage);
+          return;
+        }
+
         toast.success(t.admin.users.messages.createSuccess);
       }
 
@@ -155,17 +162,19 @@ export default function UserPage({ params }: UserPageProps) {
   };
 
   const handleDelete = async () => {
-    try {
-      await authClientReact.admin.removeUser({
-        userId: id as string,
-      });
-      toast.success(t.admin.users.messages.deleteSuccess);
-      router.push('/admin/users');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t.admin.users.messages.deleteError;
+    const { data, error } = await authClientReact.admin.removeUser({
+      userId: id as string,
+    });
+    
+    if (error) {
+      const errorMessage = error.message || t.admin.users.messages.deleteError;
       setError(errorMessage);
       toast.error(errorMessage);
+      return;
     }
+    
+    toast.success(t.admin.users.messages.deleteSuccess);
+    router.push('/admin/users');
   };
 
   if (loading) {

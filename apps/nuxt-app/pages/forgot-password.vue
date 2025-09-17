@@ -184,40 +184,41 @@ const onSubmit = handleSubmit(async (values) => {
   errorCode.value = ''
   turnstileError.value = ''
 
-  try {
-    const fetchOptions: any = {}
-    
-    // If captcha is enabled, add captcha token to request headers
-    if (captchaEnabled.value && turnstileToken.value) {
-      fetchOptions.headers = {
-        'x-captcha-response': turnstileToken.value,
-        'X-Locale': locale.value
-      }
-    } else {
-      fetchOptions.headers = {
-        'X-Locale': locale.value
-      }
+  const fetchOptions: any = {}
+  
+  // If captcha is enabled, add captcha token to request headers
+  if (captchaEnabled.value && turnstileToken.value) {
+    fetchOptions.headers = {
+      'x-captcha-response': turnstileToken.value,
+      'X-Locale': locale.value
     }
+  } else {
+    fetchOptions.headers = {
+      'X-Locale': locale.value
+    }
+  }
 
-    await authClientVue.forgetPassword({
-      email: values.email,
-      redirectTo: `/${locale.value}/reset-password`,
-      fetchOptions
-    })
+  const { data, error } = await authClientVue.requestPasswordReset({
+    email: values.email,
+    redirectTo: `/${locale.value}/reset-password`,
+    fetchOptions
+  })
 
-    emailSent.value = true
-    sentEmail.value = values.email
-  } catch (err: any) {
-    errorMessage.value = err.message || t('common.unexpectedError')
-    errorCode.value = err.code || 'UNKNOWN_ERROR'
+  if (error) {
+    errorMessage.value = error.message || t('common.unexpectedError')
+    errorCode.value = error.code || 'UNKNOWN_ERROR'
     
     // If validation fails, reset turnstile token and force re-render
     if (captchaEnabled.value) {
       turnstileToken.value = ''
       turnstileKey.value += 1
     }
-  } finally {
     loading.value = false
+    return
   }
+
+  emailSent.value = true
+  sentEmail.value = values.email
+  loading.value = false
 })
 </script> 

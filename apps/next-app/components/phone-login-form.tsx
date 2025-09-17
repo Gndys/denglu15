@@ -111,10 +111,19 @@ export function PhoneLoginForm({
       
       if (error) {
         console.error('sendOtp error:', error);
-        setError({
-          code: "SMS_SEND_ERROR",
-          message: error.message || t.common.unexpectedError,
-        });
+        if (error.code) {
+          // Use internationalized error messages
+          const authErrorMessage = t.auth.authErrors[error.code as keyof typeof t.auth.authErrors] || t.auth.authErrors.UNKNOWN_ERROR;
+          setError({
+            code: error.code,
+            message: authErrorMessage,
+          });
+        } else {
+          setError({
+            code: "UNKNOWN_ERROR",
+            message: t.auth.authErrors.UNKNOWN_ERROR,
+          });
+        }
         // 如果验证失败，重置 turnstile token 并强制重新渲染
         if (config.captcha.enabled) {
           setTurnstileToken(null);
@@ -144,73 +153,87 @@ export function PhoneLoginForm({
 
   const onVerifyOTP = async () => {
     if (otp.length !== 6) return;
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const fullPhoneNumber = getFullPhoneNumber(countryCode, phoneNumber);
-      
-      const isVerified = await authClientReact.phoneNumber.verify({
-        phoneNumber: fullPhoneNumber,
-        code: otp
-      })
-      console.log('isVerified', isVerified)
-      if (isVerified) {
-        router.push("/");
+    
+    setLoading(true);
+    setError(null);
+    
+    const fullPhoneNumber = getFullPhoneNumber(countryCode, phoneNumber);
+    
+    const { data, error } = await authClientReact.phoneNumber.verify({
+      phoneNumber: fullPhoneNumber,
+      code: otp
+    });
+    
+    if (error) {
+      if (error.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t.auth.authErrors[error.code as keyof typeof t.auth.authErrors] || t.auth.authErrors.UNKNOWN_ERROR;
+        setError({
+          code: error.code,
+          message: authErrorMessage,
+        });
+      } else {
+        setError({
+          code: "UNKNOWN_ERROR",
+          message: t.auth.authErrors.UNKNOWN_ERROR,
+        });
       }
-    } catch (err: any) {
-      setError({
-        code: err.code || "UNKNOWN_ERROR",
-        message: err.message || t.common.unexpectedError,
-      });
-    } finally {
       setLoading(false);
+      return;
     }
+    
+    console.log('isVerified', data);
+    if (data) {
+      router.push("/");
+    }
+    
+    setLoading(false);
   };
 
   // 重新发送验证码
   const onResendOTP = async () => {
     if (countdown > 0 || loading) return;
     
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const fullPhoneNumber = getFullPhoneNumber(countryCode, phoneNumber);
-      console.log('Resending OTP to:', fullPhoneNumber);
-      
-      const { data: result, error } = await authClientReact.phoneNumber.sendOtp({
-        phoneNumber: fullPhoneNumber,
-        ...(config.captcha.enabled && turnstileToken ? {
-          fetchOptions: {
-            headers: {
-              "x-captcha-response": turnstileToken,
-            },
-          }
-        } : {})
-      });
-      
-      if (error) {
-        console.error('Resend OTP error:', error);
+    setLoading(true);
+    setError(null);
+    
+    const fullPhoneNumber = getFullPhoneNumber(countryCode, phoneNumber);
+    console.log('Resending OTP to:', fullPhoneNumber);
+    
+    const { data: result, error } = await authClientReact.phoneNumber.sendOtp({
+      phoneNumber: fullPhoneNumber,
+      ...(config.captcha.enabled && turnstileToken ? {
+        fetchOptions: {
+          headers: {
+            "x-captcha-response": turnstileToken,
+          },
+        }
+      } : {})
+    });
+    
+    if (error) {
+      console.error('Resend OTP error:', error);
+      if (error.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t.auth.authErrors[error.code as keyof typeof t.auth.authErrors] || t.auth.authErrors.UNKNOWN_ERROR;
         setError({
-          code: "SMS_SEND_ERROR",
-          message: error.message || t.common.unexpectedError,
+          code: error.code,
+          message: authErrorMessage,
         });
-        return;
+      } else {
+        setError({
+          code: "UNKNOWN_ERROR",
+          message: t.auth.authErrors.UNKNOWN_ERROR,
+        });
       }
-      
-      console.log('OTP resent successfully');
-      setCountdown(30); // 重新启动30秒倒计时
-      setOtp(""); // 清空之前输入的验证码
-    } catch (err: any) {
-      console.error('Resend OTP exception:', err);
-      setError({
-        code: err.code || "SMS_SEND_ERROR",
-        message: err.message || t.common.unexpectedError,
-      });
-    } finally {
       setLoading(false);
+      return;
     }
+    
+    console.log('OTP resent successfully');
+    setCountdown(30); // 重新启动30秒倒计时
+    setOtp(""); // 清空之前输入的验证码
+    setLoading(false);
   };
 
   return (

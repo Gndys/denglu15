@@ -54,36 +54,39 @@ export default function ForgetPasswordPage() {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(null);
-      await authClientReact.forgetPassword({
-        email: data.email,
-        redirectTo: '/reset-password',
-        fetchOptions: {
-          headers: {
-            'X-Locale': locale,
-            ...(config.captcha.enabled && turnstileToken ? {
-              "x-captcha-response": turnstileToken,
-            } : {})
-          }
+    setLoading(true);
+    setError(null);
+    
+    const { data: result, error } = await authClientReact.forgetPassword({
+      email: data.email,
+      redirectTo: '/reset-password',
+      fetchOptions: {
+        headers: {
+          'X-Locale': locale,
+          ...(config.captcha.enabled && turnstileToken ? {
+            "x-captcha-response": turnstileToken,
+          } : {})
         }
-      });
-      setEmailSent(true);
-      setSentEmail(data.email);
-    } catch (err: any) {
+      }
+    });
+    
+    if (error) {
       setError({
-        code: err.code || "UNKNOWN_ERROR",
-        message: err.message || t.common.unexpectedError,
+        code: error.code || "UNKNOWN_ERROR",
+        message: error.message || t.common.unexpectedError,
       });
       // 如果验证失败，重置 turnstile token 并强制重新渲染
       if (config.captcha.enabled) {
         setTurnstileToken(null);
         setTurnstileKey(prev => prev + 1); // 强制重新渲染 Turnstile 组件
       }
-    } finally {
       setLoading(false);
+      return;
     }
+    
+    setEmailSent(true);
+    setSentEmail(data.email);
+    setLoading(false);
   };
 
   return (

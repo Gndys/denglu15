@@ -51,37 +51,38 @@ export function ResendVerificationDialog({
 
     setLoading(true);
     
-    try {
-      await authClientReact.sendVerificationEmail({
-        email,
-        callbackURL: `/${locale}`,
-        fetchOptions: {
-          headers: {
-            "x-resend-source": "user-initiated", // 标识这是用户主动重发请求
-            ...(config.captcha.enabled && turnstileToken ? {
-              "x-captcha-response": turnstileToken,
-            } : {})
-          },
-        }
-      });
+    const { data, error } = await authClientReact.sendVerificationEmail({
+      email,
+      callbackURL: `/${locale}`,
+      fetchOptions: {
+        headers: {
+          "x-resend-source": "user-initiated", // 标识这是用户主动重发请求
+          ...(config.captcha.enabled && turnstileToken ? {
+            "x-captcha-response": turnstileToken,
+          } : {})
+        },
+      }
+    });
 
-      toast.success(t.auth.signin.errors.emailNotVerified.resendSuccess);
-      setCountdown(60); // 开始60秒倒计时
-      setTurnstileToken(null);
-      setTurnstileKey(prev => prev + 1); // 重置 turnstile
-      onClose();
-    } catch (error) {
+    if (error) {
       console.error('Failed to resend verification email:', error);
-      toast.error(t.auth.signin.errors.emailNotVerified.resendError);
+      toast.error(error.message || t.auth.signin.errors.emailNotVerified.resendError);
       
       // 重置 turnstile
       if (config.captcha.enabled) {
         setTurnstileToken(null);
         setTurnstileKey(prev => prev + 1);
       }
-    } finally {
       setLoading(false);
+      return;
     }
+
+    toast.success(t.auth.signin.errors.emailNotVerified.resendSuccess);
+    setCountdown(60); // 开始60秒倒计时
+    setTurnstileToken(null);
+    setTurnstileKey(prev => prev + 1); // 重置 turnstile
+    onClose();
+    setLoading(false);
   };
 
   return (

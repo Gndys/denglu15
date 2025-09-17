@@ -13,6 +13,10 @@
 import { cn } from '@/lib/utils'
 import { authClientVue } from '@libs/auth/authClient'
 import type { SocialProvider } from '@/types/auth'
+import { toast } from 'vue-sonner'
+
+// Composables
+const { t } = useI18n()
 
 interface Props {
   className?: string
@@ -38,9 +42,14 @@ const handleProviderClick = async (provider: SocialProvider) => {
       break
     default:
       // Other providers use default social login flow
-      await authClientVue.signIn.social({
+      const { data, error } = await authClientVue.signIn.social({
         provider,
       })
+      
+      if (error) {
+        console.error('Social login error:', error)
+        toast.error(error.message || t('common.unexpectedError'))
+      }
   }
 }
 </script> 

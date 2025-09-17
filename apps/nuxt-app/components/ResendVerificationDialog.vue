@@ -127,39 +127,40 @@ const handleSubmit = async () => {
 
   loading.value = true
   
-  try {
-    const fetchOptions: any = {}
-    
-    fetchOptions.headers = {
-      'x-resend-source': 'user-initiated', // 标识这是用户主动重发请求
-      ...(captchaEnabled.value && turnstileToken.value ? {
-        'x-captcha-response': turnstileToken.value
-      } : {})
-    }
+  const fetchOptions: any = {}
+  
+  fetchOptions.headers = {
+    'x-resend-source': 'user-initiated', // 标识这是用户主动重发请求
+    ...(captchaEnabled.value && turnstileToken.value ? {
+      'x-captcha-response': turnstileToken.value
+    } : {})
+  }
 
-    await authClientVue.sendVerificationEmail({
-      email: props.email,
-      callbackURL: `/${locale.value}`,
-      fetchOptions
-    })
+  const { data, error } = await authClientVue.sendVerificationEmail({
+    email: props.email,
+    callbackURL: `/${locale.value}`,
+    fetchOptions
+  })
 
-    toast.success(t('auth.signin.errors.emailNotVerified.resendSuccess'))
-    countdown.value = 60 // 开始60秒倒计时
-    turnstileToken.value = ''
-    turnstileKey.value++ // 重置 turnstile
-    onClose()
-  } catch (error) {
+  if (error) {
     console.error('Failed to resend verification email:', error)
-    toast.error(t('auth.signin.errors.emailNotVerified.resendError'))
+    toast.error(error.message || t('auth.signin.errors.emailNotVerified.resendError'))
     
     // 重置 turnstile
     if (captchaEnabled.value) {
       turnstileToken.value = ''
       turnstileKey.value++
     }
-  } finally {
     loading.value = false
+    return
   }
+
+  toast.success(t('auth.signin.errors.emailNotVerified.resendSuccess'))
+  countdown.value = 60 // 开始60秒倒计时
+  turnstileToken.value = ''
+  turnstileKey.value++ // 重置 turnstile
+  onClose()
+  loading.value = false
 }
 
 const onClose = () => {

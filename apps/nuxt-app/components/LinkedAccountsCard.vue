@@ -18,23 +18,23 @@ const loading = ref(true)
  * Fetch linked accounts data from Better Auth
  */
 const fetchLinkedAccounts = async () => {
-  try {
-    const response: any = await authClientVue.listAccounts()
-    
-    // 根据实际返回的数据结构设置账户列表
-    if (response.data) {
-      linkedAccounts.value = response.data
-    } else if (response.accounts) {
-      linkedAccounts.value = response.accounts
-    } else {
-      linkedAccounts.value = []
-    }
-  } catch (error) {
+  const { data, error } = await authClientVue.listAccounts()
+  
+  if (error) {
     console.error('Failed to fetch linked accounts:', error)
     linkedAccounts.value = []
-  } finally {
     loading.value = false
+    return
   }
+  
+  // 根据实际返回的数据结构设置账户列表
+  if (data) {
+    linkedAccounts.value = data
+  } else {
+    linkedAccounts.value = []
+  }
+  
+  loading.value = false
 }
 
 /**

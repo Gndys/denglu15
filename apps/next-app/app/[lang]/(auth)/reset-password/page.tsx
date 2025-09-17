@@ -57,22 +57,25 @@ export default function ResetPasswordPage() {
   const onSubmit = async (data: FormData) => {
     if (!token) return;
 
-    try {
-      setLoading(true);
-      setError(null);
-      await authClientReact.resetPassword({
-        newPassword: data.password,
-        token,
-      });
-      setResetSuccess(true);
-    } catch (err: any) {
+    setLoading(true);
+    setError(null);
+    
+    const { data: result, error } = await authClientReact.resetPassword({
+      newPassword: data.password,
+      token,
+    });
+    
+    if (error) {
       setError({
-        code: err.code || "UNKNOWN_ERROR",
-        message: err.message || t.common.unexpectedError,
+        code: error.code || "UNKNOWN_ERROR",
+        message: error.message || t.common.unexpectedError,
       });
-    } finally {
       setLoading(false);
+      return;
     }
+    
+    setResetSuccess(true);
+    setLoading(false);
   };
 
   return (

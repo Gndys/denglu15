@@ -347,7 +347,7 @@ const onSubmit = handleSubmit(async (values) => {
       toast.success(t('admin.users.messages.updateSuccess'))
     } else {
       // Create user
-      await authClientVue.admin.createUser({
+      const { data, error } = await authClientVue.admin.createUser({
         name: formData.name,
         email: formData.email,
         password: formData.password || '',
@@ -361,6 +361,11 @@ const onSubmit = handleSubmit(async (values) => {
           banReason: formData.banReason || undefined,
         },
       })
+
+      if (error) {
+        toast.error(error.message || t('admin.users.messages.createError'))
+        return
+      }
 
       toast.success(t('admin.users.messages.createSuccess'))
     }
@@ -378,18 +383,19 @@ const onSubmit = handleSubmit(async (values) => {
 
 // Delete user
 const handleDelete = async () => {
-  try {
-    await authClientVue.admin.removeUser({
-      userId,
-    })
-    
-    toast.success(t('admin.users.messages.deleteSuccess'))
-    await router.push('/admin/users')
-  } catch (error: any) {
-    const message = error?.message || t('admin.users.messages.deleteError')
+  const { data, error } = await authClientVue.admin.removeUser({
+    userId,
+  })
+  
+  if (error) {
+    const message = error.message || t('admin.users.messages.deleteError')
     errorMessage.value = message
     toast.error(message)
+    return
   }
+  
+  toast.success(t('admin.users.messages.deleteSuccess'))
+  await router.push('/admin/users')
 }
 
 // Set page title

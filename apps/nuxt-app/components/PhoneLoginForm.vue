@@ -273,9 +273,18 @@ const onSubmitPhone = handleSubmit(async (values) => {
     
     if (authError) {
       console.error('sendOtp error:', authError)
-      error.value = {
-        code: "SMS_SEND_ERROR",
-        message: authError.message || t('common.unexpectedError'),
+      if (authError.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t('auth.authErrors.' + authError.code) || t('auth.authErrors.UNKNOWN_ERROR')
+        error.value = {
+          code: authError.code,
+          message: authErrorMessage,
+        }
+      } else {
+        error.value = {
+          code: "SMS_SEND_ERROR",
+          message: t('auth.authErrors.UNKNOWN_ERROR'),
+        }
       }
       // Reset turnstile token if verification failed
       if (captchaEnabled.value) {
@@ -313,29 +322,40 @@ const onSubmitPhone = handleSubmit(async (values) => {
 const onVerifyOTP = async () => {
   if (otpString.value.length !== 6) return
   
-  try {
-    loading.value = true
-    error.value = null
-    
-    const fullPhoneNumber = getFullPhoneNumber(countryCode.value || '+86', phone.value || '')
-    
-    const isVerified = await authClientVue.phoneNumber.verify({
-      phoneNumber: fullPhoneNumber,
-      code: otpString.value
-    })
-    
-    console.log('isVerified', isVerified)
-    if (isVerified) {
-      await navigateTo(localePath('/'))
+  loading.value = true
+  error.value = null
+  
+  const fullPhoneNumber = getFullPhoneNumber(countryCode.value || '+86', phone.value || '')
+  
+  const { data, error: verifyError } = await authClientVue.phoneNumber.verify({
+    phoneNumber: fullPhoneNumber,
+    code: otpString.value
+  })
+  
+  if (verifyError) {
+    if (verifyError.code) {
+      // Use internationalized error messages
+      const authErrorMessage = t('auth.authErrors.' + verifyError.code) || t('auth.authErrors.UNKNOWN_ERROR')
+      error.value = {
+        code: verifyError.code,
+        message: authErrorMessage,
+      }
+    } else {
+      error.value = {
+        code: "UNKNOWN_ERROR",
+        message: t('auth.authErrors.UNKNOWN_ERROR'),
+      }
     }
-  } catch (err: any) {
-    error.value = {
-      code: err.code || "UNKNOWN_ERROR",
-      message: err.message || t('common.unexpectedError'),
-    }
-  } finally {
     loading.value = false
+    return
   }
+  
+  console.log('isVerified', data)
+  if (data) {
+    await navigateTo(localePath('/'))
+  }
+  
+  loading.value = false
 }
 
 // Resend OTP
@@ -362,9 +382,18 @@ const onResendOTP = async () => {
     
     if (authError) {
       console.error('Resend OTP error:', authError)
-      error.value = {
-        code: "SMS_SEND_ERROR",
-        message: authError.message || t('common.unexpectedError'),
+      if (authError.code) {
+        // Use internationalized error messages
+        const authErrorMessage = t('auth.authErrors.' + authError.code) || t('auth.authErrors.UNKNOWN_ERROR')
+        error.value = {
+          code: authError.code,
+          message: authErrorMessage,
+        }
+      } else {
+        error.value = {
+          code: "SMS_SEND_ERROR",
+          message: t('auth.authErrors.UNKNOWN_ERROR'),
+        }
       }
       return
     }

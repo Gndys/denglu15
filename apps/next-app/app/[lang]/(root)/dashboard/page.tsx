@@ -79,33 +79,35 @@ export default function DashboardPage() {
     if (!user) return;
     
     setUpdateLoading(true);
-    try {
-      await authClientReact.updateUser({
-        name: editForm.name.trim() || undefined,
-        image: editForm.image.trim() || undefined,
-      });
-      
-      setIsEditing(false);
-      toast.success(t.dashboard.profile.updateSuccess);
-      
-      // 强制刷新组件状态以确保显示最新数据
-      setRefreshKey(prev => prev + 1);
-      
-      // 主动获取最新会话数据
-      setTimeout(async () => {
-        try {
-          await authClientReact.getSession();
-        } catch (error) {
-          console.error('Failed to refresh session:', error);
-        }
-      }, 100);
-      
-    } catch (error) {
+    
+    const { data, error } = await authClientReact.updateUser({
+      name: editForm.name.trim() || undefined,
+      image: editForm.image.trim() || undefined,
+    });
+    
+    if (error) {
       console.error('Failed to update profile:', error);
-      toast.error(t.dashboard.profile.updateError);
-    } finally {
+      toast.error(error.message || t.dashboard.profile.updateError);
       setUpdateLoading(false);
+      return;
     }
+    
+    setIsEditing(false);
+    toast.success(t.dashboard.profile.updateSuccess);
+    
+    // 强制刷新组件状态以确保显示最新数据
+    setRefreshKey(prev => prev + 1);
+    
+    // 主动获取最新会话数据
+    setTimeout(async () => {
+      try {
+        await authClientReact.getSession();
+      } catch (error) {
+        console.error('Failed to refresh session:', error);
+      }
+    }, 100);
+    
+    setUpdateLoading(false);
   };
 
   // 取消编辑

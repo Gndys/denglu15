@@ -118,25 +118,25 @@ const BannedCellComponent = ({ value, userId }: { value: boolean, userId: string
   const [checked, setChecked] = useState(value)
 
   const handleConfirm = async () => {
-    try {
-      if (!checked) {
-        await authClientReact.admin.banUser({
+    const { data, error } = await (!checked 
+      ? authClientReact.admin.banUser({
           userId,
           banReason: 'No reason provided',
-        });
-      } else {
-        await authClientReact.admin.unbanUser({
+        })
+      : authClientReact.admin.unbanUser({
           userId,
-        });
-      }
+        })
+    );
 
-      setChecked(!checked);
-      setIsOpen(false);
-      toast.success(checked ? t.admin.users.table.dialog.unbanSuccess : t.admin.users.table.dialog.banSuccess);
-    } catch (error) {
-      toast.error(t.admin.users.messages.operationFailed);
+    if (error) {
+      toast.error(error.message || t.admin.users.messages.operationFailed);
       console.error('Error updating user status:', error);
+      return;
     }
+
+    setChecked(!checked);
+    setIsOpen(false);
+    toast.success(checked ? t.admin.users.table.dialog.unbanSuccess : t.admin.users.table.dialog.banSuccess);
   }
 
   return (
@@ -176,17 +176,18 @@ const BannedCellComponent = ({ value, userId }: { value: boolean, userId: string
 const RoleCellComponent = ({ currentRole, userId }: { currentRole: string, userId: string }) => {
   const { t } = useTranslation()
   const handleRoleChange = async (newRole: string) => {
-    try {
-      await authClientReact.admin.setRole({
-        userId,
-        role: newRole,
-      });
+    const { data, error } = await authClientReact.admin.setRole({
+      userId,
+      role: newRole,
+    });
 
-      toast.success(t.admin.users.table.dialog.updateRoleSuccess);
-    } catch (error) {
-      toast.error(t.admin.users.table.dialog.updateRoleFailed);
+    if (error) {
+      toast.error(error.message || t.admin.users.table.dialog.updateRoleFailed);
       console.error('Error updating user role:', error);
+      return;
     }
+
+    toast.success(t.admin.users.table.dialog.updateRoleSuccess);
   };
 
   return (
@@ -209,19 +210,20 @@ const ActionsCellComponent = ({ user }: { user: User }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const handleDeleteConfirm = async () => {
-    try {
-      await authClientReact.admin.removeUser({
-        userId: user.id,
-      });
+    const { data, error } = await authClientReact.admin.removeUser({
+      userId: user.id,
+    });
 
-      setDeleteDialogOpen(false);
-      toast.success(t.admin.users.messages.deleteSuccess);
-      // Refresh the page to update the table
-      router.refresh();
-    } catch (error) {
-      toast.error(t.admin.users.messages.deleteError);
+    if (error) {
+      toast.error(error.message || t.admin.users.messages.deleteError);
       console.error('Error deleting user:', error);
+      return;
     }
+
+    setDeleteDialogOpen(false);
+    toast.success(t.admin.users.messages.deleteSuccess);
+    // Refresh the page to update the table
+    router.refresh();
   }
 
   return (

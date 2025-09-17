@@ -16,12 +16,14 @@ export const useAuth = () => {
    * Sign out user
    */
   const signOut = async () => {
-    try {
-      await authClientVue.signOut()
-      await navigateTo(useLocalePath()('/'))
-    } catch (error) {
+    const { data, error } = await authClientVue.signOut()
+    
+    if (error) {
       console.error('Sign out error:', error)
+      return
     }
+    
+    await navigateTo(useLocalePath()('/'))
   }
 
   /**

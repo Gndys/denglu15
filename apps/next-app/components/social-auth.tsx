@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { authClientReact } from '@libs/auth/authClient';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/hooks/use-translation';
+import { toast } from 'sonner';
 
 interface SocialAuthProps extends React.HTMLAttributes<HTMLDivElement> {
   providers?: SocialProvider[];
@@ -18,7 +19,7 @@ export function SocialAuth({
   ...props
 }: SocialAuthProps) {
   const router = useRouter();
-  const { locale: currentLocale } = useTranslation();
+  const { locale: currentLocale, t } = useTranslation();
 
   const handleProviderClick = async (provider: SocialProvider) => {
     switch (provider) {
@@ -30,9 +31,14 @@ export function SocialAuth({
         break;
       default:
         // Use default social login flow for other providers
-        authClientReact.signIn.social({
+        const { data, error } = await authClientReact.signIn.social({
           provider,
         });
+        
+        if (error) {
+          console.error('Social login error:', error);
+          toast.error(error.message || t.common.unexpectedError);
+        }
     }
   };
 

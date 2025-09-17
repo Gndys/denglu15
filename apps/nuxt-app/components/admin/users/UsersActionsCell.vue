@@ -57,37 +57,37 @@ const handleToggleBan = async (user: User) => {
   if (banLoading.value) return
   
   banLoading.value = true
-  try {
-    if (user.banned) {
-      // Unban user
-      await authClientVue.admin.unbanUser({
-        userId: user.id,
+  
+  const { data, error } = await (user.banned 
+    ? authClientVue.admin.unbanUser({ userId: user.id })
+    : authClientVue.admin.banUser({ 
+        userId: user.id, 
+        banReason: 'Banned by admin' 
       })
-      toast.success(t('admin.users.table.dialog.unbanSuccess'))
-    } else {
-      // Ban user
-      await authClientVue.admin.banUser({
-        userId: user.id,
-        banReason: 'Banned by admin',
-      })
-      toast.success(t('admin.users.table.dialog.banSuccess'))
-    }
-    
-    // Close dialog and emit event to parent
-    banDialogOpen.value = false
-    
-    // Emit only the changed properties - more efficient
-    emit('user-updated', { 
-      id: user.id, 
-      banned: !user.banned 
-    })
-    
-  } catch (error) {
+  )
+  
+  if (error) {
     console.error('Error toggling ban status:', error)
-    toast.error(t('admin.users.messages.operationFailed'))
-  } finally {
+    toast.error(error.message || t('admin.users.messages.operationFailed'))
     banLoading.value = false
+    return
   }
+  
+  toast.success(user.banned 
+    ? t('admin.users.table.dialog.unbanSuccess')
+    : t('admin.users.table.dialog.banSuccess')
+  )
+  
+  // Close dialog and emit event to parent
+  banDialogOpen.value = false
+  
+  // Emit only the changed properties - more efficient
+  emit('user-updated', { 
+    id: user.id, 
+    banned: !user.banned 
+  })
+  
+  banLoading.value = false
 }
 
 // Handle delete user
@@ -95,25 +95,27 @@ const handleDeleteUser = async (user: User) => {
   if (deleteLoading.value) return
   
   deleteLoading.value = true
-  try {
-    await authClientVue.admin.removeUser({
-      userId: user.id,
-    })
-    
-    toast.success(t('admin.users.messages.deleteSuccess'))
-    
-    // Close dialog and emit event to parent
-    deleteDialogOpen.value = false
-    
-    // Emit deleted user ID
-    emit('user-deleted', user.id)
-    
-  } catch (error) {
+  
+  const { data, error } = await authClientVue.admin.removeUser({
+    userId: user.id,
+  })
+  
+  if (error) {
     console.error('Error deleting user:', error)
-    toast.error(t('admin.users.messages.deleteError'))
-  } finally {
+    toast.error(error.message || t('admin.users.messages.deleteError'))
     deleteLoading.value = false
+    return
   }
+  
+  toast.success(t('admin.users.messages.deleteSuccess'))
+  
+  // Close dialog and emit event to parent
+  deleteDialogOpen.value = false
+  
+  // Emit deleted user ID
+  emit('user-deleted', user.id)
+  
+  deleteLoading.value = false
 }
 </script>
 

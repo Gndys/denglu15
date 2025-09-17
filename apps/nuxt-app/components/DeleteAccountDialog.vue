@@ -42,27 +42,27 @@ const [confirm, confirmAttrs] = defineField('confirm', {
  */
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  try {
-    // Note: Using Better Auth's user deletion functionality
-    // This might need to be adjusted based on your backend implementation
-    await authClientVue.deleteUser()
-    
-    // Show success message
-    toast.success(t('dashboard.accountManagement.deleteAccount.success'))
-    
-    // Reset form and close dialog
-    resetForm()
-    emit('update:open', false)
-    
-    // Redirect to home page or sign out the user
-    await navigateTo('/')
-    
-  } catch (error) {
+  
+  const { data, error } = await authClientVue.deleteUser()
+  
+  if (error) {
     console.error('Failed to delete account:', error)
-    toast.error(t('dashboard.accountManagement.deleteAccount.errors.failed'))
-  } finally {
+    toast.error(error.message || t('dashboard.accountManagement.deleteAccount.errors.failed'))
     loading.value = false
+    return
   }
+  
+  // Show success message
+  toast.success(t('dashboard.accountManagement.deleteAccount.success'))
+  
+  // Reset form and close dialog
+  resetForm()
+  emit('update:open', false)
+  
+  // Redirect to home page or sign out the user
+  await navigateTo('/')
+  
+  loading.value = false
 })
 
 /**

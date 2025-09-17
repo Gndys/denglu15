@@ -21,19 +21,22 @@ export function LinkedAccountsCard({}: LinkedAccountsCardProps) {
 
   useEffect(() => {
     async function fetchAccountsData() {
-      try {
-        const accountsResponse = await authClientReact.listAccounts();
-        if (accountsResponse.data) {
-          setAccountsData(accountsResponse.data);
-        } else {
-          setAccountsData([]);
-        }
-      } catch (error) {
+      const { data, error } = await authClientReact.listAccounts();
+      
+      if (error) {
         console.error('Failed to fetch user accounts', error);
         setAccountsData([]);
-      } finally {
         setLoading(false);
+        return;
       }
+      
+      if (data) {
+        setAccountsData(data);
+      } else {
+        setAccountsData([]);
+      }
+      
+      setLoading(false);
     }
 
     fetchAccountsData();
