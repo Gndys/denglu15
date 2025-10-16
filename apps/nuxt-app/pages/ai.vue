@@ -45,7 +45,7 @@
           >
             <!-- User message -->
             <div v-if="message.role === 'user'" class="whitespace-pre-wrap">
-              {{ message.content }}
+              {{ message.parts?.find(p => p.type === 'text')?.text || '' }}
             </div>
             
             <!-- AI message with parts support -->
@@ -63,9 +63,9 @@
                 </div>
                 
                 <!-- Tool invocation part -->
-                <div v-else-if="part.type === 'tool-invocation'" class="mt-2 p-2 bg-muted rounded text-sm">
+                <div v-else-if="part.type?.startsWith('tool-')" class="mt-2 p-2 bg-muted rounded text-sm">
                   <div class="font-medium">{{ $t('ai.chat.toolCall') }}</div>
-                  <pre class="text-xs mt-1">{{ JSON.stringify(part.toolInvocation, null, 2) }}</pre>
+                  <pre class="text-xs mt-1">{{ JSON.stringify(part, null, 2) }}</pre>
                 </div>
               </div>
             </div>
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Loading indicator -->
-        <div v-if="isLoading" class="flex justify-start">
+        <div v-if="status === 'streaming'" class="flex justify-start">
           <div class="px-4 py-2 rounded-lg bg-card text-card-foreground border border-border">
             <div class="flex items-center space-x-2">
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
@@ -83,16 +83,34 @@
         </div>
 
         <!-- Error message -->
-        <div v-if="error" class="flex justify-start">
-          <div class="px-4 py-2 rounded-lg bg-destructive/10 text-destructive border border-destructive/20">
-            <div class="flex items-center justify-between">
-              <span class="text-sm">{{ error.message || error }}</span>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                @click="() => error = undefined"
+        <div v-if="error" class="max-w-3xl mx-auto px-4 py-4">
+          <div class="flex items-center justify-between p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
+            <div class="flex-1">
+              <p class="font-medium">{{ $t('ai.chat.errors.requestFailed') }}</p>
+              <p class="text-sm opacity-90 mt-1">
+                {{ error.message || $t('ai.chat.errors.unknownError') }}
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                @click="regenerate"
+                :disabled="status === 'streaming'"
               >
-                <X class="h-4 w-4" />
+                {{ $t('ai.chat.actions.retry') }}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                @click="() => {
+                  // Clear error by removing the last message if it was an error
+                  if (messages.length > 0) {
+                    messages.splice(-1, 1);
+                  }
+                }"
+              >
+                {{ $t('ai.chat.actions.dismiss') }}
               </Button>
             </div>
           </div>
@@ -112,8 +130,8 @@
             <textarea
               v-model="input"
               class="w-full bg-transparent outline-none text-card-foreground placeholder:text-muted-foreground resize-none"
-              :placeholder="$t('ai.chat.placeholder')"
-              :disabled="isLoading"
+              :placeholder="error ? $t('ai.chat.errors.inputDisabled') : $t('ai.chat.placeholder')"
+              :disabled="status === 'streaming' || error != null"
               rows="1"
               @keydown="handleKeydown"
               @input="adjustTextareaHeight"
@@ -149,9 +167,9 @@
               type="submit"
               size="icon"
               variant="outline"
-              :disabled="!input.trim() || isLoading"
+              :disabled="!input.trim() || status === 'streaming' || error != null"
             >
-              <Send v-if="!isLoading" class="h-4 w-4" />
+              <Send v-if="status !== 'streaming'" class="h-4 w-4" />
               <Loader2 v-else class="h-4 w-4 animate-spin" />
             </Button>
           </div>
@@ -163,7 +181,8 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onMounted, watch } from 'vue'
-import { useChat } from '@ai-sdk/vue'
+import { Chat } from '@ai-sdk/vue'
+import { DefaultChatTransport } from 'ai'
 import { Send, X, Loader2 } from 'lucide-vue-next'
 import VueMarkdownRender from 'vue-markdown-render'
 import markdownItHighlightjs from 'markdown-it-highlightjs'
@@ -219,25 +238,26 @@ console.log("Code block");
 `, role: 'assistant' },
   ];
 
-// Use the AI SDK's useChat hook
-const { 
-  messages, 
-  input, 
-  handleSubmit: originalHandleSubmit, 
-  isLoading, 
-  error,
-   
-} = useChat({
-  api: '/api/chat',
-  body: computed(() => {
-    const [provider, model] = selectedModel.value.split(':')
-    return { provider, model }
+// Use the AI SDK's Chat class
+const input = ref('')
+const chat = new Chat({
+  transport: new DefaultChatTransport({ 
+    api: '/api/chat',
+    prepareSendMessagesRequest: ({ messages }) => {
+      const [provider, model] = selectedModel.value.split(':')
+      return { body: { messages, provider, model } }
+    }
   }),
-  onError: (error) => {
+  messages: initialMessages,
+  onError: (error: any) => {
     console.error('Chat error:', error)
   },
-  initialMessages
 })
+
+// Get reactive references from chat
+const messages = chat.messages
+const status = chat.status
+const error = chat.error
 
 // Auto-scroll to bottom
 const scrollToBottom = async () => {
@@ -245,7 +265,8 @@ const scrollToBottom = async () => {
   scrollAnchor.value?.scrollIntoView({ behavior: 'smooth' })
 }
 const reloadConversation = () => {
-  messages.value = []
+  // Clear messages by creating a new chat instance or resetting
+  messages.length = 0
 }
 
 // Check user subscription status once on page load
@@ -264,7 +285,7 @@ const checkSubscriptionStatus = async () => {
 // Enhanced form submission with subscription check
 const handleSubmit = (event: Event) => {
   event.preventDefault()
-  if (!input.value.trim() || isLoading.value) return
+  if (!input.value.trim() || status === 'streaming' || error != null) return
   
   // Check subscription status (cached from page load)
   if (!hasSubscription.value) {
@@ -288,11 +309,17 @@ const handleSubmit = (event: Event) => {
     textareaRef.value.style.height = 'auto'
   }
 
-  // Use the original handleSubmit from useChat
-  originalHandleSubmit(event)
+  // Send message using Chat class
+  chat.sendMessage({ text: input.value })
+  input.value = ''
   
   // Scroll to bottom after submission
   nextTick(() => scrollToBottom())
+}
+
+// Regenerate function
+const regenerate = () => {
+  chat.regenerate()
 }
 
 // Handle keyboard shortcuts

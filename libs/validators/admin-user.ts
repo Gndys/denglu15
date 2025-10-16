@@ -11,13 +11,11 @@ export function createAdminUserValidators(t: TranslationFunction) {
     name: z.string()
       .min(2, t('validators.user.name.minLength', { min: 2 }))
       .max(50, t('validators.user.name.maxLength', { max: 50 })),
-    email: z.string()
-      .email(t('validators.user.email.invalid')),
+    email: z.email(t('validators.user.email.invalid')),
     role: z.enum([userRoles.ADMIN, userRoles.USER], {
-      errorMap: () => ({ message: t('admin.users.form.validation.roleRequired') })
+      error: t('admin.users.form.validation.roleRequired')
     }),
-    image: z.string()
-      .url(t('validators.user.image.invalidUrl'))
+    image: z.url(t('validators.user.image.invalidUrl'))
       .optional()
       .or(z.literal('')),
     phoneNumber: z.string()
@@ -62,7 +60,7 @@ export function createAdminUserValidators(t: TranslationFunction) {
   const updateRoleSchema = z.object({
     userId: z.string().min(1, t('validators.user.id.required')),
     role: z.enum([userRoles.ADMIN, userRoles.USER], {
-      errorMap: () => ({ message: t('admin.users.form.validation.roleRequired') })
+      error: t('admin.users.form.validation.roleRequired')
     })
   })
 

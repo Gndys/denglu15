@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { MessageSquareIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/use-translation';
@@ -35,8 +36,17 @@ import '@/app/highlight.css'
 export default function Chat() {
   const { t, locale } = useTranslation();
   const initialMessages: any[] = [
-    { id: '1', content: '你好，我是Grok，一个AI助手。', role: 'user' },
-    { id: '2', content: `# Hello, Markdown!
+    { 
+      id: '1', 
+      role: 'user',
+      parts: [{ type: 'text', text: '你好，我是Grok，一个AI助手。' }]
+    },
+    { 
+      id: '2', 
+      role: 'assistant',
+      parts: [{ 
+        type: 'text', 
+        text: `# Hello, Markdown!
   This is a **bold** text with some *italic* content.
 
   - Item 1
@@ -45,10 +55,18 @@ export default function Chat() {
   \`\`\`javascript
   console.log("Code block");
   \`\`\`
-  `, role: 'assistant' },
+  `
+      }]
+    },
   ];
-  const { messages, append, setMessages, status } = useChat({
-    initialMessages
+  const { messages, sendMessage, setMessages, status, error, regenerate } = useChat({
+    messages: initialMessages,
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+    onError: (error) => {
+      console.error('Chat error:', error);
+    },
   });
   const [provider, setProvider] = useState<keyof typeof providerModels>('qwen');
   const [model, setModel] = useState('qwen-turbo');
@@ -100,10 +118,9 @@ export default function Chat() {
       return;
     }
 
-    // Use append from useChat with provider and model info
-    await append({
-      role: 'user',
-      content: message.text,
+    // Use sendMessage from useChat with provider and model info
+    await sendMessage({
+      text: message.text,
     }, {
       body: { provider, model }
     });
@@ -153,25 +170,64 @@ export default function Chat() {
             messages.map((message) => (
               <Message key={message.id} from={message.role}>
                 <MessageContent>
-                  {message.parts.map((part, i) => {
-                    switch (part.type) {
-                      case 'text':
-                        return (
-                          <Response key={`${message.id}-${i}`}>
-                            {part.text}
-                          </Response>
-                        );
-                      default:
-                        return null;
-                    }
-                  })}
+                  {message.parts && message.parts.length > 0 ? (
+                    message.parts.map((part: any, i: number) => {
+                      switch (part.type) {
+                        case 'text':
+                          return (
+                            <Response key={`${message.id}-${i}`}>
+                              {part.text}
+                            </Response>
+                          );
+                        default:
+                          return null;
+                      }
+                    })
+                  ) : (
+                    // Fallback for messages without parts (like user messages or legacy format)
+                    <Response>
+                      {(message as any).content || ''}
+                    </Response>
+                  )}
                 </MessageContent>
-                <MessageAvatar
-                  src={message.role === 'user' ? '/user-avatar.png' : '/ai-avatar.png'}
-                  name={message.role === 'user' ? 'User' : 'AI'}
-                />
               </Message>
             ))
+          )}
+          
+          {/* Error State */}
+          {error && (
+            <div className="max-w-3xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-between p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg">
+                <div className="flex-1">
+                  <p className="font-medium">{t.ai.chat.errors.requestFailed}</p>
+                  <p className="text-sm opacity-90 mt-1">
+                    {error.message || t.ai.chat.errors.unknownError}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => regenerate()}
+                    disabled={status === 'streaming'}
+                  >
+                    {t.ai.chat.actions.retry}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      // Clear error by removing the last message if it was an error
+                      if (messages.length > 0) {
+                        setMessages(messages.slice(0, -1));
+                      }
+                    }}
+                  >
+                    {t.ai.chat.actions.dismiss}
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
         </ConversationContent>
         <ConversationScrollButton />
@@ -181,7 +237,10 @@ export default function Chat() {
       <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-safe">
         <div className="max-w-3xl mx-auto">
           <PromptInput onSubmit={handlePromptSubmit}>
-            <PromptInputTextarea placeholder={t.ai.chat.placeholder} />
+            <PromptInputTextarea 
+              placeholder={error ? t.ai.chat.errors.inputDisabled : t.ai.chat.placeholder}
+              disabled={error != null}
+            />
             
             <PromptInputToolbar>
               <PromptInputTools>
@@ -215,7 +274,10 @@ export default function Chat() {
                 </PromptInputModelSelect>
               </PromptInputTools>
 
-              <PromptInputSubmit status={status} />
+              <PromptInputSubmit 
+                status={error ? 'error' : status} 
+                disabled={error != null}
+              />
             </PromptInputToolbar>
           </PromptInput>
         </div>

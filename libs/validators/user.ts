@@ -58,9 +58,9 @@ export function createValidators(t: TranslationFunction) {
     name: z.string()
       .min(2, t('validators.user.name.minLength', { min: 2 }))
       .max(50, t('validators.user.name.maxLength', { max: 50 })),
-    email: z.string().email(t('validators.user.email.invalid')),
+    email: z.email(t('validators.user.email.invalid')),
     emailVerified: z.boolean().default(false),
-    image: z.string().url(t('validators.user.image.invalidUrl')).nullable().optional(),
+    image: z.url(t('validators.user.image.invalidUrl')).nullable().optional(),
     role: z.enum([userRoles.ADMIN, userRoles.USER]).default(userRoles.USER),
     phoneNumber: z.string().nullable().optional(),
     phoneNumberVerified: z.boolean().default(false),
@@ -81,7 +81,7 @@ export function createValidators(t: TranslationFunction) {
 
   // 扩展的注册表单验证器（包含可选的图片URL）
   const signupFormSchema = emailSignUpSchema.extend({
-    image: z.string().url(t('validators.user.image.invalidUrl')).optional().or(z.literal('')),
+    image: z.url(t('validators.user.image.invalidUrl')).optional().or(z.literal('')),
   });
 
   // 邮箱登录验证器

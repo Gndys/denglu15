@@ -1,10 +1,13 @@
 import type { DeepSeekProviderSettings } from '@ai-sdk/deepseek';
 import type { OpenAIProviderSettings } from '@ai-sdk/openai';
-import type { Message } from 'ai';
+import type { UIMessage } from 'ai';
 
 export type ProviderName = 'qwen' | 'openai' | 'deepseek';
 
-export type QwenConfig = Omit<OpenAIProviderSettings, 'compatibility'>;
+export type QwenConfig = {
+  apiKey: string;
+  baseURL?: string;
+};
 export type OpenAIConfig = OpenAIProviderSettings;
 export type DeepSeekConfig = DeepSeekProviderSettings;
 
@@ -20,7 +23,7 @@ export interface AIConfig {
 }
 
 export interface ChatRequestOptions {
-  messages: Message[];
+  messages: UIMessage[];
   extra?: {
     provider?: ProviderName;
     model?: string;

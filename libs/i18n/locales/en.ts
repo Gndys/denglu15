@@ -1259,6 +1259,7 @@ export const en: Locale = {
         copy: "Copy",
         copied: "Copied!",
         retry: "Retry",
+        dismiss: "Dismiss",
         newChat: "New Chat",
         clearHistory: "Clear History"
       },

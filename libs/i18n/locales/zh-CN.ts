@@ -1073,6 +1073,7 @@ export const zhCN: Locale = {
         copy: "复制",
         copied: "已复制！",
         retry: "重试",
+        dismiss: "关闭",
         newChat: "新对话",
         clearHistory: "清空历史"
       },
