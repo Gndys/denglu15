@@ -21,8 +21,8 @@
     </div>
 
     <!-- AI Elements Conversation Container -->
-    <Conversation class="flex-1">
-      <ConversationContent class="max-w-3xl mx-auto space-y-4 pb-40">
+    <div ref="scrollRef" class="flex-1 overflow-y-auto">
+      <div ref="contentRef" class="max-w-3xl mx-auto space-y-4" :style="{ paddingBottom: `${inputAreaHeight}px` }">
         <!-- Welcome message when no messages -->
         <ConversationEmptyState
           v-if="!messages || messages.length === 0"
@@ -86,9 +86,22 @@
             </div>
           </div>
         </div>
-      </ConversationContent>
-      <ConversationScrollButton />
-    </Conversation>
+      </div>
+      
+      <!-- Custom scroll button -->
+      <div class="pointer-events-none absolute inset-0 z-20 flex items-end justify-center pb-4">
+        <Button
+          v-show="!isAtBottom"
+          class="pointer-events-auto rounded-full shadow-sm"
+          size="icon"
+          type="button"
+          variant="outline"
+          @click="scrollToBottom"
+        >
+          <ChevronDown class="size-4" />
+        </Button>
+      </div>
+    </div>
 
     <!-- Fixed form at the bottom -->
     <div class="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-4 safe-area-inset-bottom">
@@ -135,19 +148,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, watch, h, defineComponent, toRef } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, watch, h, defineComponent, toRef, computed } from 'vue'
 import { Chat } from '@ai-sdk/vue'
 import { DefaultChatTransport } from 'ai'
-import { Send, Loader2, MessageSquareIcon } from 'lucide-vue-next'
+import { MessageSquareIcon, ChevronDown } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
-import { authClientVue } from '@libs/auth/authClient'
+// Note: authClientVue import removed as it's not used
+import { useStickToBottom } from 'vue-stick-to-bottom'
 
 // AI Elements components
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from '@/components/ai-elements/conversation'
+// Note: Using custom scroll button instead of ConversationScrollButton
 import {
   Message,
   MessageContent,
@@ -202,6 +212,20 @@ const selectedModel = computed({
   }
 })
 const hasSubscription = ref(true) // 默认允许，避免闪烁
+const inputAreaHeight = ref(160) // Default height for fixed input area
+
+// Use StickToBottom composable for direct control
+const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom({
+  targetScrollTop: (target: number, ctx: { scrollElement: HTMLElement; contentElement: HTMLElement }) => {
+    if (target === -1) {
+      return -1
+    }
+    
+    // Since we're using paddingBottom on contentRef, we don't need to adjust target
+    // The paddingBottom ensures content is not obscured by fixed input
+    return target
+  }
+})
 
 // Provider models configuration
 const providerModels = {
@@ -313,8 +337,7 @@ const handleSubmit = (event: Event) => {
     textarea.dispatchEvent(new Event('input', { bubbles: true }))
   }
   
-  // Scroll to bottom after submission
-  nextTick(() => scrollToBottom())
+  // Auto-scroll is handled by StickToBottom composable
 }
 
 // Regenerate function
@@ -322,17 +345,64 @@ const regenerate = () => {
   chat.regenerate()
 }
 
-// Auto-scroll to bottom
-const scrollToBottom = async () => {
-  await nextTick()
+// Note: Auto-scroll is handled by StickToBottom composable
+
+// Calculate input area height dynamically
+const calculateInputHeight = () => {
+  const fixedInputElement = document.querySelector('.fixed.bottom-0')
+  if (fixedInputElement) {
+    const rect = fixedInputElement.getBoundingClientRect()
+    const computedStyle = window.getComputedStyle(fixedInputElement)
+    
+    // Get actual height including padding and border
+    const actualHeight = rect.height
+    const paddingTop = parseFloat(computedStyle.paddingTop) || 0
+    const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0
+    const borderTop = parseFloat(computedStyle.borderTopWidth) || 0
+    const borderBottom = parseFloat(computedStyle.borderBottomWidth) || 0
+    
+    const totalHeight = actualHeight + paddingTop + paddingBottom + borderTop + borderBottom + 40 // Extra margin for safety
+    
+    // Height calculation complete
+    
+    inputAreaHeight.value = totalHeight
+  }
 }
 
+// Note: inputAreaHeight changes are handled automatically by reactive binding
 
-// Watch for messages changes to auto-scroll
-watch(messages, scrollToBottom, { deep: true })
+// Watch messages changes to auto-scroll
+watch(messages, () => {
+  // Add a small delay to ensure DOM is updated
+  setTimeout(() => {
+    scrollToBottom()
+  }, 100)
+}, { deep: true })
+
+// Watch status changes to scroll when streaming starts/ends
+watch(status, () => {
+  if (status.value === 'submitted') {
+    setTimeout(() => {
+      scrollToBottom()
+    }, 50)
+  }
+})
 
 onMounted(() => {
   checkSubscriptionStatus()
+  
+  // Delay calculation to ensure DOM is fully rendered
+  nextTick(() => {
+    setTimeout(calculateInputHeight, 100)
+  })
+  
+  // Recalculate on window resize
+  window.addEventListener('resize', calculateInputHeight)
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  window.removeEventListener('resize', calculateInputHeight)
 })
 
 // Middleware to check subscription (commented out for now)
@@ -360,10 +430,7 @@ onMounted(() => {
   background: hsl(var(--muted-foreground));
 }
 
-/* Ensure textarea doesn't exceed max height */
-textarea {
-  max-height: 120px;
-}
+/* Note: Textarea max-height is handled by PromptInputTextarea component */
 
 /* Safe area handling for mobile devices */
 .safe-area-inset-bottom {
@@ -375,20 +442,5 @@ textarea {
   min-height: 80px; /* Minimum height to ensure proper spacing */
 }
 
-/* Markdown content styling */
-.prose pre {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  overflow-x: auto;
-}
-
-.prose code {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-}
+/* Note: Markdown styling is handled by Response component with StreamMarkdown */
 </style> 

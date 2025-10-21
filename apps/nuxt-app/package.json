@@ -30,7 +30,6 @@
     "@tanstack/vue-table": "8.21.3",
     "@vee-validate/zod": "4.15.1",
     "@vueuse/core": "13.4.0",
-    "ai": "5.0.72",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "colorizr": "3.0.8",
@@ -48,5 +47,8 @@
     "vue-sonner": "2.0.1",
     "vue-stick-to-bottom": "0.1.0",
     "vue-turnstile": "1.0.11"
+  },
+  "peerDependencies": {
+    "ai": "*"
   }
 }
