@@ -150,19 +150,21 @@ export function createProvider(providerName: ProviderName, config: ProviderConfi
 ## 🎯 Features
 
 1. **Multi-provider Support**: Unified interface supporting Qwen, DeepSeek, OpenAI
-2. **Streaming Response**: Real-time streaming output based on Vercel AI SDK
-3. **Type Safety**: Complete TypeScript type support
-4. **Extensible**: Support for adding new AI providers
+2. **Streaming Response**: Real-time streaming output based on Vercel AI SDK v5
+3. **AI Elements**: Integrated modern AI chat component library
+4. **Type Safety**: Complete TypeScript type support
+5. **Extensible**: Support for adding new AI providers
 
 ## 📦 Dependencies
 
 ```json
 {
-  "ai": "4.3.4",
-  "@ai-sdk/openai": "1.3.9",
-  "@ai-sdk/deepseek": "0.2.8",
+  "ai": "5.0.71",
+  "@ai-sdk/openai": "2.0.52",
+  "@ai-sdk/openai-compatible": "1.0.7",
+  "@ai-sdk/deepseek": "1.0.23",
   "@ai-sdk/react": "latest",    // Next.js
-  "@ai-sdk/vue": "1.2.12"       // Nuxt.js
+  "@ai-sdk/vue": "latest"       // Nuxt.js
 }
 ```
 

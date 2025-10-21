@@ -2,7 +2,7 @@
 
 ## Overview
 
-Internationalized data validation system built on Zod. Provides type-safe validation with multilingual error messages for both Next.js (React) and Nuxt.js (Vue) applications using factory pattern and framework adapters.
+Internationalized data validation system built on Zod v4. Provides type-safe validation with multilingual error messages for both Next.js (React) and Nuxt.js (Vue) applications using factory pattern and framework adapters.
 
 ## Setup Commands
 
@@ -18,7 +18,7 @@ import { countryCodes, type CountryCode } from '@libs/validators'
 
 ## Code Style
 
-- Zod schemas with internationalized error messages
+- Zod v4 schemas with internationalized error messages
 - Factory pattern: `createValidators(translationFunction)`
 - Framework adapters for React Hook Form and VeeValidate
 - Translation key pattern: `validators.user.{field}.{errorType}`

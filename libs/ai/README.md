@@ -100,19 +100,21 @@ const response = streamResponse({
 ## 🎯 功能特性
 
 1. **多提供商支持**: 统一接口支持 Qwen、DeepSeek、OpenAI
-2. **流式响应**: 基于 Vercel AI SDK 的实时流式输出
-3. **类型安全**: 完整的 TypeScript 类型支持
-4. **可扩展**: 支持添加新的 AI 提供商
+2. **流式响应**: 基于 Vercel AI SDK v5 的实时流式输出
+3. **AI Elements**: 集成现代化 AI 聊天组件库
+4. **类型安全**: 完整的 TypeScript 类型支持
+5. **可扩展**: 支持添加新的 AI 提供商
 
 ## 📦 依赖包
 
 ```json
 {
-  "ai": "4.3.4",
-  "@ai-sdk/openai": "1.3.9",
-  "@ai-sdk/deepseek": "0.2.8",
+  "ai": "5.0.71",
+  "@ai-sdk/openai": "2.0.52",
+  "@ai-sdk/openai-compatible": "1.0.7",
+  "@ai-sdk/deepseek": "1.0.23",
   "@ai-sdk/react": "latest",    // Next.js
-  "@ai-sdk/vue": "1.2.12"       // Nuxt.js
+  "@ai-sdk/vue": "latest"       // Nuxt.js
 }
 ```
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
 import 'vue-sonner/style.css'
-import 'highlight.js/styles/github-dark.min.css'
 import { config } from '@config'
 import { ALL_THEME_CLASSES } from '@libs/ui/themes'
 

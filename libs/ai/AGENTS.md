@@ -2,13 +2,13 @@
 
 ## Overview
 
-AI integration library built on Vercel AI SDK supporting multiple providers (Qwen, DeepSeek, OpenAI) with unified interface. Provides streaming chat functionality and type-safe provider management for both Next.js and Nuxt.js applications.
+AI integration library built on Vercel AI SDK v5 supporting multiple providers (Qwen, DeepSeek, OpenAI) with unified interface. Provides streaming chat functionality, AI Elements components, and type-safe provider management for both Next.js and Nuxt.js applications.
 
 ## Setup Commands
 
 ```bash
 # Install dependencies (usually already included in apps)
-pnpm add ai @ai-sdk/openai @ai-sdk/deepseek @ai-sdk/react @ai-sdk/vue
+pnpm add ai @ai-sdk/openai @ai-sdk/openai-compatible @ai-sdk/deepseek @ai-sdk/react @ai-sdk/vue
 
 # Environment configuration required
 # Add to .env file:
@@ -226,11 +226,12 @@ const modelOptions = {
 
 ## Architecture Notes
 
-- **Vercel AI SDK Foundation**: Built on proven streaming AI framework
+- **Vercel AI SDK v5 Foundation**: Built on latest streaming AI framework with improved message handling
+- **AI Elements Integration**: Modern chat UI components for React and Vue
 - **Multi-Provider Support**: Unified interface across different AI services
 - **Environment Configuration**: Centralized config with environment variable fallbacks
 - **Type Safety**: Full TypeScript support for all providers and models
 - **Framework Agnostic**: Works with both Next.js and Nuxt.js applications
-- **Streaming First**: Optimized for real-time streaming responses
+- **Streaming First**: Optimized for real-time streaming responses with UIMessage format
 - **Extensible Design**: Easy addition of new AI providers following established patterns
 - **Production Ready**: Used in chat interfaces across both applications
