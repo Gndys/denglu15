@@ -59,12 +59,12 @@ export function createValidators(t: TranslationFunction) {
       .min(2, t('validators.user.name.minLength', { min: 2 }))
       .max(50, t('validators.user.name.maxLength', { max: 50 })),
     email: z.email(t('validators.user.email.invalid')),
-    emailVerified: z.boolean().default(false),
+    emailVerified: z.boolean(),
     image: z.url(t('validators.user.image.invalidUrl')).nullable().optional(),
-    role: z.enum([userRoles.ADMIN, userRoles.USER]).default(userRoles.USER),
+    role: z.enum([userRoles.ADMIN, userRoles.USER]),
     phoneNumber: z.string().nullable().optional(),
-    phoneNumberVerified: z.boolean().default(false),
-    banned: z.boolean().default(false),
+    phoneNumberVerified: z.boolean(),
+    banned: z.boolean(),
     banReason: z.string().nullable().optional(),
   });
 
@@ -94,7 +94,7 @@ export function createValidators(t: TranslationFunction) {
 
   // 扩展的登录表单验证器（包含记住我选项）
   const loginFormSchema = emailSignInSchema.extend({
-    remember: z.boolean().default(false),
+    remember: z.boolean(),
   });
 
   // 手机号注册验证器
