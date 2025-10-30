@@ -86,8 +86,7 @@ jobs:
           build-args: |
             BUILD_TIME=true
           # Increase shared memory size for large builds (Nuxt/Vite can be memory-intensive)
-          # Note: shm-size is set via docker options, not directly in this action
-          options: --shm-size=2g
+          shm-size: 2g
           
       - name: Build Next.js Docker image
         uses: docker/build-push-action@v5
@@ -103,5 +102,4 @@ jobs:
           build-args: |
             BUILD_TIME=true
           # Increase shared memory size for large builds (Next.js/Vite can be memory-intensive)
-          # Note: shm-size is set via docker options, not directly in this action
-          options: --shm-size=2g
+          shm-size: 2g

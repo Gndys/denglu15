@@ -14,6 +14,7 @@ RUN corepack enable && corepack prepare pnpm@9.4.0 --activate
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json config.ts tsconfig.json ./
 COPY apps/nuxt-app ./apps/nuxt-app
 COPY libs ./libs
+COPY scripts ./scripts
 
 # Accept build arguments for CI/CD environments
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
