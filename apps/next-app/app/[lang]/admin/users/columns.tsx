@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import type { User } from '@libs/database'
-import { userRoles } from '@libs/database/constants'
+import { userRoles, type UserRole } from '@libs/database/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
@@ -178,7 +178,7 @@ const RoleCellComponent = ({ currentRole, userId }: { currentRole: string, userI
   const handleRoleChange = async (newRole: string) => {
     const { data, error } = await authClientReact.admin.setRole({
       userId,
-      role: newRole,
+      role: newRole as UserRole,
     });
 
     if (error) {

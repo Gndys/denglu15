@@ -1,5 +1,7 @@
 # TinyShip
 
+![Build Status](https://github.com/vikingmute/tinyship/actions/workflows/ci.yml/badge.svg)
+
 🚀 A modern, full-featured monorepo starter kit for building SaaS applications with support for both domestic (China) and international markets.
 
 ## ✨ Key Features
