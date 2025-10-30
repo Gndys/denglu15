@@ -37,6 +37,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json config.ts tsconf
 # Accept build arguments for CI/CD environments
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_WECHAT_APP_ID
+# Allow overriding Node.js memory limit for build (default: 4GB, suitable for CI and most machines)
+# For local builds with more memory, use: --build-arg NODE_OPTIONS="--max-old-space-size=8192"
+ARG NODE_OPTIONS="--max-old-space-size=4096"
 
 # Copy .env file if it exists (for local builds)
 COPY .env* ./
@@ -46,6 +49,8 @@ COPY .env* ./
 ENV BUILD_TIME=true
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
 ENV NEXT_PUBLIC_WECHAT_APP_ID=${NEXT_PUBLIC_WECHAT_APP_ID}
+# Set Node.js memory limit for build process (can be overridden via build arg)
+ENV NODE_OPTIONS=${NODE_OPTIONS}
 
 # Build the application
 RUN pnpm build:next
