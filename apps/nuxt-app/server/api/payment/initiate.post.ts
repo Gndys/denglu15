@@ -95,7 +95,13 @@ export default defineEventHandler(async (event) => {
     const paymentProvider = createPaymentProvider(provider)
 
     // Get client IP
-    const clientIp = getHeader(event, 'x-forwarded-for') || getHeader(event, 'x-real-ip') || '127.0.0.1'
+    // x-forwarded-for may contain multiple IPs (comma-separated), we only need the first one
+    // WeChat Pay requires payer_client_ip to be max 45 bytes
+    const forwardedFor = getHeader(event, 'x-forwarded-for')
+    const realIp = getHeader(event, 'x-real-ip')
+    const clientIp = forwardedFor 
+      ? forwardedFor.split(',')[0].trim() 
+      : (realIp || '127.0.0.1')
     
     // Initiate payment using the payment library
     const result = await paymentProvider.createPayment({

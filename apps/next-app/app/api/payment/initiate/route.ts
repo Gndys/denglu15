@@ -77,7 +77,13 @@ export async function POST(req: Request) {
 
     // 4. Create payment provider instance and initiate payment
     const paymentProvider = createPaymentProvider(provider as 'stripe' | 'wechat');
-    const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
+    // x-forwarded-for may contain multiple IPs (comma-separated), we only need the first one
+    // WeChat Pay requires payer_client_ip to be max 45 bytes
+    const forwardedFor = req.headers.get('x-forwarded-for')
+    const realIp = req.headers.get('x-real-ip')
+    const clientIp = forwardedFor 
+      ? forwardedFor.split(',')[0].trim() 
+      : (realIp || '127.0.0.1')
     
     const result = await paymentProvider.createPayment({
       orderId,
