@@ -21,9 +21,9 @@ export function createAdminUserValidators(t: TranslationFunction) {
     phoneNumber: z.string()
       .optional()
       .or(z.literal('')),
-    emailVerified: z.boolean().default(false),
-    phoneNumberVerified: z.boolean().default(false),
-    banned: z.boolean().default(false),
+    emailVerified: z.boolean(),
+    phoneNumberVerified: z.boolean(),
+    banned: z.boolean(),
     banReason: z.string()
       .optional()
       .or(z.literal(''))

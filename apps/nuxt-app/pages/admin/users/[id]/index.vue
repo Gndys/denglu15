@@ -247,7 +247,19 @@ const {
   setValues,
   resetForm
 } = useForm({
-  validationSchema: toTypedSchema(validationSchema.value)
+  validationSchema: toTypedSchema(validationSchema.value),
+  initialValues: {
+    name: '',
+    email: '',
+    password: '',
+    role: 'user',
+    image: '',
+    phoneNumber: '',
+    emailVerified: false,
+    phoneNumberVerified: false,
+    banned: false,
+    banReason: ''
+  }
 })
 
 // Define form fields with VeeValidate
