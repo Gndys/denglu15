@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { phoneNumber, admin, captcha } from "better-auth/plugins"
 import { validator, StandardAdapter } from "validation-better-auth"
-import { createAuthMiddleware } from "better-auth/api"
+import { createAuthMiddleware, APIError } from "better-auth/api"
 import { nanoid } from "nanoid";
 
 import { db, user, account, session, verification } from '@libs/database'
@@ -10,7 +10,7 @@ import { sendSMS } from '@libs/sms';
 import { emailSignInSchema, emailSignUpSchema } from '@libs/validators/user'
 import { wechatPlugin } from './plugins/wechat'
 import { sendVerificationEmail, sendResetPasswordEmail } from '@libs/email'
-import { locales, defaultLocale } from '@libs/i18n'
+import { locales, defaultLocale, getTranslation, type SupportedLocale } from '@libs/i18n'
 import { config } from '@config'
 export { toNextJsHandler } from "better-auth/next-js";
 /**
@@ -129,8 +129,11 @@ export const auth = betterAuth({
         console.log(`Reset password email sent to ${user.email} in ${locale} language`);
       } else {
         console.error('Failed to send reset password email:', emailResult.error);
-        // 可以根据需要决定是否要抛出错误或其他处理方式
-        // 这里我们只记录错误但不阻止重置密码流程
+        const t = getTranslation(locale as SupportedLocale);
+        throw new APIError("INTERNAL_SERVER_ERROR", {
+          code: "EMAIL_SEND_FAILED",
+          message: t.auth.authErrors.EMAIL_SEND_FAILED
+        });
       }
     },
   },
@@ -173,8 +176,11 @@ export const auth = betterAuth({
         console.log(`Verification email sent to ${user.email} in ${locale} language`);
       } else {
         console.error('Failed to send verification email:', emailResult.error);
-        // 可以根据需要决定是否要抛出错误或其他处理方式
-        // 这里我们只记录错误但不阻止用户注册流程
+        const t = getTranslation(locale as SupportedLocale);
+        throw new APIError("INTERNAL_SERVER_ERROR", {
+          code: "EMAIL_SEND_FAILED",
+          message: t.auth.authErrors.EMAIL_SEND_FAILED
+        });
       }
     },
     autoSignInAfterVerification: true,
@@ -235,6 +241,10 @@ export const auth = betterAuth({
           console.log('📱 [DEVELOPMENT MODE] OTP code stored in context:', code);
         }
         
+        // 从 referer 中获取语言信息
+        const { locale } = getRefererInfo(request);
+        const t = getTranslation(locale as SupportedLocale);
+        
         try {
           // Implement sending OTP code via SMS
           const result = await sendSMS({
@@ -248,17 +258,25 @@ export const auth = betterAuth({
           console.log('SMS send result:', result);
           
           if (!result.success) {
-            const errorMessage = result.error?.message || 'Failed to send SMS';
-            console.error('SMS sending failed:', errorMessage);
-            throw new Error(errorMessage);
+            console.error('SMS sending failed:', result.error);
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              code: "SMS_SEND_FAILED",
+              message: t.auth.authErrors.SMS_SEND_FAILED
+            });
           }
           
           console.log(`OTP ${code} sent successfully to ${phoneNumber}`);
           // 成功时不需要返回值，better-auth会自动处理
         } catch (error) {
           console.error('Failed to send OTP:', error);
-          // 重新抛出异常，确保better-auth能捕获到
-          throw new Error(`SMS sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          // Re-throw APIError as-is, otherwise wrap in APIError
+          if (error instanceof APIError) {
+            throw error;
+          }
+          throw new APIError("INTERNAL_SERVER_ERROR", {
+            code: "SMS_SEND_FAILED",
+            message: t.auth.authErrors.SMS_SEND_FAILED
+          });
         }
       },
       signUpOnVerification: {

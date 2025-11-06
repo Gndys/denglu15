@@ -309,6 +309,8 @@ export const en: Locale = {
       OTP_TOO_MANY_ATTEMPTS: "Too many verification attempts. Please request a new code",
       CAPTCHA_REQUIRED: "Please complete the captcha verification",
       CAPTCHA_INVALID: "Captcha verification failed",
+      EMAIL_SEND_FAILED: "Failed to send email. Please try again later",
+      SMS_SEND_FAILED: "Failed to send SMS. Please try again later",
       UNKNOWN_ERROR: "An unexpected error occurred"
     }
   },

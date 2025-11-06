@@ -309,6 +309,8 @@ export const zhCN: Locale = {
       OTP_TOO_MANY_ATTEMPTS: "验证尝试次数过多，请重新获取验证码",
       CAPTCHA_REQUIRED: "请完成验证码验证",
       CAPTCHA_INVALID: "验证码验证失败",
+      EMAIL_SEND_FAILED: "邮件发送失败，请稍后重试",
+      SMS_SEND_FAILED: "短信发送失败，请稍后重试",
       UNKNOWN_ERROR: "发生未知错误"
     }
   },
