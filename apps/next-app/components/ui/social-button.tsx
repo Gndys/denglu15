@@ -8,11 +8,13 @@ import AppleIcon from "@libs/ui/icons/apple.svg"
 import WeChatIcon from "@libs/ui/icons/wechat.svg"
 import PhoneIcon from "@libs/ui/icons/phone.svg"
 import { useTranslation } from "@/hooks/use-translation"
+import { Loader2 } from "lucide-react"
 
 export type SocialProvider = 'google' | 'github' | 'apple' | 'wechat' | 'phone';
 
 interface SocialButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   provider: SocialProvider;
+  loading?: boolean;
 }
 
 // 创建一个映射对象，将提供商名称映射到相应的图标组件
@@ -24,7 +26,7 @@ const providerIcons = {
   phone: PhoneIcon,
 } as const;
 
-export function SocialButton({ provider, className, onClick, ...props }: SocialButtonProps) {
+export function SocialButton({ provider, className, onClick, loading, disabled, ...props }: SocialButtonProps) {
   const { t } = useTranslation()
   // 从映射中获取对应的图标组件
   const Icon = providerIcons[provider];
@@ -45,9 +47,14 @@ export function SocialButton({ provider, className, onClick, ...props }: SocialB
         className
       )}
       onClick={onClick}
+      disabled={disabled || loading}
       {...props}
     >
-      <Icon className="mr-2 h-4 w-4" />
+      {loading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        <Icon className="mr-2 h-4 w-4" />
+      )}
       {providerNames[provider]}
     </Button>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { SocialButton, type SocialProvider } from "@/components/ui/social-button";
 import { cn } from "@/lib/utils";
 import { authClientReact } from '@libs/auth/authClient';
@@ -20,8 +21,12 @@ export function SocialAuth({
 }: SocialAuthProps) {
   const router = useRouter();
   const { locale: currentLocale, t } = useTranslation();
+  const [loadingProvider, setLoadingProvider] = useState<SocialProvider | null>(null);
 
   const handleProviderClick = async (provider: SocialProvider) => {
+    // Prevent multiple simultaneous requests
+    if (loadingProvider) return;
+
     switch (provider) {
       case 'wechat':
         router.push(`/${currentLocale}/wechat`);
@@ -30,14 +35,21 @@ export function SocialAuth({
         router.push(`/${currentLocale}/cellphone`);
         break;
       default:
-        // Use default social login flow for other providers
-        const { data, error } = await authClientReact.signIn.social({
-          provider,
-        });
+        // Set loading state for the clicked provider
+        setLoadingProvider(provider);
         
-        if (error) {
-          console.error('Social login error:', error);
-          toast.error(error.message || t.common.unexpectedError);
+        try {
+          // Use default social login flow for other providers
+          const { data, error } = await authClientReact.signIn.social({
+            provider,
+          });
+          
+          if (error) {
+            console.error('Social login error:', error);
+            toast.error(error.message || t.common.unexpectedError);
+          }
+        } finally {
+          setLoadingProvider(null);
         }
     }
   };
@@ -49,6 +61,8 @@ export function SocialAuth({
           key={provider} 
           provider={provider} 
           onClick={() => handleProviderClick(provider)}
+          loading={loadingProvider === provider}
+          disabled={loadingProvider !== null && loadingProvider !== provider}
         />
       ))}
     </div>

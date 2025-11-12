@@ -3,7 +3,9 @@
     <SocialButton 
       v-for="provider in providers" 
       :key="provider" 
-      :provider="provider" 
+      :provider="provider"
+      :loading="loadingProvider === provider"
+      :disabled="loadingProvider !== null && loadingProvider !== provider"
       @click="handleProviderClick(provider)"
     />
   </div>
@@ -31,8 +33,14 @@ const props = withDefaults(defineProps<Props>(), {
 // Navigation
 const localePath = useLocalePath()
 
+// Loading state
+const loadingProvider = ref<SocialProvider | null>(null)
+
 // Handle provider click
 const handleProviderClick = async (provider: SocialProvider) => {
+  // Prevent multiple simultaneous requests
+  if (loadingProvider.value) return
+
   switch (provider) {
     case 'wechat':
       await navigateTo(localePath('/wechat'))
@@ -41,14 +49,21 @@ const handleProviderClick = async (provider: SocialProvider) => {
       await navigateTo(localePath('/cellphone'))
       break
     default:
-      // Other providers use default social login flow
-      const { data, error } = await authClientVue.signIn.social({
-        provider,
-      })
+      // Set loading state for the clicked provider
+      loadingProvider.value = provider
       
-      if (error) {
-        console.error('Social login error:', error)
-        toast.error(error.message || t('common.unexpectedError'))
+      try {
+        // Other providers use default social login flow
+        const { data, error } = await authClientVue.signIn.social({
+          provider,
+        })
+        
+        if (error) {
+          console.error('Social login error:', error)
+          toast.error(error.message || t('common.unexpectedError'))
+        }
+      } finally {
+        loadingProvider.value = null
       }
   }
 }

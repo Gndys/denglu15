@@ -2,10 +2,12 @@
   <Button
     variant="outline"
     :class="cn('w-full bg-background hover:bg-accent hover:text-accent-foreground', className)"
+    :disabled="disabled || loading"
     @click="$emit('click')"
     v-bind="$attrs"
   >
-    <component :is="currentIcon" class="mr-2 h-4 w-4" />
+    <Loader2 v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
+    <component v-else :is="currentIcon" class="mr-2 h-4 w-4" />
     {{ providerNames[provider] }}
   </Button>
 </template>
@@ -13,6 +15,7 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
 import type { SocialProvider } from '@/types/auth'
+import { Loader2 } from 'lucide-vue-next'
 
 // Import SVG icons as Vue components
 import GoogleIcon from '@libs/ui/icons/google.svg'
@@ -24,10 +27,14 @@ import PhoneIcon from '@libs/ui/icons/phone.svg'
 interface Props {
   provider: SocialProvider
   className?: string
+  loading?: boolean
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  className: ''
+  className: '',
+  loading: false,
+  disabled: false
 })
 
 // Define events
