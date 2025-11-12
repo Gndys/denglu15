@@ -5,6 +5,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { createValidators } from '@libs/validators'
 import { z } from 'zod'
+import { Loader2 } from 'lucide-vue-next'
 
 // Set page layout
 definePageMeta({
@@ -187,7 +188,7 @@ const handleSetEditForm = (form: any) => {
 
       <!-- Loading state -->
       <div v-if="session.isPending || loading" class="flex items-center justify-center h-40">
-        <div class="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        <Loader2 class="h-10 w-10 animate-spin text-primary" />
       </div>
 
       <!-- Dashboard tabs -->

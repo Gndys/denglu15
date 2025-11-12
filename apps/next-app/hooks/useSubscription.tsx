@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 /**
  * Hook to check if the current user has a valid subscription
@@ -64,7 +65,7 @@ export function withSubscription<P extends object>(Component: React.ComponentTyp
     
     if (isLoading) {
       return <div className="flex items-center justify-center p-8">
-        <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>;
     }
     

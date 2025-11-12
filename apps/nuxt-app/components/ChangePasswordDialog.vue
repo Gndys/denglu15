@@ -5,6 +5,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { createValidators } from '@libs/validators'
 import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
@@ -171,6 +172,7 @@ const handleCancel = () => {
             type="submit" 
             :disabled="loading || isSubmitting"
           >
+            <Loader2 v-if="loading || isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
             {{ loading || isSubmitting ? t('common.loading') : t('dashboard.accountManagement.changePassword.form.submit') }}
           </Button>
         </DialogFooter>

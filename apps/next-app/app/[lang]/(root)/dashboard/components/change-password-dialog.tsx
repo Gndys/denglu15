@@ -20,6 +20,7 @@ import type { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -171,9 +172,9 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               type="submit"
               disabled={loading || isSubmitting}
             >
-              {loading || isSubmitting ? (
-                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
-              ) : null}
+              {(loading || isSubmitting) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {t.dashboard.accountManagement.changePassword.form.submit}
             </Button>
           </DialogFooter>

@@ -3,7 +3,8 @@ import {
   CreditCard, 
   CalendarIcon,
   ExternalLink,
-  Package
+  Package,
+  Loader2
 } from 'lucide-vue-next'
 import  { config } from '@config'
 const { t, locale } = useI18n()
@@ -112,7 +113,7 @@ onMounted(() => {
   <!-- Loading state -->
   <div v-if="loading" class="space-y-4">
     <div class="flex items-center justify-center h-40">
-      <div class="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+      <Loader2 class="h-10 w-10 animate-spin text-primary" />
     </div>
   </div>
 

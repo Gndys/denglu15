@@ -9,7 +9,8 @@ import {
   CreditCard, 
   CalendarIcon,
   ExternalLink,
-  Package
+  Package,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
@@ -123,7 +124,7 @@ export function SubscriptionCard({}: SubscriptionCardProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-center h-40">
-          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
       </div>
     );

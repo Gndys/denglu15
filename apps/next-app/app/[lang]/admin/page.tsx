@@ -27,7 +27,7 @@ import { count, eq, gte, and, sql, desc } from "drizzle-orm";
 import { config } from "@config";
 import dynamic from 'next/dynamic';
 import { translations } from "@libs/i18n";
-import { DollarSign, Users, ShoppingBag } from "lucide-react";
+import { DollarSign, Users, ShoppingBag, Loader2 } from "lucide-react";
 import { AdminOrdersCard } from "./components/admin-orders-card";
 
 // 定义图表数据类型
@@ -42,7 +42,7 @@ const RevenueChart = dynamic(() => import('./RevenueChart'), {
   loading: () => (
     <div className="h-80 flex items-center justify-center bg-muted rounded-lg">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chart-1 mx-auto mb-2"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-chart-1 mx-auto mb-2" />
         <p className="text-sm text-muted-foreground">加载图表中...</p>
       </div>
     </div>

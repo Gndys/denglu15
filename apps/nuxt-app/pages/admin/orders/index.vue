@@ -24,7 +24,7 @@
 
     <!-- Loading State -->
     <div v-else-if="pending" class="flex items-center justify-center py-20">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <Loader2 class="h-8 w-8 animate-spin text-primary" />
       <span class="ml-2 text-muted-foreground">{{ t('common.loading') }}</span>
     </div>
 
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus } from 'lucide-vue-next'
+import { Plus, Loader2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 // Define page metadata

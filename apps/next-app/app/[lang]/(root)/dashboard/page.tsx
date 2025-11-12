@@ -6,6 +6,7 @@ import { authClientReact } from "@libs/auth/authClient";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DashboardTabs } from "./components/dashboard-tabs";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardPage() {
   const { t, locale: currentLocale } = useTranslation();
@@ -123,7 +124,7 @@ export default function DashboardPage() {
     return (
       <div className="container py-8">
         <div className="flex items-center justify-center h-40">
-          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
       </div>
     );

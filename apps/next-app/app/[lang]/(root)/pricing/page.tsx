@@ -17,7 +17,8 @@ import {
   Zap,
   Shield,
   Heart,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
 import {
   Dialog,
@@ -355,7 +356,7 @@ export default function PricingPage() {
                 >
                       {loading === plan.id ? (
                         <div className="flex items-center justify-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <Loader2 className="h-4 w-4 animate-spin" />
                           <span>{t.common.loading}</span>
                         </div>
                       ) : (

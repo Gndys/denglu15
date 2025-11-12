@@ -150,7 +150,7 @@
                 ]"
               >
                 <div v-if="loading === plan.id" class="flex items-center justify-center space-x-2">
-                  <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <Loader2 class="h-4 w-4 animate-spin" />
                   <span>{{ t('common.loading') }}</span>
                 </div>
                 <div v-else class="flex items-center justify-center space-x-2">
@@ -261,7 +261,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
-import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap } from 'lucide-vue-next'
+import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap, Loader2 } from 'lucide-vue-next'
 import { motion } from 'motion-v'
 import type { Plan } from '@config'
 

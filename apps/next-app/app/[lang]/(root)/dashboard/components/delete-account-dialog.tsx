@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import { authClientReact } from "@libs/auth/authClient";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/use-translation";
@@ -83,7 +83,7 @@ export function DeleteAccountDialog({ open, onOpenChange }: DeleteAccountDialogP
             className="bg-destructive text-white hover:bg-destructive/90"
           >
             {deleteLoading ? (
-              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Trash2 className="h-4 w-4 mr-2" />
             )}
