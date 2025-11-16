@@ -6,29 +6,32 @@
         <h1 class="text-2xl font-bold tracking-tight">{{ t('admin.orders.title') }}</h1>
         <p class="text-muted-foreground">{{ t('admin.users.subtitle') }}</p>
       </div>
-      
-      <!-- Create Order Button (optional feature) -->
-      <Button>
-        <Plus class="mr-2 h-4 w-4" />
-        {{ t('admin.orders.actions.createOrder') }}
-      </Button>
     </div>
 
     <!-- Error State -->
-    <div v-if="error" class="text-center py-10">
-      <p class="text-destructive mb-4">{{ t('admin.orders.messages.fetchError') }}</p>
-      <Button @click="refresh" variant="outline">
-        {{ t('actions.tryAgain') }}
-      </Button>
+    <div v-if="error" class="rounded-md bg-destructive/15 p-4">
+      <div class="flex">
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-destructive">{{ t('admin.orders.messages.fetchError') }}</h3>
+          <div class="mt-2 text-sm text-destructive">
+            <p>{{ error }}</p>
+          </div>
+          <div class="mt-4">
+            <Button @click="refresh" variant="outline" size="sm">
+              {{ t('actions.tryAgain') }}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-else-if="pending" class="flex items-center justify-center py-20">
+    <!-- Initial Loading State (only on first load) -->
+    <div v-else-if="pending && !data" class="flex items-center justify-center py-20">
       <Loader2 class="h-8 w-8 animate-spin text-primary" />
       <span class="ml-2 text-muted-foreground">{{ t('common.loading') }}</span>
     </div>
 
-    <!-- Data Table -->
+    <!-- Data Table (stays mounted after first load) -->
     <div v-else class="flex flex-col gap-4">
       <OrdersDataTable 
         :data="(data?.orders || []) as any[]" 
@@ -91,13 +94,6 @@ const queryParams = computed(() => {
 const { data, error, pending, refresh } = await useFetch('/api/admin/orders', {
   query: queryParams,
   server: false,
-  default: () => ({
-    orders: [],
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 1
-  }),
 
   onResponseError({ response }) {
     console.error('Failed to fetch orders:', response._data)

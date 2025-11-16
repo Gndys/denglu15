@@ -20,7 +20,13 @@
       </div>
     </div>
 
-    <!-- Data Table -->
+    <!-- Initial Loading State (only on first load) -->
+    <div v-else-if="pending && !subscriptionsData" class="flex items-center justify-center py-20">
+      <Loader2 class="h-8 w-8 animate-spin text-primary" />
+      <span class="ml-2 text-muted-foreground">{{ $t('common.loading') }}</span>
+    </div>
+
+    <!-- Data Table (stays mounted after first load) -->
     <div v-else class="flex flex-col gap-4">
       <SubscriptionsDataTable 
         :data="(subscriptionsData?.subscriptions || []) as any[]" 
@@ -32,6 +38,8 @@
 </template>
 
 <script setup lang="ts">
+import { Loader2 } from 'lucide-vue-next'
+
 // Define page metadata
 definePageMeta({
   layout: 'admin'
@@ -79,14 +87,7 @@ const queryParams = computed(() => {
 // Fetch subscriptions data
 const { data: subscriptionsData, pending, error, refresh } = await useFetch('/api/admin/subscriptions', {
   query: queryParams,
-  server: false,
-  default: () => ({
-    subscriptions: [],
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 0
-  })
+  server: false
 })
 
 // Computed properties

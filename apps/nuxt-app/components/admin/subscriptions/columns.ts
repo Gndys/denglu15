@@ -9,8 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, ExternalLink, RefreshCw, ArrowUpDown, Copy } from 'lucide-vue-next'
+import { MoreHorizontal, ExternalLink, RefreshCw, Copy } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import SortableHeader from '@/components/admin/SortableHeader.vue'
 
 // Subscription type definition
 export interface Subscription {
@@ -152,13 +153,13 @@ export const columns: ColumnDef<Subscription>[] = [
     accessorKey: 'userEmail',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.subscriptions.table.columns.user')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.subscriptions.table.columns.user'),
+        ascendingText: t('admin.subscriptions.table.sort.ascending'),
+        descendingText: t('admin.subscriptions.table.sort.descending'),
+        noneText: t('admin.subscriptions.table.sort.none')
+      })
     },
     enableHiding: false,
     cell: ({ row }) => {
@@ -194,13 +195,13 @@ export const columns: ColumnDef<Subscription>[] = [
     accessorKey: 'status',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.subscriptions.table.columns.status')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.subscriptions.table.columns.status'),
+        ascendingText: t('admin.subscriptions.table.sort.ascending'),
+        descendingText: t('admin.subscriptions.table.sort.descending'),
+        noneText: t('admin.subscriptions.table.sort.none')
+      })
     },
     enableHiding: false,
     cell: ({ row }) => {
@@ -241,13 +242,13 @@ export const columns: ColumnDef<Subscription>[] = [
     accessorKey: 'periodStart',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.subscriptions.table.columns.periodStart')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.subscriptions.table.columns.periodStart'),
+        ascendingText: t('admin.subscriptions.table.sort.ascending'),
+        descendingText: t('admin.subscriptions.table.sort.descending'),
+        noneText: t('admin.subscriptions.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const date = row.getValue('periodStart') as Date
@@ -258,13 +259,13 @@ export const columns: ColumnDef<Subscription>[] = [
     accessorKey: 'periodEnd',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.subscriptions.table.columns.periodEnd')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.subscriptions.table.columns.periodEnd'),
+        ascendingText: t('admin.subscriptions.table.sort.ascending'),
+        descendingText: t('admin.subscriptions.table.sort.descending'),
+        noneText: t('admin.subscriptions.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const date = row.getValue('periodEnd') as Date
@@ -293,13 +294,13 @@ export const columns: ColumnDef<Subscription>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.subscriptions.table.columns.createdAt')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.subscriptions.table.columns.createdAt'),
+        ascendingText: t('admin.subscriptions.table.sort.ascending'),
+        descendingText: t('admin.subscriptions.table.sort.descending'),
+        noneText: t('admin.subscriptions.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const date = row.getValue('createdAt') as Date

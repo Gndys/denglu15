@@ -1,22 +1,3 @@
-/**
- * 管理员仪表板页面
- * 
- * 📊 图表数据说明：
- * - 当前使用静态测试数据 (monthlyRevenueData) 用于演示美观效果
- * - 线上环境请切换到真实数据源
- * 
- * 🔄 切换到真实数据的步骤：
- * 1. 在 AdminDashboard 函数中取消注释：const realMonthlyData = await getRealMonthlyData();
- * 2. 将 <RevenueChart data={monthlyRevenueData} /> 改为 <RevenueChart data={realMonthlyData} />
- * 3. getRealMonthlyData() 函数会获取过去6个月的真实订单和收入数据
- * 
- * ✨ 功能特性：
- * - 自动错误处理和数据回退
- * - 支持空数据状态的优雅显示
- * - 响应式设计适配各种屏幕尺寸
- * - 实时数据查询（今日、本月统计）
- */
-
 import { headers } from 'next/headers'
 import { auth } from "@libs/auth";
 import { userRoles } from "@libs/database/constants";
@@ -72,23 +53,8 @@ interface AdminStats {
   };
 }
 
-// 测试数据 - 月度收入趋势（为了演示美观，线上可替换为真实数据）
-const monthlyRevenueData: ChartData[] = [
-  { month: '1月', revenue: 12000, orders: 45 },
-  { month: '2月', revenue: 15000, orders: 52 },
-  { month: '3月', revenue: 18000, orders: 61 },
-  { month: '4月', revenue: 22000, orders: 73 },
-  { month: '5月', revenue: 19000, orders: 68 },
-  { month: '6月', revenue: 25000, orders: 84 },
-  { month: '7月', revenue: 28000, orders: 92 },
-  { month: '8月', revenue: 32000, orders: 105 },
-  { month: '9月', revenue: 29000, orders: 98 },
-  { month: '10月', revenue: 35000, orders: 112 },
-  { month: '11月', revenue: 38000, orders: 125 },
-  { month: '12月', revenue: 42000, orders: 138 },
-];
+// Get real monthly revenue trend data (past 6 months)
 
-// 获取真实的月度收入趋势数据（过去6个月）
 async function getRealMonthlyData(): Promise<ChartData[]> {
   try {
     const now = new Date();
@@ -260,17 +226,11 @@ export default async function AdminDashboard({ params }: { params: Promise<{ lan
     );
   }
 
-  // 获取统计数据
+  // Fetch statistics data
   const stats = await getAdminStats();
-
-  // 🔄 线上环境切换到真实数据的方法：
-  // 1. 取消下面一行的注释，获取真实的月度数据
-  // const realMonthlyData = await getRealMonthlyData();
-  // 
-  // 2. 在下面的 RevenueChart 组件中将 data={monthlyRevenueData} 
-  //    替换为 data={realMonthlyData}
-  // 
-  // 当前使用静态数据是为了确保演示效果，即使没有足够的历史数据也能看到美观的图表
+  
+  // Fetch real monthly data for chart
+  const monthlyData = await getRealMonthlyData();
 
   return (
     <div className="p-8 bg-background min-h-screen">
@@ -342,7 +302,7 @@ export default async function AdminDashboard({ params }: { params: Promise<{ lan
               </div>
             </div>
           </div>
-          <RevenueChart data={monthlyRevenueData} />
+          <RevenueChart data={monthlyData} />
         </div>
 
         {/* 时间维度统计 */}

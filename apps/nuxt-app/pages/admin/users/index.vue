@@ -15,17 +15,25 @@
     </div>
     
     <div class="flex flex-col gap-4">
-      <!-- Loading State -->
-      <div v-if="pending" class="flex items-center justify-center py-8">
-        <div class="text-muted-foreground">{{ $t('common.loading') }}</div>
-      </div>
-      
       <!-- Error State -->
-      <div v-else-if="error" class="text-red-600 py-8 text-center">
-        {{ $t('admin.users.messages.fetchError') }}: {{ error }}
+      <div v-if="error" class="rounded-md bg-destructive/15 p-4">
+        <div class="flex">
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-destructive">{{ $t('admin.users.messages.fetchError') }}</h3>
+            <div class="mt-2 text-sm text-destructive">
+              <p>{{ error }}</p>
+            </div>
+          </div>
+        </div>
       </div>
       
-      <!-- Success State with Advanced DataTable -->
+      <!-- Initial Loading State (only on first load) -->
+      <div v-else-if="pending && !data" class="flex items-center justify-center py-20">
+        <Loader2 class="h-8 w-8 animate-spin text-primary" />
+        <span class="ml-2 text-muted-foreground">{{ $t('common.loading') }}</span>
+      </div>
+      
+      <!-- Data Table (stays mounted after first load) -->
       <div v-else>
         <UsersDataTable 
           :data="data?.users || []"
@@ -43,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserPlus } from 'lucide-vue-next'
+import { UserPlus, Loader2 } from 'lucide-vue-next'
 //import UsersDataTable from '../../../components/admin/users/UsersDataTable.vue'
 
 // Define page metadata
@@ -92,7 +100,8 @@ const queryParams = computed(() => {
 
 // Fetch users data
 const { data, pending, error, refresh } = await useFetch('/api/admin/users', {
-  query: queryParams
+  query: queryParams,
+  server: false  // Only fetch on client-side
 })
 
 // Watch for query changes and refresh data

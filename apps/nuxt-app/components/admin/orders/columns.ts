@@ -9,8 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, ExternalLink, RefreshCw, ArrowUpDown, Copy } from 'lucide-vue-next'
+import { MoreHorizontal, ExternalLink, RefreshCw, Copy } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import SortableHeader from '@/components/admin/SortableHeader.vue'
 
 // Order type definition
 export interface Order {
@@ -139,13 +140,13 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: 'userEmail',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.orders.table.columns.user')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.orders.table.columns.user'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     enableHiding: false,
     cell: ({ row }) => {
@@ -168,13 +169,13 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: 'amount',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.orders.table.columns.amount')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.orders.table.columns.amount'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     enableHiding: false,
     cell: ({ row }) => {
@@ -256,13 +257,13 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => {
       const { t } = useI18n()
-      return h('button', {
-        class: 'flex items-center space-x-2 hover:text-accent-foreground',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      }, [
-        h('span', {}, t('admin.orders.table.columns.createdAt')),
-        h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })
-      ])
+      return h(SortableHeader, {
+        column,
+        title: t('admin.orders.table.columns.createdAt'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const date = row.getValue('createdAt') as Date | string | null

@@ -142,14 +142,57 @@ watch(() => props.data, (newData) => {
   localData.value = [...newData]
 }, { deep: true })
 
-// Table state
-const columnVisibility = ref<VisibilityState>({
-  id: false,
-  metadata: false,
-  updatedAt: false,
-})
+// Table state - Load from localStorage or use defaults
+const COLUMN_VISIBILITY_KEY = 'admin-subscriptions-column-visibility'
 
-const sorting = ref<SortingState>([])
+const getInitialColumnVisibility = (): VisibilityState => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem(COLUMN_VISIBILITY_KEY)
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        console.error('Failed to parse saved column visibility:', e)
+      }
+    }
+  }
+  // Default visibility state
+  return {
+    id: false,
+    metadata: false,
+    updatedAt: false,
+  }
+}
+
+const columnVisibility = ref<VisibilityState>(getInitialColumnVisibility())
+
+// Watch and persist column visibility changes
+watch(columnVisibility, (newValue) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(newValue))
+  }
+}, { deep: true })
+
+// Initialize sorting from URL query parameters
+const getInitialSorting = (): SortingState => {
+  const sortBy = route.query.sortBy as string
+  const sortDirection = route.query.sortDirection as string
+  
+  if (sortBy && sortDirection) {
+    return [{
+      id: sortBy,
+      desc: sortDirection === 'desc'
+    }]
+  }
+  return []
+}
+
+const sorting = ref<SortingState>(getInitialSorting())
+
+// Watch route changes to update sorting state
+watch(() => route.query, () => {
+  sorting.value = getInitialSorting()
+}, { deep: true })
 
 // Create table instance
 const table = useVueTable({

@@ -1,8 +1,11 @@
 import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
-import { ArrowUpDown, Copy } from 'lucide-vue-next'
+import { Copy } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import UsersActionsCell from '@/components/admin/users/UsersActionsCell.vue'
+import UsersBannedCell from '@/components/admin/users/UsersBannedCell.vue'
+import UsersRoleCell from '@/components/admin/users/UsersRoleCell.vue'
+import SortableHeader from '@/components/admin/SortableHeader.vue'
 
 // User type definition based on the API response
 export interface User {
@@ -75,15 +78,13 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: 'name',
     header: ({ column }) => {
       const { t } = useI18n()
-      return (
-        <button
-          class="flex items-center space-x-2 hover:text-accent-foreground"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          <span>{t('admin.users.table.columns.name')}</span>
-          <ArrowUpDown class="ml-2 h-4 w-4" />
-        </button>
-      )
+      return h(SortableHeader, {
+        column,
+        title: t('admin.users.table.columns.name'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const name = row.getValue('name') as string | null
@@ -96,15 +97,13 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: 'email',
     header: ({ column }) => {
       const { t } = useI18n()
-      return (
-        <button
-          class="flex items-center space-x-2 hover:text-accent-foreground"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          <span>{t('admin.users.table.columns.email')}</span>
-          <ArrowUpDown class="ml-2 h-4 w-4" />
-        </button>
-      )
+      return h(SortableHeader, {
+        column,
+        title: t('admin.users.table.columns.email'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const email = row.getValue('email') as string
@@ -112,28 +111,26 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   
-  // Role Column (no sorting needed - just admin/user filter)
+  // Role Column (with dropdown to change role)
   {
     accessorKey: 'role',
     header: () => {
       const { t } = useI18n()
       return <span>{t('admin.users.table.columns.role')}</span>
     },
-    cell: ({ row }) => {
-      const { t } = useI18n()
-      const role = row.getValue('role') as string
-      const badgeClass = role === 'admin' 
-        ? 'bg-chart-1 text-destructive-foreground'
-        : 'bg-primary text-primary-foreground'
+    cell: ({ row, table }) => {
+      const currentRole = row.getValue('role') as string
+      const userId = row.getValue('id') as string
       
-      // Use translated role names
-      const roleLabel = role === 'admin' ? t('dashboard.roles.admin') : t('dashboard.roles.user')
+      // Get the onUserUpdated function from table meta
+      const meta = table.options.meta as any
+      const onUserUpdated = meta?.onUserUpdated
       
-      return (
-        <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>
-          {roleLabel}
-        </span>
-      )
+      return h(UsersRoleCell, { 
+        currentRole,
+        userId,
+        onUserUpdated
+      })
     },
     enableSorting: false,
   },
@@ -165,29 +162,28 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
   },
   
-  // Banned Status Column (no sorting needed - just status display)
+  // Banned Status Column (with toggle switch)
   {
     accessorKey: 'banned',
     header: () => {
       const { t } = useI18n()
-      return <span>Status</span>
+      return <span>{t('admin.users.table.columns.banned')}</span>
     },
-    cell: ({ row }) => {
-      const banned = row.getValue('banned') as boolean | null
+    cell: ({ row, table }) => {
+      const bannedValue = row.getValue('banned') as boolean | null
+      // Convert null to false for the switch (null means not banned)
+      const isBanned = bannedValue === true
+      const userId = row.getValue('id') as string
       
-      if (banned) {
-        return (
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-destructive text-destructive-foreground">
-            Banned
-          </span>
-        )
-      }
+      // Get the onUserUpdated function from table meta to update local data
+      const meta = table.options.meta as any
+      const onUserUpdated = meta?.onUserUpdated
       
-      return (
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-          Active
-        </span>
-      )
+      return h(UsersBannedCell, { 
+        value: isBanned,
+        userId,
+        onUserUpdated
+      })
     },
     enableSorting: false,
   },
@@ -197,15 +193,13 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => {
       const { t } = useI18n()
-      return (
-        <button
-          class="flex items-center space-x-2 hover:text-accent-foreground"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          <span>{t('admin.users.table.columns.createdAt')}</span>
-          <ArrowUpDown class="ml-2 h-4 w-4" />
-        </button>
-      )
+      return h(SortableHeader, {
+        column,
+        title: t('admin.users.table.columns.createdAt'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const createdAt = row.getValue('createdAt') as string | Date
@@ -224,15 +218,13 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: 'updatedAt',
     header: ({ column }) => {
       const { t } = useI18n()
-      return (
-        <button
-          class="flex items-center space-x-2 hover:text-accent-foreground"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          <span>{t('admin.users.table.columns.updatedAt')}</span>
-          <ArrowUpDown class="ml-2 h-4 w-4" />
-        </button>
-      )
+      return h(SortableHeader, {
+        column,
+        title: t('admin.users.table.columns.updatedAt'),
+        ascendingText: t('admin.users.table.sort.ascending'),
+        descendingText: t('admin.users.table.sort.descending'),
+        noneText: t('admin.users.table.sort.none')
+      })
     },
     cell: ({ row }) => {
       const updatedAt = row.getValue('updatedAt') as string | Date

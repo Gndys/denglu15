@@ -144,11 +144,9 @@ watch(() => props.data, (newData) => {
 
 // Handle user updates
 const handleUserUpdated = (userUpdate: Partial<User> & { id: string }) => {
-  
   const index = localData.value.findIndex(user => user.id === userUpdate.id)
   
   if (index !== -1) {
-    
     // Extract id and get the actual update properties
     const { id, ...updateProperties } = userUpdate
     
@@ -165,28 +163,64 @@ const handleUserUpdated = (userUpdate: Partial<User> & { id: string }) => {
 
 // Handle user deletion
 const handleUserDeleted = (userId: string) => {
-  console.log('handleUserDeleted called with userId:', userId)
-  console.log('current localData before delete:', localData.value)
-  
-  const originalLength = localData.value.length
   localData.value = localData.value.filter(user => user.id !== userId)
-  
-  console.log('localData after delete:', localData.value)
-  console.log(`Removed ${originalLength - localData.value.length} users`)
   
   // Also emit refresh to parent to update pagination counts
   emit('refresh-data')
 }
 
-// Table state
-const columnVisibility = ref<VisibilityState>({
-  id: false,
-  emailVerified: false,
-  createdAt: true,
-  updatedAt: false,
-})
+// Table state - Load from localStorage or use defaults
+const COLUMN_VISIBILITY_KEY = 'admin-users-column-visibility'
 
-const sorting = ref<SortingState>([])
+const getInitialColumnVisibility = (): VisibilityState => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem(COLUMN_VISIBILITY_KEY)
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        console.error('Failed to parse saved column visibility:', e)
+      }
+    }
+  }
+  // Default visibility state
+  return {
+    id: false,
+    emailVerified: false,
+    createdAt: true,
+    updatedAt: false,
+  }
+}
+
+const columnVisibility = ref<VisibilityState>(getInitialColumnVisibility())
+
+// Watch and persist column visibility changes
+watch(columnVisibility, (newValue) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(newValue))
+  }
+}, { deep: true })
+
+// Initialize sorting from URL query parameters
+const getInitialSorting = (): SortingState => {
+  const sortBy = route.query.sortBy as string
+  const sortDirection = route.query.sortDirection as string
+  
+  if (sortBy && sortDirection) {
+    return [{
+      id: sortBy,
+      desc: sortDirection === 'desc'
+    }]
+  }
+  return []
+}
+
+const sorting = ref<SortingState>(getInitialSorting())
+
+// Watch route changes to update sorting state
+watch(() => route.query, () => {
+  sorting.value = getInitialSorting()
+}, { deep: true })
 
 // Create table instance
 const table = useVueTable({
@@ -223,6 +257,7 @@ const table = useVueTable({
   meta: {
     onUserUpdated: handleUserUpdated,
     onUserDeleted: handleUserDeleted,
+    refreshData: () => emit('refresh-data'),
   },
   enableSorting: true,
 })

@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
+  VisibilityState,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -53,7 +54,35 @@ export function DataTable<TData, TValue>({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const columns = useSubscriptionColumns()
+  
+  // Load column visibility from localStorage
+  const COLUMN_VISIBILITY_KEY = 'admin-subscriptions-column-visibility'
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(COLUMN_VISIBILITY_KEY)
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to parse saved column visibility:', e)
+        }
+      }
+    }
+    // Default visibility state
+    return {
+      id: false,
+      metadata: false,
+      updatedAt: false,
+    }
+  })
   const [sorting, setSorting] = useState<SortingState>([])
+  
+  // Persist column visibility to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(columnVisibility))
+    }
+  }, [columnVisibility])
 
   // Initialize sorting from URL parameters
   useEffect(() => {
@@ -71,6 +100,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: columns as ColumnDef<TData, TValue>[],
+    onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: (updater) => {
       const newSorting = typeof updater === 'function' ? updater(sorting) : updater
       setSorting(newSorting)
@@ -93,6 +123,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     manualSorting: true, // Enable manual sorting for server-side
     state: {
+      columnVisibility,
       sorting,
     },
   })
@@ -155,7 +186,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {pagination && pagination.totalPages > 1 && (
+      {pagination && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -167,17 +198,36 @@ export function DataTable<TData, TValue>({
             
             {Array.from({ length: pagination.totalPages }).map((_, index) => {
               const page = index + 1;
-              return (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    isActive={page === pagination.currentPage}
-                    onClick={() => handlePageChange(page)}
-                    className="cursor-pointer"
-                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              );
+              // Show first page, last page, and pages around current page
+              if (
+                page === 1 ||
+                page === pagination.totalPages ||
+                (page >= pagination.currentPage - 2 && page <= pagination.currentPage + 2)
+              ) {
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      isActive={page === pagination.currentPage}
+                      onClick={() => handlePageChange(page)}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              }
+              // Show ellipsis for gaps
+              if (
+                page === pagination.currentPage - 3 ||
+                page === pagination.currentPage + 3
+              ) {
+                return (
+                  <PaginationItem key={page}>
+                    <span className="flex h-9 w-9 items-center justify-center">...</span>
+                  </PaginationItem>
+                );
+              }
+              return null;
             })}
 
             <PaginationItem>

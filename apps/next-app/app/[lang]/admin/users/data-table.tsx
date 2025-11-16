@@ -52,13 +52,36 @@ export function DataTable<TData, TValue>({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    id: false,
-    emailVerified: false,
-    createdAt: true,
-    updatedAt: false,
+  
+  // Load column visibility from localStorage
+  const COLUMN_VISIBILITY_KEY = 'admin-users-column-visibility'
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(COLUMN_VISIBILITY_KEY)
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to parse saved column visibility:', e)
+        }
+      }
+    }
+    // Default visibility state
+    return {
+      id: false,
+      emailVerified: false,
+      createdAt: true,
+      updatedAt: false,
+    }
   })
   const [sorting, setSorting] = useState<SortingState>([])
+  
+  // Persist column visibility to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(COLUMN_VISIBILITY_KEY, JSON.stringify(columnVisibility))
+    }
+  }, [columnVisibility])
 
   // Initialize sorting from URL parameters
   useEffect(() => {

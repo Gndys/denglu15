@@ -128,6 +128,9 @@
         </Card>
       </div>
 
+      <!-- Recent Orders -->
+      <AdminOrdersCard :limit="10" />
+
     </div>
   </div>
 </template>
