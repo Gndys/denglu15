@@ -21,7 +21,7 @@ export default function WeixinLoginPage() {
     const initWxLogin = () => {
       if (typeof window.WxLogin !== 'undefined') {
         const returnTo = searchParams.get('returnTo') || '/';
-        const stateData = btoa(returnTo);
+        const stateData = btoa(encodeURIComponent(returnTo));
         
         new window.WxLogin({
           id: 'login_container',

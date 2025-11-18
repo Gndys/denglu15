@@ -63,7 +63,7 @@ export const wechatPlugin = (options: WeChatPluginOptions): BetterAuthPlugin => 
           if (state && typeof state === 'string') {
             try {
               const decoded = Buffer.from(state, 'base64').toString('utf-8');
-              returnTo = decoded || '/';
+              returnTo = decodeURIComponent(decoded) || '/';
             } catch (e) {
               console.error('Failed to decode state:', e);
               returnTo = '/';
