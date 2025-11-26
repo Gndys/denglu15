@@ -12,7 +12,7 @@
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton as-child>
+              <SidebarMenuButton as-child :is-active="isRouteActive('/admin') && route.path === localePath('/admin')">
                 <NuxtLink :to="localePath('/admin')">
                   <LayoutDashboard />
                   <span>{{ t('navigation.admin.dashboard') }}</span>
@@ -29,7 +29,7 @@
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton as-child>
+              <SidebarMenuButton as-child :is-active="isRouteActive('/admin/users')">
                 <NuxtLink :to="localePath('/admin/users')">
                   <User />
                   <span>{{ t('navigation.admin.users') }}</span>
@@ -38,7 +38,7 @@
             </SidebarMenuItem>
             
             <SidebarMenuItem>
-              <SidebarMenuButton as-child>
+              <SidebarMenuButton as-child :is-active="isRouteActive('/admin/subscriptions')">
                 <NuxtLink :to="localePath('/admin/subscriptions')">
                   <CreditCard />
                   <span>{{ t('navigation.admin.subscriptions') }}</span>
@@ -47,7 +47,7 @@
             </SidebarMenuItem>
             
             <SidebarMenuItem>
-              <SidebarMenuButton as-child>
+              <SidebarMenuButton as-child :is-active="isRouteActive('/admin/orders')">
                 <NuxtLink :to="localePath('/admin/orders')">
                   <ShoppingCart />
                   <span>{{ t('navigation.admin.orders') }}</span>
@@ -67,4 +67,10 @@ import { User, CreditCard, ShoppingCart, LayoutDashboard } from 'lucide-vue-next
 // Internationalization
 const { t } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
+
+// Check if a route is active
+const isRouteActive = (path: string) => {
+  return route.path.startsWith(localePath(path))
+}
 </script> 

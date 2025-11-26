@@ -4,6 +4,7 @@ import { User, CreditCard, ShoppingCart, LayoutDashboard } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -19,6 +20,7 @@ import {
 
 export function AppSidebar() {
   const { t, locale: currentLocale } = useTranslation();
+  const pathname = usePathname();
 
   // Admin dashboard item
   const dashboardItem = {
@@ -59,7 +61,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={pathname === `/${currentLocale}${dashboardItem.url}`}>
                   <Link href={`/${currentLocale}${dashboardItem.url}`}>
                     <dashboardItem.icon />
                     <span>{dashboardItem.title}</span>
@@ -77,7 +79,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(`/${currentLocale}${item.url}`)}>
                     <Link href={`/${currentLocale}${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
