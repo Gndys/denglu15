@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 7001",
-    "build": "BUILD_TIME=true next build",
+    "build": "next build",
     "start": "NODE_ENV=production next start --port 7001"
   },
   "dependencies": {

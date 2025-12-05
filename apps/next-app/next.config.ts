@@ -1,5 +1,11 @@
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import type { NextConfig } from 'next'
+
+import { config } from 'dotenv';
+
+// Load .env file from root directory
+// Note: __dirname is automatically provided by Next.js 16
+config({ path: join(__dirname, '../../.env') });
 
 // Resolve project root directory and libs directory absolute paths
 const rootDir = resolve(__dirname || process.cwd(), '../..');
@@ -8,7 +14,7 @@ const libsDir = resolve(rootDir, 'libs');
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig= {
   webpack(config: any) {
-    // 修改 webpack 配置以处理 SVG 文件
+    // Modify webpack configuration to handle SVG files
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: { and: [/\.(js|ts|md)x?$/] },
@@ -17,7 +23,7 @@ const nextConfig: NextConfig= {
       }],
     });
 
-    // 添加外部文件夹的解析路径
+    // Add resolve paths for external folders
     config.resolve.alias = {
       ...config.resolve.alias,
       '@libs': libsDir
@@ -25,7 +31,7 @@ const nextConfig: NextConfig= {
 
     return config;
   },
-  // 允许加载外部目录的图片
+  // Allow loading images from external directories
   images: {
     dangerouslyAllowSVG: true,
     domains: [],
@@ -35,7 +41,7 @@ const nextConfig: NextConfig= {
   // Enable standalone mode for Docker deployment
   output: 'standalone',
   experimental: {
-    // 允许导入外部目录
+    // Allow importing from external directories
     externalDir: true,
   },
   turbopack: {
