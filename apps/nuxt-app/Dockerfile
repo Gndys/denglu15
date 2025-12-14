@@ -1,4 +1,6 @@
 # Nuxt.js Production Dockerfile
+# Use Node.js 22.20+ LTS for Nuxt 4 oxc-parser compatibility
+# See: https://github.com/nuxt/nuxt/issues/33480
 FROM node:22-alpine AS base
 
 # Build stage - install deps and build
