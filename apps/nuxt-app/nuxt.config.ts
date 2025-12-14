@@ -11,7 +11,7 @@ Object.assign(process.env, env);
 
 import { config as appConfig } from '../../config';
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
   devServer: {
     port: 7001,
@@ -118,19 +118,23 @@ export default defineNuxtConfig({
   modules: ['shadcn-nuxt', '@pinia/nuxt', '@nuxtjs/i18n', 'nuxt-charts', 'motion-v/nuxt'],
   
   // Configure components auto-import
+  // Only scan .vue files to avoid conflicts with .ts/.tsx files (like columns.ts, index.ts)
   components: {
     dirs: [
       {
         path: '~/components',
         pathPrefix: false,
+        extensions: ['.vue'],
       },
       {
         path: '~/components/admin',
         pathPrefix: false,
+        extensions: ['.vue'],
       },
       {
         path: '~/components/admin/users',
         pathPrefix: false,
+        extensions: ['.vue'],
       }
     ]
   },
@@ -162,9 +166,10 @@ export default defineNuxtConfig({
     prefix: '',
     /**
      * Directory that the component lives in.
-     * @default "./components/ui"
+     * Fix: Use ~ to correctly resolve to app folder
+     * See: https://github.com/unovue/shadcn-vue/issues/1416
      */
-    componentDir: './components/ui'
+    componentDir: '~/components/ui'
   },
 
   // App configuration including favicon and metadata

@@ -1,4 +1,5 @@
 # Next.js Production Dockerfile
+# Use Node.js 22 LTS (22.20+ recommended for best compatibility)
 FROM node:22-alpine AS base
 
 # Build stage - install deps and build
