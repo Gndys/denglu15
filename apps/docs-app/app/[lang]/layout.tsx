@@ -4,12 +4,11 @@ import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { ThemeScript } from '@/components/theme-script';
-import { RootProvider } from 'fumadocs-ui/provider/next';
 import { defineI18nUI } from 'fumadocs-ui/i18n';
 import { i18n } from '@/lib/i18n';
 import { config } from '@config';
 import { translations } from '@libs/i18n';
-import SearchDialog from '@/components/search';
+import { DocsRootProvider } from '@/components/docs-root-provider';
 
 // Define i18n UI with translations for language switcher
 const { provider } = defineI18nUI(i18n, {
@@ -116,12 +115,9 @@ export default async function Layout({
       </head>
       <body className="flex flex-col min-h-screen">
         <Suspense fallback={null}>
-          <RootProvider
-            search={{ SearchDialog }}
-            i18n={provider(lang)}
-          >
+          <DocsRootProvider i18n={provider(lang)}>
             {children}
-          </RootProvider>
+          </DocsRootProvider>
         </Suspense>
       </body>
     </html>
