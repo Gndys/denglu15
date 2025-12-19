@@ -1,7 +1,7 @@
 // Theme management module for consistent theme handling across the application
 // Built on shadcn/ui theme system with 5 color schemes, light/dark modes, and tweakcn.com integration
 export type Theme = 'light' | 'dark'
-export type ColorScheme = 'default' | 'claude' | 'cosmic-night' | 'modern-minimal' | 'ocean-breeze'
+export type ColorScheme = 'default' | 'claude' | 'cosmic-night' | 'modern-minimal' | 'ocean-breeze' | 'perplexity'
 
 export interface ThemeState {
   theme: Theme
@@ -16,7 +16,8 @@ export const COLOR_SCHEMES: readonly ColorScheme[] = [
   'claude', 
   'cosmic-night',
   'modern-minimal',
-  'ocean-breeze'
+  'ocean-breeze',
+  'perplexity'
 ] as const
 
 // Theme class mappings
@@ -31,6 +32,7 @@ export const COLOR_SCHEME_CLASSES = {
   'cosmic-night': 'theme-cosmic-night',
   'modern-minimal': 'theme-modern-minimal',
   'ocean-breeze': 'theme-ocean-breeze',
+  perplexity: 'theme-perplexity',
 } as const
 
 // All possible theme-related classes for cleanup
@@ -41,7 +43,8 @@ export const ALL_THEME_CLASSES = [
   'theme-claude',
   'theme-cosmic-night', 
   'theme-modern-minimal',
-  'theme-ocean-breeze'
+  'theme-ocean-breeze',
+  'theme-perplexity'
 ] as const
 
 // shadcn/ui theme configuration with UI display information
@@ -54,6 +57,10 @@ export const THEME_CONFIG = {
   claude: {
     name: 'Claude',
     color: '#b45309' // oklch(0.6171 0.1375 39.0427) - Warm orange
+  },
+  perplexity: {
+    name: 'Perplexity',
+    color: '#0d9488' // oklch(0.5322 0.0910 205.7465) - Teal cyan
   },
   'cosmic-night': {
     name: 'Cosmic Night',
