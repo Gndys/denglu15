@@ -640,16 +640,27 @@ export const config = {
 
     /**
      * Alibaba Cloud OSS Configuration
+     * Note: OSS can reuse ALIYUN_ACCESS_KEY_ID/SECRET if OSS_ACCESS_KEY_ID/SECRET are not set
      */
     oss: {
       get region() {
         return getEnvForService('OSS_REGION', 'Alibaba Cloud OSS') || 'oss-cn-shanghai';
       },
       get accessKeyId() {
-        return requireEnvForService('OSS_ACCESS_KEY_ID', 'Alibaba Cloud OSS');
+        // Fallback to ALIYUN_ACCESS_KEY_ID if OSS_ACCESS_KEY_ID is not set
+        const ossKey = getEnv('OSS_ACCESS_KEY_ID');
+        if (ossKey) return ossKey;
+        const aliyunKey = getEnv('ALIYUN_ACCESS_KEY_ID');
+        if (aliyunKey) return aliyunKey;
+        throw new Error('Missing OSS_ACCESS_KEY_ID or ALIYUN_ACCESS_KEY_ID for Alibaba Cloud OSS');
       },
       get accessKeySecret() {
-        return requireEnvForService('OSS_ACCESS_KEY_SECRET', 'Alibaba Cloud OSS');
+        // Fallback to ALIYUN_ACCESS_KEY_SECRET if OSS_ACCESS_KEY_SECRET is not set
+        const ossSecret = getEnv('OSS_ACCESS_KEY_SECRET');
+        if (ossSecret) return ossSecret;
+        const aliyunSecret = getEnv('ALIYUN_ACCESS_KEY_SECRET');
+        if (aliyunSecret) return aliyunSecret;
+        throw new Error('Missing OSS_ACCESS_KEY_SECRET or ALIYUN_ACCESS_KEY_SECRET for Alibaba Cloud OSS');
       },
       get bucket() {
         return getEnvForService('OSS_BUCKET', 'Alibaba Cloud OSS') || 'tinyship';
