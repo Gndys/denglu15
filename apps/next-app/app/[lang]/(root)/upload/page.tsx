@@ -185,6 +185,13 @@ export default function UploadPage() {
     }
   };
 
+  // Handle files change - clean up uploaded files for removed files
+  const handleFilesChange = React.useCallback((newFiles: File[]) => {
+    setFiles(newFiles);
+    // Clean up uploaded files for removed files
+    setUploadedFiles((prev) => prev.filter((uf) => newFiles.includes(uf.file)));
+  }, []);
+
   const handleClearAll = () => {
     setFiles([]);
     setUploadedFiles([]);
@@ -266,7 +273,7 @@ export default function UploadPage() {
           <CardContent>
             <FileUpload
               value={files}
-              onValueChange={setFiles}
+              onValueChange={handleFilesChange}
               onFileValidate={onFileValidate}
               onFileReject={onFileReject}
               onUpload={onUpload}

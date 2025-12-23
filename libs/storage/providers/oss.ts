@@ -55,12 +55,13 @@ export class OSSProvider implements StorageProvider {
 
       // Upload file to OSS
       const result = await this.client.put(key, file, options);
+      const headers = result.res?.headers as Record<string, string> | undefined;
 
       return {
         key: result.name,
         url: result.url,
         size: file.length,
-        etag: result.etag
+        etag: headers?.etag
       };
     } catch (error: unknown) {
       console.error('OSS upload failed:', error);
@@ -82,7 +83,6 @@ export class OSSProvider implements StorageProvider {
         // Generate signed URL for download
         url = this.client.signatureUrl(key, {
           expires: expiresIn,
-          secure: true,
           method: 'GET'
         });
       } else if (operation === 'put') {
@@ -149,14 +149,23 @@ export class OSSProvider implements StorageProvider {
   async getFileMetadata(key: string): Promise<FileMetadata> {
     try {
       const result = await this.client.head(key);
+      const headers = result.res.headers as Record<string, string>;
+      
+      // Convert OSS UserMeta (string | number values) to Record<string, string>
+      const metadata: Record<string, string> = {};
+      if (result.meta) {
+        for (const [k, v] of Object.entries(result.meta)) {
+          metadata[k] = String(v);
+        }
+      }
       
       return {
         key,
-        size: parseInt(result.res.headers['content-length'] || '0'),
-        lastModified: new Date(result.res.headers['last-modified'] || Date.now()),
-        contentType: result.res.headers['content-type'],
-        etag: result.res.headers['etag'],
-        metadata: result.meta || {}
+        size: parseInt(headers['content-length'] || '0'),
+        lastModified: new Date(headers['last-modified'] || Date.now()),
+        contentType: headers['content-type'],
+        etag: headers['etag'],
+        metadata
       };
     } catch (error: unknown) {
       console.error('OSS metadata retrieval failed:', error);
@@ -173,13 +182,13 @@ export class OSSProvider implements StorageProvider {
       const result = await this.client.list({
         prefix: folder.endsWith('/') ? folder : `${folder}/`,
         'max-keys': limit
-      });
+      }, {});
 
       if (!result.objects) {
         return [];
       }
 
-      return result.objects.map((obj: any) => ({
+      return result.objects.map((obj) => ({
         key: obj.name,
         size: obj.size,
         lastModified: new Date(obj.lastModified),
