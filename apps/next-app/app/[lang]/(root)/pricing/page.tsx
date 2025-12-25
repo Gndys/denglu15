@@ -3,7 +3,7 @@
 import { config } from '@config';
 import { useTranslation } from "@/hooks/use-translation";
 import type { Plan } from '@config';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import { authClientReact } from "@libs/auth/authClient";
@@ -18,7 +18,9 @@ import {
   Shield,
   Heart,
   ArrowRight,
-  Loader2
+  Loader2,
+  Coins,
+  CreditCard
 } from "lucide-react";
 import {
   Dialog,
@@ -28,6 +30,9 @@ import {
 } from "@/components/ui/dialog";
 import { Steps, Step } from "@/components/ui/steps";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+type PricingTab = 'subscription' | 'credits';
 
 export default function PricingPage() {
   const { t, locale: currentLocale } = useTranslation();
@@ -42,8 +47,27 @@ export default function PricingPage() {
   
   const { data: session, isPending } = authClientReact.useSession();
   const user = session?.user;
+  const [activeTab, setActiveTab] = useState<PricingTab>('subscription');
 
-  const plans = Object.values(config.payment.plans) as unknown as Plan[];
+  const allPlans = Object.values(config.payment.plans) as unknown as Plan[];
+  
+  // Filter plans based on active tab
+  const { subscriptionPlans, creditPlans } = useMemo(() => {
+    const subscription: Plan[] = [];
+    const credits: Plan[] = [];
+    
+    allPlans.forEach(plan => {
+      if ((plan as any).duration?.type === 'credits') {
+        credits.push(plan);
+      } else {
+        subscription.push(plan);
+      }
+    });
+    
+    return { subscriptionPlans: subscription, creditPlans: credits };
+  }, [allPlans]);
+  
+  const plans = activeTab === 'subscription' ? subscriptionPlans : creditPlans;
 
   // 清理轮询定时器
   useEffect(() => {
@@ -249,11 +273,54 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <section className="py-24">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Tab Switcher */}
+            {creditPlans.length > 0 && (
+              <motion.div 
+                className="flex justify-center mb-12"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="inline-flex p-1 bg-muted rounded-xl">
+                  <button
+                    onClick={() => setActiveTab('subscription')}
+                    className={cn(
+                      "flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                      activeTab === 'subscription'
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    {t.pricing.tabs?.subscription || (currentLocale === 'zh-CN' ? '订阅套餐' : 'Subscription')}
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('credits')}
+                    className={cn(
+                      "flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                      activeTab === 'credits'
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Coins className="h-4 w-4" />
+                    {t.pricing.tabs?.credits || (currentLocale === 'zh-CN' ? '积分充值' : 'Credits')}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            <div className={cn(
+              "grid gap-8 lg:gap-12",
+              plans.length === 1 ? "grid-cols-1 max-w-md mx-auto" :
+              plans.length === 2 ? "grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto" :
+              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            )}>
               {plans.map((plan, index) => {
             const i18n = plan.i18n && typeof plan.i18n === 'object' ? plan.i18n[currentLocale] : undefined;
                 const isRecommended = plan.recommended;
                 const isLifetime = plan.id === 'lifetime';
+                const isCreditPack = plan.duration?.type === 'credits';
                 
             const features = i18n?.features || [];
             
@@ -276,6 +343,16 @@ export default function PricingPage() {
                         <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-chart-warm text-white rounded-full shadow-md">
                           <Crown className="h-3.5 w-3.5" />
                           <span className="text-xs font-medium">{t.pricing.recommendedBadge}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Credit Pack Badge */}
+                    {isCreditPack && !isRecommended && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div className="inline-flex items-center space-x-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full shadow-md">
+                          <Coins className="h-3.5 w-3.5" />
+                          <span className="text-xs font-medium">{t.pricing.creditsBadge || 'Credits'}</span>
                         </div>
                       </div>
                     )}
@@ -316,6 +393,13 @@ export default function PricingPage() {
                           <span>{t.pricing.lifetimeBadge}</span>
                         </div>
                       )}
+                      
+                      {isCreditPack && (plan as any).credits && (
+                        <div className="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-4-bg-15 text-chart-4 rounded-full text-xs font-medium">
+                          <Coins className="h-3.5 w-3.5" />
+                          <span>{(plan as any).credits} {t.pricing.creditsUnit || 'credits'}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Features */}
@@ -346,13 +430,11 @@ export default function PricingPage() {
                     <Button
                       onClick={() => handleSubscribe(plan)}
                   disabled={loading === plan.id || isPending}
-                      className={`w-full py-3 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-[1.02] ${
-                        isRecommended
-                          ? 'bg-gradient-chart-warm text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                          : isLifetime
-                          ? 'bg-gradient-chart-cool text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                          : 'bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90'
-                      } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                      className={cn(
+                        "w-full py-3 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-[1.02]",
+                        "shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+                        "bg-primary text-primary-foreground hover:bg-primary/90"
+                      )}
                 >
                       {loading === plan.id ? (
                         <div className="flex items-center justify-center space-x-2">
@@ -436,7 +518,7 @@ export default function PricingPage() {
                   alt="WeChat Pay QR Code" 
                   className="w-64 h-64"
                 />
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {t.payment.scanQrCode}
                 </p>
               </div>

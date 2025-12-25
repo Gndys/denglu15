@@ -1,0 +1,244 @@
+import { db } from '@libs/database';
+import { user, creditTransaction, creditTransactionTypes } from '@libs/database/schema';
+import { eq, desc, and, sql } from 'drizzle-orm';
+import type { 
+  AddCreditsParams, 
+  ConsumeCreditsParams, 
+  ConsumeCreditsResult,
+  GetTransactionsOptions,
+  CreditTransactionType
+} from './types';
+import type { CreditTransaction } from '@libs/database/schema/credit-transaction';
+
+/**
+ * Credit Service - Manages user credit balances and transactions
+ */
+export class CreditService {
+  /**
+   * Get the current credit balance for a user
+   */
+  async getBalance(userId: string): Promise<number> {
+    const result = await db
+      .select({ creditBalance: user.creditBalance })
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+
+    if (!result.length) {
+      return 0;
+    }
+
+    return parseFloat(result[0].creditBalance) || 0;
+  }
+
+  /**
+   * Add credits to a user's account
+   * Used for purchases, bonuses, refunds, and adjustments
+   */
+  async addCredits(params: AddCreditsParams): Promise<CreditTransaction> {
+    const { userId, amount, type, orderId, description, metadata } = params;
+
+    if (amount <= 0) {
+      throw new Error('Amount must be positive when adding credits');
+    }
+
+    // Use transaction to ensure atomicity
+    const result = await db.transaction(async (tx) => {
+      // Update user balance
+      const [updatedUser] = await tx
+        .update(user)
+        .set({
+          creditBalance: sql`${user.creditBalance} + ${amount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(user.id, userId))
+        .returning({ creditBalance: user.creditBalance });
+
+      if (!updatedUser) {
+        throw new Error(`User not found: ${userId}`);
+      }
+
+      const newBalance = parseFloat(updatedUser.creditBalance);
+
+      // Create transaction record
+      const transactionId = `txn_${crypto.randomUUID()}`;
+      const [transaction] = await tx
+        .insert(creditTransaction)
+        .values({
+          id: transactionId,
+          userId,
+          type,
+          amount: amount.toString(),
+          balance: newBalance.toString(),
+          orderId: orderId || null,
+          description: description || `${type} credits`,
+          metadata: metadata || null
+        })
+        .returning();
+
+      return transaction;
+    });
+
+    return result;
+  }
+
+  /**
+   * Consume credits from a user's account
+   * Returns success status and new balance
+   */
+  async consumeCredits(params: ConsumeCreditsParams): Promise<ConsumeCreditsResult> {
+    const { userId, amount, description, metadata } = params;
+
+    if (amount <= 0) {
+      return {
+        success: false,
+        newBalance: await this.getBalance(userId),
+        error: 'Amount must be positive when consuming credits'
+      };
+    }
+
+    try {
+      const result = await db.transaction(async (tx) => {
+        // Get current balance
+        const [currentUser] = await tx
+          .select({ creditBalance: user.creditBalance })
+          .from(user)
+          .where(eq(user.id, userId))
+          .limit(1);
+
+        if (!currentUser) {
+          throw new Error(`User not found: ${userId}`);
+        }
+
+        const currentBalance = parseFloat(currentUser.creditBalance) || 0;
+
+        // Check if user has enough credits
+        if (currentBalance < amount) {
+          return {
+            success: false,
+            newBalance: currentBalance,
+            error: 'Insufficient credits'
+          };
+        }
+
+        // Deduct credits
+        const [updatedUser] = await tx
+          .update(user)
+          .set({
+            creditBalance: sql`${user.creditBalance} - ${amount}`,
+            updatedAt: new Date()
+          })
+          .where(eq(user.id, userId))
+          .returning({ creditBalance: user.creditBalance });
+
+        const newBalance = parseFloat(updatedUser.creditBalance);
+
+        // Create transaction record (negative amount for consumption)
+        const transactionId = `txn_${crypto.randomUUID()}`;
+        await tx.insert(creditTransaction).values({
+          id: transactionId,
+          userId,
+          type: creditTransactionTypes.CONSUMPTION,
+          amount: (-amount).toString(),  // Negative for consumption
+          balance: newBalance.toString(),
+          description: description || 'Credits consumed',
+          metadata: metadata || null
+        });
+
+        return {
+          success: true,
+          newBalance,
+          transactionId
+        };
+      });
+
+      return result;
+    } catch (error) {
+      console.error('Error consuming credits:', error);
+      return {
+        success: false,
+        newBalance: await this.getBalance(userId),
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  /**
+   * Check if user has enough credits for an operation
+   */
+  async hasEnoughCredits(userId: string, amount: number): Promise<boolean> {
+    const balance = await this.getBalance(userId);
+    return balance >= amount;
+  }
+
+  /**
+   * Get credit transaction history for a user
+   */
+  async getTransactions(
+    userId: string, 
+    options: GetTransactionsOptions = {}
+  ): Promise<CreditTransaction[]> {
+    const { limit = 50, offset = 0, type } = options;
+
+    let query = db
+      .select()
+      .from(creditTransaction)
+      .where(
+        type 
+          ? and(
+              eq(creditTransaction.userId, userId),
+              eq(creditTransaction.type, type)
+            )
+          : eq(creditTransaction.userId, userId)
+      )
+      .orderBy(desc(creditTransaction.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return query;
+  }
+
+  /**
+   * Get credit status summary for a user
+   * Includes balance and recent transaction count
+   */
+  async getStatus(userId: string): Promise<{
+    balance: number;
+    totalPurchased: number;
+    totalConsumed: number;
+  }> {
+    const balance = await this.getBalance(userId);
+
+    // Get aggregated stats
+    const stats = await db
+      .select({
+        type: creditTransaction.type,
+        total: sql<string>`SUM(ABS(${creditTransaction.amount}))`
+      })
+      .from(creditTransaction)
+      .where(eq(creditTransaction.userId, userId))
+      .groupBy(creditTransaction.type);
+
+    let totalPurchased = 0;
+    let totalConsumed = 0;
+
+    for (const stat of stats) {
+      const amount = parseFloat(stat.total) || 0;
+      if (stat.type === 'purchase' || stat.type === 'bonus') {
+        totalPurchased += amount;
+      } else if (stat.type === 'consumption') {
+        totalConsumed += amount;
+      }
+    }
+
+    return {
+      balance,
+      totalPurchased,
+      totalConsumed
+    };
+  }
+}
+
+// Export singleton instance
+export const creditService = new CreditService();
+

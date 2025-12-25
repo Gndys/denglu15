@@ -43,7 +43,48 @@
       <!-- Pricing Cards -->
       <section class="py-24">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <!-- Tab Switcher -->
+          <motion.div 
+            v-if="creditPlans.length > 0"
+            class="flex justify-center mb-12"
+            :initial="{ opacity: 0, y: 10 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ duration: 0.5 }"
+          >
+            <div class="inline-flex p-1 bg-muted rounded-xl">
+              <button
+                @click="activeTab = 'subscription'"
+                :class="cn(
+                  'flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+                  activeTab === 'subscription'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )"
+              >
+                <CreditCard class="h-4 w-4" />
+                {{ t('pricing.tabs.subscription') || (locale === 'zh-CN' ? '订阅套餐' : 'Subscription') }}
+              </button>
+              <button
+                @click="activeTab = 'credits'"
+                :class="cn(
+                  'flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+                  activeTab === 'credits'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )"
+              >
+                <Coins class="h-4 w-4" />
+                {{ t('pricing.tabs.credits') || (locale === 'zh-CN' ? '积分充值' : 'Credits') }}
+              </button>
+            </div>
+          </motion.div>
+
+          <div :class="cn(
+            'grid gap-8 lg:gap-12',
+            plans.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+            plans.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
+            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          )">
             <motion.div
               v-for="(plan, index) in plans"
               :key="plan.id"
@@ -63,6 +104,14 @@
                 <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-chart-warm text-white rounded-full shadow-md">
                   <Crown class="h-3.5 w-3.5" />
                   <span class="text-xs font-medium">{{ t('pricing.recommendedBadge') }}</span>
+                </div>
+              </div>
+              
+              <!-- Credit Pack Badge -->
+              <div v-if="isCreditPack(plan) && !isRecommended(plan)" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full shadow-md">
+                  <Coins class="h-3.5 w-3.5" />
+                  <span class="text-xs font-medium">{{ t('pricing.creditsBadge') }}</span>
                 </div>
               </div>
 
@@ -104,6 +153,11 @@
                   <Heart class="h-3.5 w-3.5" />
                   <span>{{ t('pricing.lifetimeBadge') }}</span>
                 </div>
+                
+                <div v-if="isCreditPack(plan) && getPlanCredits(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-4-bg-15 text-chart-4 rounded-full text-xs font-medium">
+                  <Coins class="h-3.5 w-3.5" />
+                  <span>{{ getPlanCredits(plan) }} {{ t('pricing.creditsUnit') }}</span>
+                </div>
               </div>
 
               <!-- Features -->
@@ -139,15 +193,11 @@
               <Button
                 @click="handleSubscribe(plan)"
                 :disabled="loading === plan.id || session.isPending"
-                :class="[
+                :class="cn(
                   'w-full py-3 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-[1.02]',
-                  isRecommended(plan)
-                    ? 'bg-gradient-chart-warm text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                    : isLifetime(plan)
-                    ? 'bg-gradient-chart-cool text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                    : 'bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90',
-                  'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
-                ]"
+                  'shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
+                  'bg-primary text-primary-foreground hover:bg-primary/90'
+                )"
               >
                 <div v-if="loading === plan.id" class="flex items-center justify-center space-x-2">
                   <Loader2 class="h-4 w-4 animate-spin" />
@@ -271,13 +321,28 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
-import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap, Loader2 } from 'lucide-vue-next'
+import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap, Loader2, Coins, CreditCard } from 'lucide-vue-next'
 import { motion } from 'motion-v'
 import type { Plan } from '@config'
+import { cn } from '@/lib/utils'
+
+type PricingTab = 'subscription' | 'credits'
 
 // Get config data
 const runtimeConfig = useRuntimeConfig()
-const plans = computed(() => Object.values(runtimeConfig.public.paymentPlans) as Plan[])
+const allPlans = computed(() => Object.values(runtimeConfig.public.paymentPlans) as Plan[])
+const activeTab = ref<PricingTab>('subscription')
+
+// Filter plans based on active tab
+const subscriptionPlans = computed(() => 
+  allPlans.value.filter(plan => (plan as any).duration?.type !== 'credits')
+)
+const creditPlans = computed(() => 
+  allPlans.value.filter(plan => (plan as any).duration?.type === 'credits')
+)
+const plans = computed(() => 
+  activeTab.value === 'subscription' ? subscriptionPlans.value : creditPlans.value
+)
 
 // Authentication - Use Better Auth composable
 const { user, isAuthenticated, session } = useAuth()
@@ -306,6 +371,8 @@ const steps = computed(() => [
 // Helper functions
 const isRecommended = (plan: Plan) => plan.recommended
 const isLifetime = (plan: Plan) => plan.id === 'lifetime'
+const isCreditPack = (plan: Plan) => (plan as any).duration?.type === 'credits'
+const getPlanCredits = (plan: Plan) => (plan as any).credits
 
 const getPlanName = (plan: Plan) => {
   return plan.i18n?.[locale.value]?.name || plan.i18n?.['zh-CN']?.name || 'Plan'

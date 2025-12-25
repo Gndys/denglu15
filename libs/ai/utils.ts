@@ -10,7 +10,18 @@ interface StreamOptions {
   model?: string;
 }
 
-export function streamResponse({ messages, provider, model }: StreamOptions) {
+interface StreamResponseWithUsage {
+  response: Response;
+  usage: Promise<{ promptTokens: number; completionTokens: number; totalTokens: number }>;
+  provider: string;
+  model: string;
+}
+
+/**
+ * Stream AI response with usage tracking capability
+ * Returns both the response and a promise for usage data
+ */
+export function streamResponseWithUsage({ messages, provider, model }: StreamOptions): StreamResponseWithUsage {
   // Validate messages
   if (!messages || !Array.isArray(messages)) {
     throw new Error('Invalid messages: messages must be an array');
@@ -26,16 +37,32 @@ export function streamResponse({ messages, provider, model }: StreamOptions) {
     }
   });
   
-  const config = getProviderConfig(provider || 'openai');
-  const aiProvider = createProvider(provider || 'openai', config);
+  const providerName = provider || 'openai';
+  const config = getProviderConfig(providerName);
+  const aiProvider = createProvider(providerName, config);
   
   const result = streamText({
     model: aiProvider(model as any),
     messages: convertToModelMessages(messages),
   });
   
-  return result.toUIMessageStreamResponse({
+  const response = result.toUIMessageStreamResponse({
     originalMessages: messages,
     generateMessageId: () => crypto.randomUUID(),
   });
+  
+  return {
+    response,
+    usage: result.usage,
+    provider: providerName,
+    model: model || 'default'
+  };
+}
+
+/**
+ * Simple stream response (backwards compatible)
+ * Use streamResponseWithUsage for credit consumption tracking
+ */
+export function streamResponse({ messages, provider, model }: StreamOptions): Response {
+  return streamResponseWithUsage({ messages, provider, model }).response;
 }

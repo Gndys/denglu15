@@ -658,6 +658,12 @@ export const zhCN: Locale = {
     cta: "立即开始",
     recommendedBadge: "推荐选择",
     lifetimeBadge: "一次购买，终身使用",
+    creditsBadge: "积分包",
+    creditsUnit: "积分",
+    tabs: {
+      subscription: "订阅套餐",
+      credits: "积分充值"
+    },
     features: {
       securePayment: {
         title: "多渠道安全支付",
@@ -833,6 +839,20 @@ export const zhCN: Locale = {
       manageSubscription: "管理订阅",
       viewPlans: "查看套餐"
     },
+    credits: {
+      title: "积分余额",
+      available: "可用积分",
+      totalPurchased: "累计获得",
+      totalConsumed: "累计消耗",
+      recentTransactions: "最近交易",
+      buyMore: "购买更多积分",
+      types: {
+        purchase: "充值",
+        bonus: "赠送",
+        consumption: "消耗",
+        refund: "退款"
+      }
+    },
     account: {
       title: "账户信息",
       memberSince: "注册时间",
@@ -905,6 +925,10 @@ export const zhCN: Locale = {
       },
       subscription: {
         description: "管理您的订阅计划和付费功能"
+      },
+      credits: {
+        title: "积分",
+        description: "查看积分余额和交易记录"
       },
       orders: {
         description: "查看您的订单历史和交易记录"

@@ -1,5 +1,6 @@
 import { Creem } from 'creem';
 import { config } from '@config';
+import type { CreditPlan } from '@config';
 import {
   PaymentProvider,
   PaymentParams,
@@ -15,18 +16,20 @@ import {
 } from '@libs/database/schema/subscription';
 import { order, orderStatus } from '@libs/database/schema/order';
 import { user } from '@libs/database/schema/user';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import crypto from 'crypto';
+import { creditService } from '@libs/credits';
 
-// 添加一个简单的支付计划接口，只包含我们需要的属性
+// Payment plan interface for type safety
 interface PaymentPlan {
   creemProductId?: string;
   duration: {
-    type: 'recurring' | 'one_time';
-    months: number;
+    type: 'recurring' | 'one_time' | 'credits';
+    months?: number;
   };
+  credits?: number;
   currency: string;
   amount: number;
 }
@@ -295,26 +298,46 @@ export class CreemProvider implements PaymentProvider {
       })
       .where(eq(order.id, orderId));
 
+    // Handle credit pack purchase
+    if (plan.duration.type === 'credits' && plan.credits) {
+      console.log(`Creem credit pack purchase - Adding ${plan.credits} credits to user ${userId}`);
+      
+      await creditService.addCredits({
+        userId: userId,
+        amount: plan.credits,
+        type: 'purchase',
+        orderId: orderId,
+        description: `Purchased ${plan.credits} credits via Creem`,
+        metadata: {
+          checkoutId: webhookData.object.id,
+          planId: planId,
+          provider: 'creem'
+        }
+      });
+
+      return { success: true, orderId };
+    }
+
     if (plan.duration.type === 'recurring') {
-      // 处理订阅
-      // 优先使用Creem提供的周期信息，如果没有则fallback到计算方式
+      // Handle recurring subscription
       let periodStart: Date;
       let periodEnd: Date;
       
       if (webhookData.object.subscription?.current_period_start_date && webhookData.object.subscription?.current_period_end_date) {
-        // 使用Creem提供的准确周期信息（ISO字符串转UTC）
+        // Use Creem provided period dates (ISO string to UTC)
         periodStart = new Date(webhookData.object.subscription.current_period_start_date);
         periodEnd = new Date(webhookData.object.subscription.current_period_end_date);
         console.log(`Using Creem provided period dates - Period: ${periodStart.toISOString()} to ${periodEnd.toISOString()}`);
       } else {
-        // Fallback: 基于当前时间和计划配置计算周期
+        // Fallback: calculate period based on current time and plan config
         const now = utcNow();
+        const months = plan.duration.months ?? 1;
         periodStart = now;
         periodEnd = new Date(now);
-        if (plan.duration.months >= 9999) {
+        if (months >= 9999) {
           periodEnd.setFullYear(periodEnd.getFullYear() + 100);
         } else {
-          periodEnd.setMonth(periodEnd.getMonth() + plan.duration.months);
+          periodEnd.setMonth(periodEnd.getMonth() + months);
         }
         console.log(`Using calculated period dates - Period: ${periodStart.toISOString()} to ${periodEnd.toISOString()}`);
       }
@@ -338,15 +361,16 @@ export class CreemProvider implements PaymentProvider {
       };
       await db.insert(userSubscription).values(subscriptionData);
     } else {
-      // 处理一次性支付
+      // Handle one-time payment
       const now = utcNow();
+      const months = plan.duration.months ?? 1;
       const periodEnd = new Date(now);
-      if (plan.duration.months >= 9999) {
-        // 终身订阅：设置为100年后
+      if (months >= 9999) {
+        // Lifetime subscription: set to 100 years
         periodEnd.setFullYear(periodEnd.getFullYear() + 100);
       } else {
-        // 普通订阅：添加月数
-        periodEnd.setMonth(periodEnd.getMonth() + plan.duration.months);
+        // Regular subscription: add months
+        periodEnd.setMonth(periodEnd.getMonth() + months);
       }
       
       console.log(`Creem one-time payment - Period: ${now.toISOString()} to ${periodEnd.toISOString()}`);
@@ -365,7 +389,7 @@ export class CreemProvider implements PaymentProvider {
         cancelAtPeriodEnd: true,
         metadata: JSON.stringify({
           checkoutId: webhookData.object.id,
-          isLifetime: plan.duration.months >= 9999
+          isLifetime: months >= 9999
         })
       };
       await db.insert(userSubscription).values(oneTimeSubscriptionData);

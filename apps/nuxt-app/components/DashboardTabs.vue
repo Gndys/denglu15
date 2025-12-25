@@ -278,7 +278,10 @@ const handleCancelEdit = () => {
             </div>
 
             <!-- Subscription Tab -->
-            <SubscriptionCard v-else-if="activeTab === 'subscription'" />
+            <div v-else-if="activeTab === 'subscription'" class="space-y-6">
+              <SubscriptionCard />
+              <CreditsCard />
+            </div>
 
             <!-- Orders Tab -->
             <OrdersCard v-else-if="activeTab === 'orders'" />

@@ -1,7 +1,7 @@
 export * from './types';
 export { createProvider } from './providers';
 export { getConfig, getProviderConfig } from './config';
-export { streamResponse } from './utils';
+export { streamResponse, streamResponseWithUsage } from './utils';
 
 import { createProvider } from './providers';
 import { getConfig, getProviderConfig } from './config';

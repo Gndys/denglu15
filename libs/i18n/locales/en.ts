@@ -651,6 +651,12 @@ export const en: Locale = {
     cta: "Get started",
     recommendedBadge: "Recommended",
     lifetimeBadge: "One-time purchase, lifetime access",
+    creditsBadge: "Credits",
+    creditsUnit: "credits",
+    tabs: {
+      subscription: "Subscription",
+      credits: "Credits"
+    },
     features: {
       securePayment: {
         title: "Multi-Provider Security",
@@ -826,6 +832,20 @@ export const en: Locale = {
       manageSubscription: "Manage Subscription",
       viewPlans: "View Plans"
     },
+    credits: {
+      title: "Credit Balance",
+      available: "Available Credits",
+      totalPurchased: "Total Purchased",
+      totalConsumed: "Total Used",
+      recentTransactions: "Recent Transactions",
+      buyMore: "Buy More Credits",
+      types: {
+        purchase: "Purchase",
+        bonus: "Bonus",
+        consumption: "Used",
+        refund: "Refund"
+      }
+    },
     account: {
       title: "Account Details",
       memberSince: "Member since",
@@ -898,6 +918,10 @@ export const en: Locale = {
       },
       subscription: {
         description: "Manage your subscription plan and features"
+      },
+      credits: {
+        title: "Credits",
+        description: "View your credit balance and transactions"
       },
       orders: {
         description: "View your order history and transactions"
