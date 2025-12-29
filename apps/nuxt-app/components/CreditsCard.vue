@@ -57,28 +57,29 @@
             {{ t('dashboard.credits.recentTransactions') }}
           </h4>
           <div class="rounded-md border">
-            <table class="w-full">
+            <table class="w-full table-fixed">
               <thead class="bg-muted">
                 <tr>
-                  <th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
+                  <th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase w-[90px]">
                     {{ t('dashboard.credits.table.type') }}
                   </th>
                   <th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                     {{ t('dashboard.credits.table.description') }}
                   </th>
-                  <th class="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
+                  <th class="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase w-[80px]">
                     {{ t('dashboard.credits.table.amount') }}
                   </th>
-                  <th class="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
+                  <th class="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase w-[120px]">
                     {{ t('dashboard.credits.table.time') }}
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border">
                 <tr 
-                  v-for="tx in paginatedTransactions" 
+                  v-for="tx in transactions" 
                   :key="tx.id"
                   class="hover:bg-muted/50"
+                  :class="{ 'opacity-50': loadingTransactions }"
                 >
                   <td class="px-3 py-3">
                     <Badge :variant="getTransactionTypeInfo(tx.type).variant" class="text-xs">
@@ -89,13 +90,13 @@
                       {{ getTransactionTypeInfo(tx.type).label }}
                     </Badge>
                   </td>
-                  <td class="px-3 py-3 text-sm text-foreground">
+                  <td class="px-3 py-3 text-sm text-foreground truncate">
                     {{ getDescriptionDisplay(tx.description) }}
                   </td>
                   <td :class="['px-3 py-3 text-sm font-medium text-right', parseFloat(tx.amount) >= 0 ? 'text-foreground' : 'text-muted-foreground']">
                     {{ parseFloat(tx.amount) >= 0 ? '+' : '' }}{{ parseFloat(tx.amount).toLocaleString() }}
                   </td>
-                  <td class="px-3 py-3 text-sm text-muted-foreground text-right">
+                  <td class="px-3 py-3 text-sm text-muted-foreground text-right whitespace-nowrap">
                     {{ formatDate(tx.createdAt) }}
                   </td>
                 </tr>
@@ -104,26 +105,22 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="mt-4 flex justify-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              :disabled="currentPage <= 1"
-              @click="handlePageChange(currentPage - 1)"
-            >
-              {{ locale === 'zh-CN' ? '上一页' : 'Previous' }}
-            </Button>
-            <span class="flex items-center px-3 text-sm text-muted-foreground">
-              {{ currentPage }} / {{ totalPages }}
-            </span>
-            <Button 
-              variant="outline" 
-              size="sm"
-              :disabled="currentPage >= totalPages"
-              @click="handlePageChange(currentPage + 1)"
-            >
-              {{ locale === 'zh-CN' ? '下一页' : 'Next' }}
-            </Button>
+          <div v-if="totalPages > 1" class="mt-4">
+            <Pagination :total="totalTransactions" :items-per-page="PAGE_SIZE" :page="currentPage">
+              <PaginationContent class="justify-center gap-2">
+                <PaginationPrevious 
+                  :disabled="currentPage <= 1 || loadingTransactions"
+                  @click="handlePageChange(currentPage - 1)"
+                />
+                <span class="flex items-center px-3 text-sm text-muted-foreground">
+                  {{ currentPage }} / {{ totalPages }}
+                </span>
+                <PaginationNext 
+                  :disabled="currentPage >= totalPages || loadingTransactions"
+                  @click="handlePageChange(currentPage + 1)"
+                />
+              </PaginationContent>
+            </Pagination>
           </div>
         </div>
 
@@ -146,6 +143,12 @@ import { Coins, TrendingUp, TrendingDown, History, ArrowRight, Loader2, Gift, Ro
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
@@ -169,47 +172,43 @@ interface CreditTransaction {
   createdAt: string
 }
 
-const PAGE_SIZE = 5
+const PAGE_SIZE = 10
 
 const loading = ref(true)
+const loadingTransactions = ref(false)
 const creditData = ref<CreditStatus | null>(null)
 const transactions = ref<CreditTransaction[]>([])
 const currentPage = ref(1)
+const totalPages = ref(1)
+const totalTransactions = ref(0)
 
-// Mock data for preview - using type codes for descriptions
-const MOCK_TRANSACTIONS: CreditTransaction[] = [
-  { id: '1', type: 'purchase', amount: '500', balance: '500', description: 'purchase', createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
-  { id: '2', type: 'consumption', amount: '-25', balance: '475', description: 'ai_chat', createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() },
-  { id: '3', type: 'consumption', amount: '-15', balance: '460', description: 'ai_chat', createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString() },
-  { id: '4', type: 'bonus', amount: '100', balance: '560', description: 'bonus', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
-  { id: '5', type: 'consumption', amount: '-30', balance: '530', description: 'ai_chat', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString() },
-  { id: '6', type: 'purchase', amount: '200', balance: '730', description: 'purchase', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() },
-  { id: '7', type: 'consumption', amount: '-45', balance: '685', description: 'ai_chat', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 25).toISOString() },
-  { id: '8', type: 'refund', amount: '50', balance: '735', description: 'refund', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() },
-]
-
-const MOCK_CREDIT_STATUS: CreditStatus = {
-  credits: {
-    balance: 735,
-    totalPurchased: 700,
-    totalConsumed: 115,
-  },
-  hasSubscription: false,
-  canAccess: true,
+// Fetch transactions for a specific page
+const fetchTransactions = async (page: number) => {
+  loadingTransactions.value = true
+  try {
+    const response = await $fetch('/api/credits/transactions', { 
+      query: { page, limit: PAGE_SIZE } 
+    }) as { 
+      transactions: CreditTransaction[]
+      total: number
+      page: number
+      totalPages: number
+    }
+    
+    transactions.value = response.transactions || []
+    totalPages.value = response.totalPages || 1
+    totalTransactions.value = response.total || 0
+    currentPage.value = response.page || 1
+  } catch (error) {
+    console.error('Failed to fetch transactions:', error)
+  } finally {
+    loadingTransactions.value = false
+  }
 }
 
-// Pagination
-const totalPages = computed(() => Math.ceil(transactions.value.length / PAGE_SIZE))
-const paginatedTransactions = computed(() => 
-  transactions.value.slice(
-    (currentPage.value - 1) * PAGE_SIZE,
-    currentPage.value * PAGE_SIZE
-  )
-)
-
-const handlePageChange = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
+const handlePageChange = async (page: number) => {
+  if (page >= 1 && page <= totalPages.value && page !== currentPage.value) {
+    await fetchTransactions(page)
   }
 }
 
@@ -280,23 +279,13 @@ const getDescriptionDisplay = (description: string | null) => {
 // Fetch credit data
 onMounted(async () => {
   try {
-    // Use mock data for preview
-    const useMockData = true
-    
-    if (useMockData) {
-      creditData.value = MOCK_CREDIT_STATUS
-      transactions.value = MOCK_TRANSACTIONS
-      loading.value = false
-      return
-    }
-
-    const [statusResponse, transactionsResponse] = await Promise.all([
+    // Fetch status and first page of transactions
+    const [statusResponse] = await Promise.all([
       $fetch('/api/credits/status'),
-      $fetch('/api/credits/transactions', { query: { limit: 50 } })
+      fetchTransactions(1)
     ])
     
     creditData.value = statusResponse as CreditStatus
-    transactions.value = (transactionsResponse as { transactions: CreditTransaction[] })?.transactions || []
   } catch (error) {
     console.error('Failed to fetch credit data:', error)
   } finally {

@@ -40,46 +40,56 @@ interface OrdersCardProps {
   // Props interface for orders data if needed
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export function OrdersCard({}: OrdersCardProps) {
   const { t, locale: currentLocale } = useTranslation();
   const [ordersData, setOrdersData] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
+
+  // Fetch orders for a specific page
+  const fetchOrders = async (page: number) => {
+    setLoadingOrders(true);
+    try {
+      const response = await fetch(`/api/orders?page=${page}&limit=${PAGE_SIZE}`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrdersData(data.orders || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalOrders(data.total || 0);
+        setCurrentPage(data.page || 1);
+      } else {
+        setError('Failed to fetch orders');
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+      setError('Failed to fetch orders');
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchOrdersData() {
+    async function initFetch() {
       try {
-        const ordersResponse = await fetch('/api/orders');
-        if (ordersResponse.ok) {
-          const data = await ordersResponse.json();
-          setOrdersData(data.orders || []);
-        } else {
-          setError('Failed to fetch orders');
-        }
-      } catch (error) {
-        console.error('Failed to fetch orders data', error);
-        setError('Failed to fetch orders');
+        await fetchOrders(1);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchOrdersData();
+    initFetch();
   }, []);
 
-  // Pagination
-  const totalPages = Math.ceil(ordersData.length / PAGE_SIZE);
-  const paginatedOrders = ordersData.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  // Handle page change - fetch new data from server
+  const handlePageChange = async (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      await fetchOrders(page);
     }
   };
 
@@ -196,7 +206,7 @@ export function OrdersCard({}: OrdersCardProps) {
           {t.dashboard.orders.title}
         </h3>
         <div className="text-sm text-muted-foreground">
-          {t.dashboard.orders.page.totalOrders.replace('{count}', ordersData.length.toString())}
+          {t.dashboard.orders.page.totalOrders.replace('{count}', totalOrders.toString())}
         </div>
       </div>
       
@@ -238,10 +248,10 @@ export function OrdersCard({}: OrdersCardProps) {
                 </tr>
               </thead>
               <tbody className="bg-card divide-y divide-border">
-                {paginatedOrders.map((order) => {
+                {ordersData.map((order) => {
                   const statusDisplay = getOrderStatusDisplay(order.status);
                   return (
-                    <tr key={order.id} className="hover:bg-muted/50">
+                    <tr key={order.id} className={`hover:bg-muted/50 ${loadingOrders ? 'opacity-50' : ''}`}>
                       <td className="px-3 py-4 text-sm font-medium text-card-foreground">
                         <div className="truncate">#{order.id.slice(-8)}</div>
                       </td>
@@ -278,7 +288,8 @@ export function OrdersCard({}: OrdersCardProps) {
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={currentPage <= 1 || loadingOrders ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      label={t.actions.previous}
                     />
                   </PaginationItem>
                   
@@ -294,7 +305,7 @@ export function OrdersCard({}: OrdersCardProps) {
                           <PaginationLink
                             isActive={page === currentPage}
                             onClick={() => handlePageChange(page)}
-                            className="cursor-pointer"
+                            className={loadingOrders ? "pointer-events-none opacity-50" : "cursor-pointer"}
                           >
                             {page}
                           </PaginationLink>
@@ -314,7 +325,8 @@ export function OrdersCard({}: OrdersCardProps) {
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={currentPage >= totalPages || loadingOrders ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      label={t.actions.next}
                     />
                   </PaginationItem>
                 </PaginationContent>

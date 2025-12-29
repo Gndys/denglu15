@@ -18,17 +18,17 @@
             :transition="{ duration: 0.8 }"
           >
             <motion.div
-              class="inline-flex items-center space-x-2 px-4 py-2 bg-chart-1-bg-15 rounded-full border border-chart-1/20 mb-8"
+              class="inline-flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-8"
               :initial="{ opacity: 0, scale: 0.9 }"
               :animate="{ opacity: 1, scale: 1 }"
               :transition="{ duration: 0.6, delay: 0.2 }"
             >
-              <Sparkles class="h-4 w-4 text-chart-1" />
-              <span class="text-xs font-medium text-chart-1">{{ t('pricing.title') }}</span>
+              <Sparkles class="h-4 w-4 text-primary" />
+              <span class="text-xs font-medium text-primary">{{ t('pricing.title') }}</span>
             </motion.div>
 
             <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
-              <span class="text-gradient-chart-warm">
+              <span class="text-primary">
                 {{ t('pricing.subtitle') }}
               </span>
             </h2>
@@ -91,7 +91,7 @@
               :class="[
                 'relative rounded-xl p-6 shadow-lg transition-all duration-300 hover:scale-[1.02]',
                 isRecommended(plan) 
-                  ? 'bg-card border-2 border-chart-1 shadow-chart-1/20' 
+                  ? 'bg-card border-2 border-primary shadow-primary/20' 
                   : 'bg-card border border-border hover:border-border/80'
               ]"
               :initial="{ opacity: 0, y: 20 }"
@@ -101,7 +101,7 @@
             >
               <!-- Recommended Badge -->
               <div v-if="isRecommended(plan)" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-chart-warm text-white rounded-full shadow-md">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full shadow-md">
                   <Crown class="h-3.5 w-3.5" />
                   <span class="text-xs font-medium">{{ t('pricing.recommendedBadge') }}</span>
                 </div>
@@ -149,7 +149,7 @@
                   </span>
                 </div>
                 
-                <div v-if="isLifetime(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-5-bg-15 text-chart-5 rounded-full text-xs font-medium">
+                <div v-if="isLifetime(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                   <Heart class="h-3.5 w-3.5" />
                   <span>{{ t('pricing.lifetimeBadge') }}</span>
                 </div>
@@ -165,14 +165,14 @@
                   <div :class="[
                     'w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
                     isRecommended(plan) 
-                      ? 'bg-chart-1' 
-                      : 'bg-chart-2-bg-15'
+                      ? 'bg-primary' 
+                      : 'bg-muted'
                   ]">
                     <Check :class="[
                       'h-3 w-3',
                       isRecommended(plan) 
-                        ? 'text-white' 
-                        : 'text-chart-2'
+                        ? 'text-primary-foreground' 
+                        : 'text-foreground'
                     ]" />
                   </div>
                   <span :class="[
@@ -205,7 +205,7 @@
               </Button>
 
               <!-- Special Effects for Recommended Plan -->
-              <div v-if="isRecommended(plan)" class="absolute inset-0 bg-gradient-chart-warm opacity-5 rounded-xl pointer-events-none"></div>
+              <div v-if="isRecommended(plan)" class="absolute inset-0 bg-primary opacity-5 rounded-xl pointer-events-none"></div>
             </motion.div>
           </div>
 
@@ -219,24 +219,24 @@
           >
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-2-bg-15 rounded-xl flex items-center justify-center">
-                  <Shield class="h-6 w-6 text-chart-2" />
+                <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
+                  <Shield class="h-6 w-6 text-foreground" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.securePayment.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.securePayment.description') }}</p>
               </div>
               
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-1-bg-15 rounded-xl flex items-center justify-center">
-                  <Zap class="h-6 w-6 text-chart-1" />
+                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Zap class="h-6 w-6 text-primary" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.flexibleSubscription.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.flexibleSubscription.description') }}</p>
               </div>
               
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-3-bg-15 rounded-xl flex items-center justify-center">
-                  <Star class="h-6 w-6 text-chart-3" />
+                <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
+                  <Star class="h-6 w-6 text-foreground" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.globalCoverage.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.globalCoverage.description') }}</p>

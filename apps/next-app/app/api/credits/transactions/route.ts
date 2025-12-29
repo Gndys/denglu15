@@ -4,7 +4,7 @@ import { creditService } from '@libs/credits';
 import type { CreditTransactionType } from '@libs/credits';
 
 /**
- * Get current user's credit transaction history
+ * Get current user's credit transaction history with pagination
  */
 export async function GET(request: Request) {
   try {
@@ -25,17 +25,17 @@ export async function GET(request: Request) {
     
     // Parse query parameters
     const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-    const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '10', 10), 100);
     const type = url.searchParams.get('type') as CreditTransactionType | null;
     
-    const transactions = await creditService.getTransactions(userId, {
-      limit: Math.min(limit, 100), // Max 100 per request
-      offset,
+    const result = await creditService.getTransactionsPaginated(userId, {
+      page,
+      limit,
       type: type || undefined
     });
     
-    return NextResponse.json({ transactions });
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Failed to fetch credit transactions:', error);
     return NextResponse.json(

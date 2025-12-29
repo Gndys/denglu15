@@ -6,6 +6,7 @@ import type {
   ConsumeCreditsParams, 
   ConsumeCreditsResult,
   GetTransactionsOptions,
+  GetTransactionsPaginatedResult,
   CreditTransactionType
 } from './types';
 import type { CreditTransaction } from '@libs/database/schema/credit-transaction';
@@ -184,7 +185,7 @@ export class CreditService {
   }
 
   /**
-   * Get credit transaction history for a user
+   * Get credit transaction history for a user (simple version)
    */
   async getTransactions(
     userId: string, 
@@ -208,6 +209,49 @@ export class CreditService {
       .offset(offset);
 
     return query;
+  }
+
+  /**
+   * Get credit transaction history with pagination info
+   */
+  async getTransactionsPaginated(
+    userId: string, 
+    options: GetTransactionsOptions = {}
+  ): Promise<GetTransactionsPaginatedResult> {
+    const { page = 1, limit = 10, type } = options;
+    const offset = (page - 1) * limit;
+
+    const whereCondition = type 
+      ? and(
+          eq(creditTransaction.userId, userId),
+          eq(creditTransaction.type, type)
+        )
+      : eq(creditTransaction.userId, userId);
+
+    // Get total count
+    const countResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(creditTransaction)
+      .where(whereCondition);
+    
+    const total = countResult[0]?.count || 0;
+
+    // Get paginated transactions
+    const transactions = await db
+      .select()
+      .from(creditTransaction)
+      .where(whereCondition)
+      .orderBy(desc(creditTransaction.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      transactions,
+      total,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   /**

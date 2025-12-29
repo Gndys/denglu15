@@ -45,33 +45,48 @@ interface CreditTransaction {
 }
 
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export function CreditsCard() {
   const { t, locale: currentLocale } = useTranslation();
   const [creditData, setCreditData] = useState<CreditStatus | null>(null);
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalTransactions, setTotalTransactions] = useState(0);
+
+  // Fetch transactions for a specific page
+  const fetchTransactions = async (page: number) => {
+    setLoadingTransactions(true);
+    try {
+      const response = await fetch(`/api/credits/transactions?page=${page}&limit=${PAGE_SIZE}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTransactions(data.transactions || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalTransactions(data.total || 0);
+        setCurrentPage(data.page || 1);
+      }
+    } catch (error) {
+      console.error('Failed to fetch transactions:', error);
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchCreditData() {
       try {
-
-        const [statusResponse, transactionsResponse] = await Promise.all([
-          fetch('/api/credits/status'),
-          fetch('/api/credits/transactions?limit=50')
-        ]);
-        
+        const statusResponse = await fetch('/api/credits/status');
         if (statusResponse.ok) {
           const data = await statusResponse.json();
           setCreditData(data);
         }
         
-        if (transactionsResponse.ok) {
-          const data = await transactionsResponse.json();
-          setTransactions(data.transactions || []);
-        }
+        // Fetch first page of transactions
+        await fetchTransactions(1);
       } catch (error) {
         console.error('Failed to fetch credit data', error);
       } finally {
@@ -144,16 +159,10 @@ export function CreditsCard() {
     return description;
   };
 
-  // Pagination
-  const totalPages = Math.ceil(transactions.length / PAGE_SIZE);
-  const paginatedTransactions = transactions.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  // Handle page change - fetch new data from server
+  const handlePageChange = async (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      await fetchTransactions(page);
     }
   };
 
@@ -227,44 +236,44 @@ export function CreditsCard() {
               {t.dashboard.credits.recentTransactions}
             </h4>
             <div className="rounded-md border">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
+                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase w-[90px]">
                       {t.dashboard.credits.table?.type || 'Type'}
                     </th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                       {t.dashboard.credits.table?.description || 'Description'}
                     </th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase w-[80px]">
                       {t.dashboard.credits.table?.amount || 'Amount'}
                     </th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase w-[120px]">
                       {t.dashboard.credits.table?.time || 'Time'}
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {paginatedTransactions.map((tx) => {
+                  {transactions.map((tx) => {
                     const typeInfo = getTransactionTypeDisplay(tx.type);
                     const TypeIcon = typeInfo.icon;
                     const amount = parseFloat(tx.amount);
                     
                     return (
-                      <tr key={tx.id} className="hover:bg-muted/50">
+                      <tr key={tx.id} className={`hover:bg-muted/50 ${loadingTransactions ? 'opacity-50' : ''}`}>
                         <td className="px-3 py-3">
                           <Badge variant={typeInfo.variant} className="text-xs">
                             <TypeIcon className="h-3 w-3 mr-1" />
                             {typeInfo.label}
                           </Badge>
                         </td>
-                        <td className="px-3 py-3 text-sm text-foreground">
+                        <td className="px-3 py-3 text-sm text-foreground truncate">
                           {getDescriptionDisplay(tx.description)}
                         </td>
                         <td className={`px-3 py-3 text-sm font-medium text-right ${amount >= 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
                           {amount >= 0 ? '+' : ''}{amount.toLocaleString()}
                         </td>
-                        <td className="px-3 py-3 text-sm text-muted-foreground text-right">
+                        <td className="px-3 py-3 text-sm text-muted-foreground text-right whitespace-nowrap">
                           {formatDate(tx.createdAt)}
                         </td>
                       </tr>
@@ -282,7 +291,8 @@ export function CreditsCard() {
                     <PaginationItem>
                       <PaginationPrevious
                         onClick={() => handlePageChange(currentPage - 1)}
-                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        className={currentPage <= 1 || loadingTransactions ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        label={t.actions.previous}
                       />
                     </PaginationItem>
                     
@@ -298,7 +308,7 @@ export function CreditsCard() {
                             <PaginationLink
                               isActive={page === currentPage}
                               onClick={() => handlePageChange(page)}
-                              className="cursor-pointer"
+                              className={loadingTransactions ? "pointer-events-none opacity-50" : "cursor-pointer"}
                             >
                               {page}
                             </PaginationLink>
@@ -318,7 +328,8 @@ export function CreditsCard() {
                     <PaginationItem>
                       <PaginationNext
                         onClick={() => handlePageChange(currentPage + 1)}
-                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        className={currentPage >= totalPages || loadingTransactions ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        label={t.actions.next}
                       />
                     </PaginationItem>
                   </PaginationContent>

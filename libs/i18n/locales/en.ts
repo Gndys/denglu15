@@ -63,7 +63,9 @@ export const en: Locale = {
     back: "Back",
     resendCode: "Resend Code",
     resendVerificationEmail: "Resend Verification Email",
-    upload: "Upload"
+    upload: "Upload",
+    previous: "Previous",
+    next: "Next"
   },
   email: {
     verification: {

@@ -194,6 +194,7 @@ export function DataTable<TData, TValue>({
               <PaginationPrevious
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 className={pagination.currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                label={t.actions.previous}
               />
             </PaginationItem>
             
@@ -235,6 +236,7 @@ export function DataTable<TData, TValue>({
               <PaginationNext
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 className={pagination.currentPage >= pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                label={t.actions.next}
               />
             </PaginationItem>
           </PaginationContent>

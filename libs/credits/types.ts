@@ -46,7 +46,19 @@ export interface ConsumeCreditsResult {
 export interface GetTransactionsOptions {
   limit?: number;
   offset?: number;
+  page?: number;
   type?: CreditTransactionType;
+}
+
+/**
+ * Paginated result for credit transactions
+ */
+export interface GetTransactionsPaginatedResult {
+  transactions: import('@libs/database/schema/credit-transaction').CreditTransaction[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 /**

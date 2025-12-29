@@ -63,7 +63,9 @@ export const zhCN: Locale = {
     back: "返回",
     resendCode: "重新发送",
     resendVerificationEmail: "重新发送验证邮件",
-    upload: "上传"
+    upload: "上传",
+    previous: "上一页",
+    next: "下一页"
   },
   email: {
     verification: {

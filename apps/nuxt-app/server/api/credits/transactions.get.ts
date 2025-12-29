@@ -3,7 +3,7 @@ import { creditService } from '@libs/credits'
 import type { CreditTransactionType } from '@libs/credits'
 
 /**
- * Get current user's credit transaction history
+ * Get current user's credit transaction history with pagination
  */
 export default defineEventHandler(async (event) => {
   try {
@@ -27,17 +27,17 @@ export default defineEventHandler(async (event) => {
     
     // Parse query parameters
     const query = getQuery(event)
-    const limit = Math.min(parseInt(query.limit as string || '50', 10), 100)
-    const offset = parseInt(query.offset as string || '0', 10)
+    const page = parseInt(query.page as string || '1', 10)
+    const limit = Math.min(parseInt(query.limit as string || '10', 10), 100)
     const type = query.type as CreditTransactionType | undefined
     
-    const transactions = await creditService.getTransactions(user.id, {
+    const result = await creditService.getTransactionsPaginated(user.id, {
+      page,
       limit,
-      offset,
       type
     })
     
-    return { transactions }
+    return result
   } catch (error) {
     console.error('Failed to fetch credit transactions:', error)
     throw createError({
