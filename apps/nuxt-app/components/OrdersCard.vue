@@ -7,9 +7,19 @@ import {
   AlertCircle,
   RotateCcw
 } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+import type { Plan } from '@config'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
+const runtimeConfig = useRuntimeConfig()
+const paymentPlans = computed(() => runtimeConfig.public.paymentPlans as Record<string, Plan>)
 
 interface Order {
   id: string
@@ -24,22 +34,41 @@ interface Order {
   updatedAt?: string | Date
 }
 
+const PAGE_SIZE = 10
+
 const ordersData = ref<Order[]>([])
 const loading = ref(true)
+const loadingOrders = ref(false)
 const error = ref<string | null>(null)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const totalOrders = ref(0)
 
 /**
- * Fetch orders data from API
+ * Fetch orders data from API for a specific page
+ * @param page - Page number to fetch
  */
-const fetchOrdersData = async () => {
+const fetchOrders = async (page: number) => {
+  loadingOrders.value = true
   try {
-    const response: any = await $fetch('/api/orders')
+    const response = await $fetch('/api/orders', { 
+      query: { page, limit: PAGE_SIZE } 
+    }) as { 
+      orders: Order[]
+      total: number
+      page: number
+      totalPages: number
+    }
+    
     ordersData.value = response.orders || []
+    totalPages.value = response.totalPages || 1
+    totalOrders.value = response.total || 0
+    currentPage.value = response.page || 1
   } catch (err) {
     console.error('Failed to fetch orders data', err)
     error.value = 'Failed to fetch orders'
   } finally {
-    loading.value = false
+    loadingOrders.value = false
   }
 }
 
@@ -75,9 +104,10 @@ const formatAmount = (amount: string, currency: string) => {
  * @returns Plan display name
  */
 const getPlanName = (planId: string) => {
-  // This can be retrieved from configuration
-  // const plan = config.payment.plans[planId as keyof typeof config.payment.plans]
-  // return plan?.name || planId
+  const plan = paymentPlans.value[planId]
+  if (plan?.i18n) {
+    return plan.i18n[locale.value]?.name || plan.i18n['zh-CN']?.name || planId
+  }
   return planId
 }
 
@@ -145,9 +175,20 @@ const getProviderDisplay = (provider: string) => {
   }
 }
 
+// Handle page change - fetch new data from server
+const handlePageChange = async (page: number) => {
+  if (page >= 1 && page <= totalPages.value && page !== currentPage.value) {
+    await fetchOrders(page)
+  }
+}
+
 // Fetch data when component is mounted
-onMounted(() => {
-  fetchOrdersData()
+onMounted(async () => {
+  try {
+    await fetchOrders(1)
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
@@ -159,7 +200,7 @@ onMounted(() => {
         {{ t('dashboard.orders.title') }}
       </CardTitle>
       <div class="text-sm text-muted-foreground">
-        {{ $t('dashboard.orders.page.totalOrders', { count: ordersData.length }) }}
+        {{ $t('dashboard.orders.page.totalOrders', { count: totalOrders }) }}
       </div>
     </CardHeader>
     
@@ -192,63 +233,85 @@ onMounted(() => {
       </div>
       
       <!-- Orders table -->
-      <div v-else class="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead class="w-[100px]">
-                {{ t('dashboard.orders.orderDetails.orderId') }}
-              </TableHead>
-              <TableHead class="w-[120px]">
-                {{ t('dashboard.orders.orderDetails.amount') }}
-              </TableHead>
-              <TableHead class="w-[140px]">
-                {{ t('dashboard.orders.orderDetails.plan') }}
-              </TableHead>
-              <TableHead class="w-[120px]">
-                {{ t('dashboard.orders.orderDetails.status') }}
-              </TableHead>
-              <TableHead class="w-[120px]">
-                {{ t('dashboard.orders.orderDetails.provider') }}
-              </TableHead>
-              <TableHead class="w-[120px]">
-                {{ t('dashboard.orders.orderDetails.createdAt') }}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow 
-              v-for="order in ordersData" 
-              :key="order.id" 
-              class="hover:bg-muted/50 transition-colors"
-            >
-              <TableCell class="font-mono text-xs">
-                #{{ order.id.slice(-8) }}
-              </TableCell>
-              <TableCell class="font-medium">
-                {{ formatAmount(order.amount, order.currency) }}
-              </TableCell>
-              <TableCell>
-                {{ getPlanName(order.planId) }}
-              </TableCell>
-              <TableCell>
-                <Badge :variant="getOrderStatusDisplay(order.status).variant">
-                  <component 
-                    :is="getOrderStatusDisplay(order.status).icon" 
-                    class="h-3 w-3 mr-1" 
-                  />
-                  {{ getOrderStatusDisplay(order.status).text }}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {{ getProviderDisplay(order.provider) }}
-              </TableCell>
-              <TableCell class="text-muted-foreground">
-                {{ formatDate(order.createdAt) }}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <div v-else>
+        <div class="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead class="w-[100px]">
+                  {{ t('dashboard.orders.orderDetails.orderId') }}
+                </TableHead>
+                <TableHead class="w-[120px]">
+                  {{ t('dashboard.orders.orderDetails.amount') }}
+                </TableHead>
+                <TableHead class="w-[140px]">
+                  {{ t('dashboard.orders.orderDetails.plan') }}
+                </TableHead>
+                <TableHead class="w-[120px]">
+                  {{ t('dashboard.orders.orderDetails.status') }}
+                </TableHead>
+                <TableHead class="w-[120px]">
+                  {{ t('dashboard.orders.orderDetails.provider') }}
+                </TableHead>
+                <TableHead class="w-[120px]">
+                  {{ t('dashboard.orders.orderDetails.createdAt') }}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow 
+                v-for="order in ordersData" 
+                :key="order.id" 
+                class="hover:bg-muted/50 transition-colors"
+                :class="{ 'opacity-50': loadingOrders }"
+              >
+                <TableCell class="font-mono text-xs">
+                  #{{ order.id.slice(-8) }}
+                </TableCell>
+                <TableCell class="font-medium">
+                  {{ formatAmount(order.amount, order.currency) }}
+                </TableCell>
+                <TableCell>
+                  {{ getPlanName(order.planId) }}
+                </TableCell>
+                <TableCell>
+                  <Badge :variant="getOrderStatusDisplay(order.status).variant">
+                    <component 
+                      :is="getOrderStatusDisplay(order.status).icon" 
+                      class="h-3 w-3 mr-1" 
+                    />
+                    {{ getOrderStatusDisplay(order.status).text }}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {{ getProviderDisplay(order.provider) }}
+                </TableCell>
+                <TableCell class="text-muted-foreground">
+                  {{ formatDate(order.createdAt) }}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="mt-4">
+          <Pagination :total="totalOrders" :items-per-page="PAGE_SIZE" :page="currentPage">
+            <PaginationContent class="justify-center gap-2">
+              <PaginationPrevious 
+                :disabled="currentPage <= 1 || loadingOrders"
+                @click="handlePageChange(currentPage - 1)"
+              />
+              <span class="flex items-center px-3 text-sm text-muted-foreground">
+                {{ currentPage }} / {{ totalPages }}
+              </span>
+              <PaginationNext 
+                :disabled="currentPage >= totalPages || loadingOrders"
+                @click="handlePageChange(currentPage + 1)"
+              />
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </CardContent>
   </Card>

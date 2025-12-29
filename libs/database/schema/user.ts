@@ -18,9 +18,13 @@ export const user = pgTable("user", {
   phoneNumber: text("phone_number"),
   phoneNumberVerified: boolean("phone_number_verified").default(false),
 
-  // 支付相关
+  // Payment related
   stripeCustomerId: text("stripe_customer_id"),
   creemCustomerId: text("creem_customer_id"),
+  
+  // Credits balance for token-based consumption
+  creditBalance: numeric("credit_balance").default("0").notNull(),
+  
   // better-auth admin  https://www.better-auth.com/docs/plugins/admin#schema
   banned: boolean('banned').default(false),
   banReason: text('ban_reason'),

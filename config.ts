@@ -83,7 +83,16 @@ export type OneTimePlan = BasePlan & {
   creemProductId?: string | undefined;
 };
 
-export type Plan = RecurringPlan | OneTimePlan;
+// Credit pack plan type for token-based consumption model
+export type CreditPlan = BasePlan & {
+  duration: { type: 'credits' };
+  credits: number;  // Number of credits user receives after purchase
+  stripePriceId?: string | undefined;
+  stripeProductId?: string | undefined;
+  creemProductId?: string | undefined;
+};
+
+export type Plan = RecurringPlan | OneTimePlan | CreditPlan;
 
 /**
  * Application Configuration
@@ -503,11 +512,119 @@ export const config = {
             ]
           }
         }
+      },
+
+      // Credit pack plans - Token-based consumption model
+      credits100: {
+        provider: 'stripe',
+        id: 'credits100',
+        amount: 5,
+        currency: 'USD',
+        duration: { type: 'credits' },
+        credits: 100,
+        stripePriceId: 'price_1SiVbxDjHLfDWeHDQ4BNtUNT', // Set after creating price in Stripe dashboard
+        i18n: {
+          'en': {
+            name: '100 Credits Stripe',
+            description: 'Purchase 100 AI credits for on-demand usage',
+            duration: 'one-time',
+            features: [
+              '100 AI conversations',
+              'Credits never expire',
+              'Pay as you go'
+            ]
+          },
+          'zh-CN': {
+            name: '100 积分包 Stripe',
+            description: '通过 Stripe 购买的 100 个 AI 积分，按需使用',
+            duration: '一次性',
+            features: [
+              '100 次 AI 对话',
+              '积分永不过期',
+              '按需付费'
+            ]
+          }
+        }
+      },
+      credits500: {
+        provider: 'wechat',
+        id: 'credits500',
+        amount: 0.01,
+        currency: 'CNY',
+        recommended: true,
+        duration: { type: 'credits' },
+        credits: 550,  // 500 + 50 bonus
+        i18n: {
+          'en': {
+            name: '500 Credits + 50 Bonus Wechat Pay',
+            description: 'Best value! Get 550 credits for the price of 500',
+            duration: 'one-time',
+            features: [
+              '550 AI conversations (50 bonus)',
+              'Credits never expire',
+              'Best value package'
+            ]
+          },
+          'zh-CN': {
+            name: '500 积分包 + 50 赠送 微信支付',
+            description: '超值优惠！以 500 积分的价格获得 550 积分',
+            duration: '一次性',
+            features: [
+              '550 次 AI 对话 (含 50 赠送)',
+              '积分永不过期',
+              '最超值套餐'
+            ]
+          }
+        }
       }
     } as const,
   },
 
+  /**
+   * Credits System Configuration
+   * Token-based consumption model for AI and other features
+   */
+  credits: {
+    /**
+     * Consumption mode: 'fixed' or 'dynamic'
+     * - fixed: Each operation consumes a fixed amount of credits
+     * - dynamic: Credits consumed based on actual token usage
+     */
+    consumptionMode: 'dynamic' as 'fixed' | 'dynamic',
 
+    /**
+     * Fixed consumption amounts (used when consumptionMode is 'fixed')
+     */
+    fixedConsumption: {
+      aiChat: 1,  // Credits per AI chat message
+      // Future extensions:
+      // aiImage: 5,
+      // apiCall: 2,
+    },
+
+    /**
+     * Dynamic consumption settings (used when consumptionMode is 'dynamic')
+     */
+    dynamicConsumption: {
+      // Tokens to credits conversion ratio
+      tokensPerCredit: 1000,  // 1000 tokens = 1 credit
+
+      // Model-specific multipliers (adjust pricing per model)
+      modelMultipliers: {
+        // Premium models cost more
+        'gpt-4': 2.0,
+        'gpt-4-turbo': 1.5,
+        'qwen-max': 1.2,
+        // Standard models
+        'gpt-3.5-turbo': 1.0,
+        'qwen-plus': 1.0,
+        'deepseek-chat': 0.8,
+        // Economy models
+        'qwen-turbo': 0.5,
+        'default': 1.0
+      } as Record<string, number>
+    }
+  },
 
   /**
    * SMS Service Configuration

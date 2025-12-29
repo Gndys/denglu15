@@ -1,6 +1,8 @@
 # 💳 支付配置指南
 
-支付是我们重要的核心功能，目前我们支持三种支付方式：**WeChat Pay**、**Stripe** 和 **Creem**，并且支持单次付费和订阅两种模式（微信支付只支持单次付费）。
+支付是我们重要的核心功能，目前我们支持三种支付方式：**WeChat Pay**、**Stripe** 和 **Creem**，并且支持**三种付费模式**：单次付费、订阅和积分充值（微信支付只支持单次付费和积分充值）。
+
+> 🪙 **积分系统**：如需配置 AI 积分消耗功能，请参阅 [积分系统配置指南](./credits.md)。
 
 ## 📑 目录
 
@@ -17,9 +19,7 @@
   - [🔗 获取价格 ID](#-获取价格-id)
   - [⚙️ 字段说明](#️-字段说明)
   - [🌍 国际化配置](#-国际化配置)
-- [🧪 测试配置](#-测试配置)
-  - [测试环境设置](#测试环境设置)
-  - [本地开发测试](#本地开发测试)
+- [🧪 支付流程本地测试](#-支付流程本地测试)
 - [🔄 支付流程](#-支付流程)
   - [支付处理流程](#支付处理流程)
   - [API 端点](#api-端点)
@@ -29,11 +29,11 @@
 
 ## 🎯 支持的支付方式
 
-| 支付方式 | 单次付费 | 订阅付费 | 主要市场 | 币种支持 |
-|---------|---------|---------|---------|---------|
-| WeChat Pay | ✅ | ❌ | 中国大陆 | CNY |
-| Stripe | ✅ | ✅ | 全球 | 多币种 |
-| Creem | ✅ | ✅ | 全球 | USD, EUR等 |
+| 支付方式 | 单次付费 | 订阅付费 | 积分充值 | 主要市场 | 币种支持 |
+|---------|---------|---------|---------|---------|---------|
+| WeChat Pay | ✅ | ❌ | ✅ | 中国大陆 | CNY |
+| Stripe | ✅ | ✅ | ✅ | 全球 | 多币种 |
+| Creem | ✅ | ✅ | ✅ | 全球 | USD, EUR等 |
 
 ## ⚙️ 配置概览
 
@@ -325,7 +325,7 @@ CREEM_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### 💰 计划类型
 
-系统支持两种付费模式：
+系统支持三种付费模式：
 
 #### 单次付费 (One-time)
 
@@ -481,6 +481,12 @@ const recurringPlans = {
 - `paymentType: RECURRING` - 标记为循环订阅
 - 支持升级/降级：用户可在订阅期间变更计划
 - 自动续费管理：系统处理周期性付费和失败重试
+
+#### 积分充值 (Credits)
+
+积分充值是 AI 时代流行的付费模式，用户一次性购买积分，按使用量消耗。
+
+> 📖 详细配置请参阅 [积分系统配置指南](./credits.md)
 
 ### 🛠️ 计划配置示例
 
@@ -662,220 +668,9 @@ i18n: {
 }
 ```
 
+## 🧪 支付流程本地测试
 
-## 🧪 测试配置
-
-### 测试环境设置
-
-在开发环境中，可以使用测试密钥进行支付测试：
-
-#### Stripe 测试模式
-
-```env
-# 使用 test 密钥
-STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-测试卡号：
-- **成功支付**: `4242424242424242`
-- **失败支付**: `4000000000000002`  
-- **需要验证**: `4000002500003155`
-
-#### 微信支付测试
-
-微信支付没有测试沙盒环境，可以使用小金额直接进行测试 - 比如一个订单 0.01 元。
-
-#### Creem 测试模式
-
-```env
-# 使用测试环境
-CREEM_SERVER_URL=https://test-api.creem.io
-CREEM_API_KEY=creem_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-### 本地开发测试
-
-> 💡 **重要提示**：本地开发时推荐使用以下方式测试 webhook，无需先在生产环境配置 webhook 端点。
-
-我们需要使用真实的域名来接收 webhook 的数据，所以这里我们需要将本地服务映射到真实域名上。
-
-* **Stripe**：使用 Stripe CLI（推荐），无需内网穿透
-* **微信支付 和 Creem**：需要使用内网穿透工具
-
-1. **启动本地隧道 针对微信支付和 Creem** (用于接收 Webhook)，这里可以选择 ngrok，cloudflare tunnel 等你喜欢的内网穿透工具。
-
-* [ngrok 文档地址](https://ngrok.com/docs/getting-started/)
-* [cloudflare 文档地址](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
-
-```bash
-# 使用 ngrok 创建公网隧道
-npx ngrok http 7001
-```
-
-将隧道地址配置到各支付平台：
-- 微信支付: `https://abc123.ngrok.io/api/payment/webhook/wechat`
-- Creem: `https://abc123.ngrok.io/api/payment/webhook/creem`
-
-**Stripe Webhook 测试（两种方案）**
-
-Stripe 支持两种本地 webhook 测试方式：
-
-**方案一：Stripe CLI（推荐）**
-
-文档地址：[https://docs.stripe.com/stripe-cli](https://docs.stripe.com/stripe-cli)
-
-```bash
-# 1. 安装 Stripe CLI
-# macOS
-brew install stripe/stripe-cli/stripe
-
-# Windows
-scoop bucket add stripe https://github.com/stripe/scoop-stripe-cli.git
-scoop install stripe
-
-# 2. 登录到 Stripe 账户
-stripe login
-
-# 3. 启动 webhook 转发
-stripe listen --forward-to localhost:7001/api/payment/webhook/stripe
-
-# 4. CLI 会显示 webhook 签名密钥，复制到环境变量
-# 输出示例：whsec_1234567890abcdef...
-```
-
-**优势**：
-- ✅ 无需外网访问，完全本地化
-- ✅ 实时接收真实 webhook 事件
-- ✅ 自动处理签名验证
-- ✅ 可查看详细的事件日志
-
-**方案二：ngrok + Stripe Dashboard（备选）**
-
-当 Stripe CLI 不可用时的备选方案：
-
-```bash
-# 1. 启动 ngrok 隧道
-ngrok http 7001
-
-# 2. 复制 ngrok 提供的 https 地址
-# 示例：https://abc123.ngrok.io
-
-# 3. 在 Stripe Dashboard 中配置 webhook 端点
-# 地址：https://abc123.ngrok.io/api/payment/webhook/stripe
-# 选择需要的事件类型：
-# - checkout.session.completed
-# - customer.subscription.updated
-# - customer.subscription.deleted
-```
-
-**配置环境变量**：
-```bash
-# .env.local
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
-```
-
-**测试验证**：
-
-**1. 基础事件触发**：
-```bash
-# 监控 webhook 事件（使用 Stripe CLI 时）
-stripe listen --forward-to localhost:7001/api/payment/webhook/stripe --events checkout.session.completed,customer.subscription.updated
-
-# 发送预定义的测试事件
-stripe trigger checkout.session.completed
-stripe trigger customer.subscription.updated
-stripe trigger customer.subscription.deleted
-```
-
-**2. trigger 命令说明**：
-
-`stripe trigger` 会生成**预定义的模拟数据**，不能自定义具体内容，但会触发真实的 webhook 事件流程：
-
-```bash
-# 查看可用的触发器事件
-stripe trigger --help
-
-# 触发订阅相关事件
-stripe trigger checkout.session.completed  # 模拟支付完成
-stripe trigger invoice.payment_succeeded    # 模拟发票支付成功
-stripe trigger customer.subscription.created # 模拟订阅创建
-```
-
-**生成的数据特点**：
-- ✅ 数据结构与真实事件完全一致
-- ✅ 包含所有必需的字段和关系
-- ❌ 数据内容是固定的测试值
-- ❌ 无法指定特定的用户ID或订单信息
-
-**3. 自定义数据测试**：
-
-如需测试特定数据场景，可使用以下方法：
-
-**方法一：Stripe Dashboard测试**
-```bash
-# 1. 在 Stripe Dashboard 中创建真实的支付会话
-# 2. 使用测试卡号完成支付：4242 4242 4242 4242
-# 3. 观察本地应用接收到的真实 webhook 数据
-```
-
-**方法二：手动发送自定义 webhook**
-```bash
-# 发送自定义的 webhook 数据到本地端点
-curl -X POST http://localhost:7001/api/payment/webhook/stripe \
-  -H "Content-Type: application/json" \
-  -H "Stripe-Signature: YOUR_TEST_SIGNATURE" \
-  -d '{
-    "id": "evt_test_webhook",
-    "object": "event",
-    "type": "checkout.session.completed",
-    "data": {
-      "object": {
-        "id": "cs_test_custom_session_id",
-        "mode": "subscription",
-        "customer": "cus_test_customer",
-        "metadata": {
-          "planId": "your_plan_id",
-          "userId": "your_user_id",
-          "orderId": "your_order_id"
-        }
-      }
-    }
-  }'
-```
-
-**4. 实际测试建议**：
-
-```bash
-# 步骤1：启动监听
-stripe listen --forward-to localhost:7001/api/payment/webhook/stripe
-
-# 步骤2：启动本地应用
-pnpm run dev
-
-# 步骤3：访问支付页面，使用测试卡完成真实支付流程
-open http://localhost:7001/pricing
-
-# 步骤4：观察控制台输出，验证 webhook 处理逻辑
-```
-
-**测试卡号**：
-- `4242 4242 4242 4242` - 成功支付
-- `4000 0000 0000 0002` - 支付失败  
-- `4000 0000 0000 9995` - 资金不足
-
-3. **测试支付流程**
-
-```bash
-# 启动开发服务器
-pnpm run dev
-
-# 访问定价页面
-open http://localhost:7001/pricing
-
-# 选择计划进行测试支付
-```
+请查阅我们单独撰写的一个文档： [🧪 支付测试指南](./payment-testing.md) 本地开发测试和 Webhook 调试
 
 ## 🔄 支付流程
 
@@ -906,6 +701,10 @@ POST /api/payment/cancel/:orderId
 ```
 
 ## 📚 参考文档
+
+### 相关指南
+- [🧪 支付测试指南](./payment-testing.md) - 本地开发测试和 Webhook 调试
+- [🪙 积分系统指南](./credits.md) - 积分充值和消耗配置
 
 ### 微信支付
 - [微信支付开发文档](https://pay.weixin.qq.com/wiki/doc/api/index.html)

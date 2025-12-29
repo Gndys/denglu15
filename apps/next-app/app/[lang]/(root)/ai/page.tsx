@@ -74,21 +74,26 @@ export default function Chat() {
   const providerModels = config.ai.availableModels;
   const [provider, setProvider] = useState<keyof typeof providerModels>(config.ai.defaultProvider);
   const [model, setModel] = useState<string>(config.ai.defaultModels[config.ai.defaultProvider]);
-  const [hasSubscription, setHasSubscription] = useState(true); // 默认允许，避免闪烁
+  const [hasAccess, setHasAccess] = useState(true); // Default to allow, avoid flicker
+  const [creditBalance, setCreditBalance] = useState<number | null>(null);
   const [inputAreaHeight, setInputAreaHeight] = useState(160); // Default height for fixed input area
 
-  // Check user subscription status once on page load
-  const checkSubscriptionStatus = async () => {
+  // Check user credit balance on page load
+  const checkAccessStatus = async () => {
     try {
-      const response = await fetch('/api/subscription/status', {
+      const response = await fetch('/api/credits/status', {
         method: 'GET'
       });
       const data = await response.json();
-      setHasSubscription(data && data.hasSubscription);
+      // User has access if credit balance > 0
+      const balance = data?.credits?.balance || 0;
+      setHasAccess(balance > 0);
+      setCreditBalance(balance);
     } catch (error) {
       // Handle both network errors and JSON parsing errors (like 401 Unauthorized)
-      console.warn('Subscription check failed, setting to false');
-      setHasSubscription(false);
+      console.warn('Credit check failed, setting to false');
+      setHasAccess(false);
+      setCreditBalance(0);
     }
   };
 
@@ -98,17 +103,17 @@ export default function Chat() {
     setMessages([]);
   };
 
-  // Enhanced form submission with subscription check for PromptInput
+  // Enhanced form submission with access check for PromptInput
   const handlePromptSubmit = async (message: { text?: string; files?: any[] }) => {
     if (!message.text?.trim()) return;
 
-    // Check subscription status (cached from page load)
-    if (!hasSubscription) {
-      // Show permission denied toast
-      toast.error(t.ai.chat.errors.subscriptionRequired, {
-        description: t.ai.chat.errors.subscriptionRequiredDescription,
+    // Check access status (cached from page load)
+    if (!hasAccess) {
+      // Show no credits toast
+      toast.error(t.ai.chat.errors.insufficientCredits || 'Insufficient Credits', {
+        description: t.ai.chat.errors.insufficientCreditsDescription || 'You need credits or a subscription to use AI chat.',
         action: {
-          label: t.common.viewPlans,
+          label: t.dashboard.credits?.buyMore || t.common.viewPlans,
           onClick: () => {
             // Navigate to pricing page
             window.location.href = `/${locale}/pricing`;
@@ -124,6 +129,9 @@ export default function Chat() {
     }, {
       body: { provider, model }
     });
+    
+    // Refresh credit balance after sending (async)
+    checkAccessStatus();
   };
 
   // Calculate input area height dynamically
@@ -150,8 +158,8 @@ export default function Chat() {
   // Note: Scrolling is now handled automatically by AI Elements Conversation component
 
   useEffect(() => {
-    // Check subscription status once on page load
-    checkSubscriptionStatus();
+    // Check access status (subscription or credits) once on page load
+    checkAccessStatus();
     
     // Calculate input height after component mounts
     setTimeout(calculateInputHeight, 100);

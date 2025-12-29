@@ -6,13 +6,19 @@ alwaysApply: false
 # Payment Integration Guidelines
 
 ## Overview
-The payment system supports both WeChat Pay and Stripe, handling one-time payments and subscriptions through a factory-based implementation.
+The payment system supports WeChat Pay, Stripe, and Creem, handling one-time payments, subscriptions, and **credit purchases** through a factory-based implementation. Includes a complete credit system for AI-powered features with consumption tracking.
 
 ## Key Concepts
 
 ### Provider Types
 - `stripe`: Stripe Checkout Session based implementation
 - `wechat`: WeChat Native QR code based implementation
+- `creem`: Creem payment integration
+
+### Payment Plan Types
+- `one_time`: Single payment (all providers)
+- `recurring`: Subscription billing (Stripe and Creem only)
+- `credits`: One-time credit purchase with automatic balance update (all providers)
 
 ### Payment Flow
 1. Create order record in database
@@ -70,6 +76,40 @@ app.post('/api/webhook/:provider', async (req, res) => {
 const status = await provider.queryOrder(orderId);
 ```
 
+### 5. Credit System Operations
+```typescript
+import { creditService, calculateCreditConsumption, safeNumber, TransactionTypeCode } from '@libs/credits';
+
+// Get user credit balance
+const balance = await creditService.getBalance(userId);
+
+// Add credits (called automatically on credit purchase via webhook)
+await creditService.addCredits({
+  userId: 'user_123',
+  amount: 100,
+  description: TransactionTypeCode.PURCHASE,
+  relatedOrderId: 'order_456'
+});
+
+// Consume credits (e.g., for AI chat)
+const totalTokens = safeNumber(usageData.totalTokens);
+const creditsToConsume = calculateCreditConsumption({
+  totalTokens,
+  model: 'qwen-turbo',
+  provider: 'qwen'
+});
+
+await creditService.consumeCredits({
+  userId: 'user_123',
+  amount: creditsToConsume,
+  description: TransactionTypeCode.AI_CHAT,
+  metadata: { model: 'qwen-turbo', tokens: totalTokens }
+});
+
+// Get transaction history
+const transactions = await creditService.getTransactions(userId, { page: 1, limit: 10 });
+```
+
 ## Configuration Requirements
 
 ### Environment Variables
@@ -104,23 +144,38 @@ export const config = {
         mchId: string,
         apiKey: string,
         notifyUrl: string
+      },
+      creem: {
+        apiKey: string,
+        serverUrl: string,
+        webhookSecret: string
       }
     },
     plans: {
       [planId: string]: {
         id: string,
-        name: string,
-        description: string,
+        provider: 'stripe' | 'wechat' | 'creem',
         amount: number,
         currency: string,
         duration: {
-          type: 'recurring' | 'one_time',
-          months: number,
-          description: string
+          type: 'recurring' | 'one_time' | 'credits',
+          months?: number,       // For recurring/one_time
+          credits?: number       // For credits type
         },
         stripePriceId?: string,
-        stripeProductId?: string
+        creemProductId?: string,
+        i18n: { [locale: string]: PlanI18n }
       }
+    }
+  },
+  
+  // Credit consumption configuration
+  credits: {
+    consumptionMode: 'fixed' | 'dynamic',
+    fixedChatCost: number,              // Credits per chat (fixed mode)
+    dynamicChatCostPerKiloToken: number, // Credits per 1K tokens (dynamic mode)
+    modelMultipliers: {                  // Cost multipliers by AI model
+      [modelName: string]: number
     }
   }
 };
@@ -163,4 +218,23 @@ export const config = {
 3. **Configuration**
    - Verify all required environment variables
    - Check certificate paths for WeChat Pay
-   - Validate webhook URLs 
+   - Validate webhook URLs
+
+4. **Credit System**
+   - Use `safeNumber()` to prevent NaN/Infinity in calculations
+   - Always validate token counts before credit consumption
+   - Use `TransactionTypeCode` constants for transaction descriptions
+   - Check credit balance before allowing AI operations
+
+## Credit System API Endpoints
+
+```typescript
+// Get user credit balance
+GET /api/credits/balance
+
+// Get transaction history
+GET /api/credits/transactions?page=1&limit=10
+
+// Get complete status (credits + subscription)
+GET /api/credits/status
+```

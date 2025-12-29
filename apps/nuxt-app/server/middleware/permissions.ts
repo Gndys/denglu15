@@ -30,12 +30,12 @@ const protectedApiRoutes: ProtectedApiRouteConfig[] = [
     requiredPermission: { action: Action.MANAGE, subject: Subject.ALL }
   },
   
-  // Chat API - require authentication and subscription
+  // Chat API - require authentication only
+  // Credit/subscription check is handled in the API route itself
+  // to support both credit-based and subscription-based access
   {
     pattern: /^\/api\/chat(\/.*)?$/,
-    requiresAuth: true,
-    requiresSubscription: true
-    // Could add: requiredPermission: { action: Action.CREATE, subject: Subject.CHAT_MESSAGE }
+    requiresAuth: true
   },
   
   // Premium API routes - require active subscription

@@ -103,13 +103,14 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     requiresAuth: true
   },
   
-  // Pricing page - redirect subscribed users to dashboard (require locale prefix)
-  {
-    pattern: new RegExp(`^\\/(${locales.join('|')})\\/pricing$`),
-    type: 'page',
-    requiresAuth: false,
-    redirectIfSubscribed: true
-  },
+  // Pricing page - accessible to all users
+  // Note: Removed redirectIfSubscribed because users with subscriptions
+  // may still want to purchase credits
+  // {
+  //   pattern: new RegExp(`^\\/(${locales.join('|')})\\/pricing$`),
+  //   type: 'page',
+  //   requiresAuth: false,
+  // },
   
   // AI features - require authentication (require locale prefix)
   // {

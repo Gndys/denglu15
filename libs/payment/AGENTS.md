@@ -2,7 +2,7 @@
 
 ## Overview
 
-Unified payment integration library supporting WeChat Pay, Stripe, and Creem payment providers. Handles both one-time payments and recurring subscriptions with webhook processing, database integration, and automated plan configuration from `@config`.
+Unified payment integration library supporting WeChat Pay, Stripe, and Creem payment providers. Handles one-time payments, recurring subscriptions, and **credit purchases** with webhook processing, database integration, and automated plan configuration from `@config`. Includes a complete credit system for AI-powered features with consumption tracking.
 
 ## Setup Commands
 
@@ -147,20 +147,87 @@ if (stripeProvider.createCustomerPortal) {
 }
 ```
 
+### Credit System Usage
+```typescript
+import { creditService, calculateCreditConsumption, safeNumber, TransactionTypeCode } from '@libs/credits';
+
+// Get user credit balance
+const balance = await creditService.getBalance(userId);
+
+// Add credits (called automatically on credit purchase via webhook)
+await creditService.addCredits({
+  userId: 'user_123',
+  amount: 100,
+  description: TransactionTypeCode.PURCHASE,
+  relatedOrderId: 'order_456',
+  metadata: { provider: 'stripe', planId: 'credits100' }
+});
+
+// Consume credits (e.g., for AI chat)
+const totalTokens = safeNumber(usageData.totalTokens);
+const creditsToConsume = calculateCreditConsumption({
+  totalTokens,
+  model: 'qwen-turbo',
+  provider: 'qwen'
+});
+
+const result = await creditService.consumeCredits({
+  userId: 'user_123',
+  amount: creditsToConsume,
+  description: TransactionTypeCode.AI_CHAT,
+  metadata: { model: 'qwen-turbo', tokens: totalTokens }
+});
+
+// Get credit transaction history
+const transactions = await creditService.getTransactions(userId, { page: 1, limit: 10 });
+
+// Get complete user status (credits + subscription)
+const status = await creditService.getStatus(userId);
+```
+
+### Credit Plan Configuration (config.ts)
+```typescript
+// Credit purchase plans
+credits100: {
+  provider: 'stripe',
+  id: 'credits100',
+  amount: 10,
+  currency: 'USD',
+  duration: { type: 'credits', credits: 100 },
+  stripePriceId: 'price_xxx',
+  i18n: { /* ... */ }
+},
+
+// Credit consumption configuration
+credits: {
+  consumptionMode: 'dynamic',           // 'fixed' or 'dynamic'
+  fixedChatCost: 10,                    // Credits per chat (fixed mode)
+  dynamicChatCostPerKiloToken: 1,       // Credits per 1K tokens (dynamic mode)
+  modelMultipliers: {                   // Cost multipliers by AI model
+    'qwen-turbo': 1.0,
+    'gpt-4': 2.0,
+    'default': 1.0
+  }
+}
+```
+
 ## Common Tasks
 
 ### Provider Capabilities
-- **WeChat Pay**: One-time payments only, CNY currency, requires business license
-- **Stripe**: Full subscription management, global currencies, customer portal
-- **Creem**: Developer-friendly, global currencies, simplified onboarding
+- **WeChat Pay**: One-time payments and credit purchases, CNY currency, requires business license
+- **Stripe**: Full subscription management, credit purchases, global currencies, customer portal
+- **Creem**: Developer-friendly, credit purchases, global currencies, simplified onboarding
 
 ### Payment Types
 - **One-time**: Single payment (supported by all providers)
 - **Recurring**: Subscription billing (Stripe and Creem only)
+- **Credits**: One-time credit purchase with automatic balance update (all providers)
 
 ### Database Operations
 - **Orders**: Created automatically on payment initiation
 - **Subscriptions**: Created/updated via webhook processing
+- **Credits**: User balance updated on successful credit purchase
+- **Credit Transactions**: Full audit trail of all credit operations
 - **Status Tracking**: `pending` → `paid`/`failed` status updates
 
 ### Add New Payment Plan
@@ -222,7 +289,10 @@ if (stripeProvider.createCustomerPortal) {
 
 - **Multi-Provider Design**: Factory pattern with unified interface abstracts provider differences
 - **Configuration-Driven**: Payment plans defined in `@config` auto-generate pricing UI
-- **Database Integration**: Automatic order/subscription tracking via `@libs/database`
+- **Dual Payment Model**: Traditional subscriptions + AI-era credit system running in parallel
+- **Database Integration**: Automatic order/subscription/credit tracking via `@libs/database`
+- **Credit System**: Complete implementation via `@libs/credits` with balance management, consumption tracking, and transaction history
+- **Consumption Modes**: Fixed (per-operation) and dynamic (per-token) credit consumption with model multipliers
 - **Webhook Security**: Provider-specific signature verification for payment confirmation
 - **Type Safety**: Generic factory function ensures compile-time provider type checking
 - **Internationalization**: Built-in i18n support for payment plan display content
@@ -230,4 +300,5 @@ if (stripeProvider.createCustomerPortal) {
 - **Subscription Management**: Full lifecycle support (create, update, cancel, portal access)
 - **Modular Architecture**: Easy to add new providers without changing existing code
 - **Error Handling**: Comprehensive error types and validation for payment operations
+- **Safe Number Handling**: Utility functions to prevent NaN/Infinity in credit calculations
 - **Development Experience**: Test mode support with detailed logging and debugging info
