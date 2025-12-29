@@ -647,7 +647,7 @@ export const en: Locale = {
     },
     title: "Pricing",
     subtitle: "Choose the plan that's right for you",
-    description: "Choose the perfect plan for your TinyShip journey. Multiple payment methods, flexible billing models, providing secure and convenient payment experience for global users.",
+    description: "We offer both traditional time-based subscriptions (monthly/yearly/lifetime) and the AI-era popular credit system. Subscribe for unlimited access, or purchase credits and pay only for what you use.",
     cta: "Get started",
     recommendedBadge: "Recommended",
     lifetimeBadge: "One-time purchase, lifetime access",
@@ -663,8 +663,8 @@ export const en: Locale = {
         description: "Support WeChat Pay, Stripe, Creem with enterprise-grade security"
       },
       flexibleSubscription: {
-        title: "Flexible Billing",
-        description: "Both one-time payments and recurring subscriptions supported"
+        title: "Flexible Payment Models",
+        description: "Time-based subscription or AI-era credit system — choose your style"
       },
       globalCoverage: {
         title: "Global Payment Coverage", 
@@ -843,7 +843,23 @@ export const en: Locale = {
         purchase: "Purchase",
         bonus: "Bonus",
         consumption: "Used",
-        refund: "Refund"
+        refund: "Refund",
+        adjustment: "Adjustment"
+      },
+      descriptions: {
+        ai_chat: "AI Chat",
+        image_generation: "Image Generation",
+        document_processing: "Document Processing",
+        purchase: "Credit Purchase",
+        bonus: "Bonus Credits",
+        refund: "Credit Refund",
+        adjustment: "Admin Adjustment"
+      },
+      table: {
+        type: "Type",
+        description: "Description",
+        amount: "Amount",
+        time: "Time"
       }
     },
     account: {
@@ -1298,7 +1314,9 @@ export const en: Locale = {
         invalidResponse: "Invalid response from AI. Please try again.",
         rateLimited: "Too many requests. Please wait a moment.",
         subscriptionRequired: "AI features require an active subscription",
-        subscriptionRequiredDescription: "Upgrade to a premium plan to access AI chat features"
+        subscriptionRequiredDescription: "Upgrade to a premium plan to access AI chat features",
+        insufficientCredits: "Insufficient Credits",
+        insufficientCreditsDescription: "You need credits or a subscription to use AI chat. Purchase credits to continue."
       },
       history: {
         title: "Chat History",

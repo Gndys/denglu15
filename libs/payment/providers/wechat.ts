@@ -10,7 +10,7 @@ import { utcNow } from '@libs/database/utils/utc';
 import crypto from 'crypto';
 import { X509Certificate } from '@peculiar/x509';
 import { ofetch } from 'ofetch';
-import { creditService } from '@libs/credits';
+import { creditService, TransactionTypeCode } from '@libs/credits';
 
 // Payment plan interface for type safety
 interface PaymentPlan {
@@ -571,7 +571,7 @@ export class WechatPayProvider implements PaymentProvider {
               amount: plan.credits,
               type: 'purchase',
               orderId: orderId,
-              description: `Purchased ${plan.credits} credits via WeChat Pay`,
+              description: TransactionTypeCode.PURCHASE,
               metadata: {
                 transactionId: decryptedData.transaction_id,
                 planId: orderRecord.planId,

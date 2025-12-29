@@ -96,13 +96,14 @@ const protectedRoutes: ProtectedRouteConfig[] = [
     requiresSubscription: true // 高级功能区域
   },
   
-  // Pricing page - redirect subscribed users to dashboard
-  {
-    pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/pricing$`),
-    type: 'page',
-    requiresAuth: false,
-    redirectIfSubscribed: true // 已订阅用户访问定价页面时重定向到仪表板
-  },
+  // Pricing page - accessible to all users
+  // Note: Removed redirectIfSubscribed because users with subscriptions
+  // may still want to purchase credits
+  // {
+  //   pattern: new RegExp(`^\\/(${i18n.locales.join('|')})\\/pricing$`),
+  //   type: 'page',
+  //   requiresAuth: false,
+  // },
   
   // Payment pages - require authentication
   {
@@ -167,10 +168,9 @@ const protectedRoutes: ProtectedRouteConfig[] = [
   {
     pattern: new RegExp('^/api/chat(\\/.*)?$'), 
     type: 'api',
-    requiresAuth: true,
-    requiresSubscription: true
-    // TODO: Replace Subject.CHAT_MESSAGE with a valid Subject 
-    // requiredPermission: { action: Action.CREATE, subject: Subject.CHAT_MESSAGE } // Requires definition
+    requiresAuth: true
+    // Credit/subscription check is handled in the API route itself
+    // to support both credit-based and subscription-based access
   },
   {
     pattern: new RegExp('^/api/protected(\\/.*)?$'), 

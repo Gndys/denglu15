@@ -153,11 +153,6 @@
                   <Heart class="h-3.5 w-3.5" />
                   <span>{{ t('pricing.lifetimeBadge') }}</span>
                 </div>
-                
-                <div v-if="isCreditPack(plan) && getPlanCredits(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-4-bg-15 text-chart-4 rounded-full text-xs font-medium">
-                  <Coins class="h-3.5 w-3.5" />
-                  <span>{{ getPlanCredits(plan) }} {{ t('pricing.creditsUnit') }}</span>
-                </div>
               </div>
 
               <!-- Features -->

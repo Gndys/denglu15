@@ -20,7 +20,7 @@ import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import crypto from 'crypto';
-import { creditService } from '@libs/credits';
+import { creditService, TransactionTypeCode } from '@libs/credits';
 
 // Payment plan interface for type safety
 interface PaymentPlan {
@@ -307,7 +307,7 @@ export class CreemProvider implements PaymentProvider {
         amount: plan.credits,
         type: 'purchase',
         orderId: orderId,
-        description: `Purchased ${plan.credits} credits via Creem`,
+        description: TransactionTypeCode.PURCHASE,
         metadata: {
           checkoutId: webhookData.object.id,
           planId: planId,

@@ -6,5 +6,6 @@ export {
   isDynamicMode,
   getModelMultiplier 
 } from './calculator';
+export { safeNumber, TransactionTypeCode } from './utils';
 export * from './types';
 

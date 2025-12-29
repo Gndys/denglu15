@@ -522,10 +522,10 @@ export const config = {
         currency: 'USD',
         duration: { type: 'credits' },
         credits: 100,
-        stripePriceId: '', // Set after creating price in Stripe dashboard
+        stripePriceId: 'price_1SiVbxDjHLfDWeHDQ4BNtUNT', // Set after creating price in Stripe dashboard
         i18n: {
           'en': {
-            name: '100 Credits',
+            name: '100 Credits Stripe',
             description: 'Purchase 100 AI credits for on-demand usage',
             duration: 'one-time',
             features: [
@@ -535,8 +535,8 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '100 积分包',
-            description: '购买 100 个 AI 积分，按需使用',
+            name: '100 积分包 Stripe',
+            description: '通过 Stripe 购买的 100 个 AI 积分，按需使用',
             duration: '一次性',
             features: [
               '100 次 AI 对话',
@@ -556,7 +556,7 @@ export const config = {
         credits: 550,  // 500 + 50 bonus
         i18n: {
           'en': {
-            name: '500 Credits + 50 Bonus',
+            name: '500 Credits + 50 Bonus Wechat Pay',
             description: 'Best value! Get 550 credits for the price of 500',
             duration: 'one-time',
             features: [
@@ -566,7 +566,7 @@ export const config = {
             ]
           },
           'zh-CN': {
-            name: '500 积分包 + 50 赠送',
+            name: '500 积分包 + 50 赠送 微信支付',
             description: '超值优惠！以 500 积分的价格获得 550 积分',
             duration: '一次性',
             features: [

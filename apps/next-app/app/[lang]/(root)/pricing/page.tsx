@@ -393,13 +393,6 @@ export default function PricingPage() {
                           <span>{t.pricing.lifetimeBadge}</span>
                         </div>
                       )}
-                      
-                      {isCreditPack && (plan as any).credits && (
-                        <div className="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-4-bg-15 text-chart-4 rounded-full text-xs font-medium">
-                          <Coins className="h-3.5 w-3.5" />
-                          <span>{(plan as any).credits} {t.pricing.creditsUnit || 'credits'}</span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Features */}

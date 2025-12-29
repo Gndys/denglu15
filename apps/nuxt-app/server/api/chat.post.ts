@@ -1,7 +1,10 @@
 import { streamResponseWithUsage } from '@libs/ai'
-import { auth } from '@libs/auth'
-import { creditService, calculateCreditConsumption } from '@libs/credits'
-import { checkSubscriptionStatus } from '@libs/database/utils/subscription'
+import { 
+  creditService, 
+  calculateCreditConsumption,
+  safeNumber,
+  TransactionTypeCode
+} from '@libs/credits'
 
 export default defineEventHandler(async (event) => {
   // Only allow POST requests
@@ -13,18 +16,12 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Get user session for credit tracking
-    const user = event.context.user || await (async () => {
-      const headers = new Headers()
-      Object.entries(getHeaders(event)).forEach(([key, value]) => {
-        if (value) headers.set(key, value)
-      })
-      
-      const session = await auth.api.getSession({ headers })
-      return session?.user
-    })()
+    // Get user from context (set by permissions middleware)
+    // Note: Authentication is already verified by middleware (requiresAuth: true)
+    const user = event.context.user
     
-    const userId = user?.id
+    // userId should always exist since middleware ensures authentication
+    const userId = user?.id!
 
     // Read the request body
     const { messages, provider, model } = await readBody(event)
@@ -37,12 +34,27 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Check credit balance
+    const creditBalance = await creditService.getBalance(userId)
+    
+    if (creditBalance <= 0) {
+      throw createError({
+        statusCode: 402, // Payment Required
+        statusMessage: 'Insufficient Credits',
+        data: {
+          error: 'insufficient_credits',
+          message: 'No credits available. Please purchase credits to continue.'
+        }
+      })
+    }
+
     // Log the request for debugging
     console.log('Chat API request:', { 
       messageCount: messages.length, 
       provider: provider || 'openai', 
       model: model || 'gpt-5',
-      userId: userId || 'anonymous'
+      userId,
+      creditBalance
     })
 
     // Get streaming response with usage tracking
@@ -53,53 +65,74 @@ export default defineEventHandler(async (event) => {
     })
 
     // Process credit consumption asynchronously (don't block response)
-    if (userId) {
-      // Check subscription status first
-      checkSubscriptionStatus(userId).then(async (subscription) => {
-        // Only consume credits if user doesn't have active subscription
-        if (!subscription) {
-          try {
-            const usageData = await usage
-            const creditsToConsume = calculateCreditConsumption({
-              totalTokens: usageData.totalTokens,
-              model: usedModel,
-              provider: usedProvider
-            })
-            
-            console.log('Credit consumption:', {
-              userId,
-              totalTokens: usageData.totalTokens,
-              creditsToConsume,
-              model: usedModel,
-              provider: usedProvider
-            })
-            
-            const result = await creditService.consumeCredits({
-              userId,
-              amount: creditsToConsume,
-              description: `AI chat: ${usageData.totalTokens} tokens (${usedModel})`,
-              metadata: {
-                provider: usedProvider,
-                model: usedModel,
-                promptTokens: usageData.promptTokens,
-                completionTokens: usageData.completionTokens,
-                totalTokens: usageData.totalTokens
-              }
-            })
-            
-            if (!result.success) {
-              console.warn('Credit consumption failed:', result.error)
-            }
-          } catch (error) {
-            console.error('Error processing credit consumption:', error)
-          }
-        } else {
-          console.log('User has active subscription, skipping credit consumption')
+    usage.then(async (usageData) => {
+      try {
+        // Use safeNumber to prevent NaN issues
+        const totalTokens = safeNumber(usageData.totalTokens)
+        const promptTokens = safeNumber(usageData.promptTokens)
+        const completionTokens = safeNumber(usageData.completionTokens)
+        
+        // Skip consumption if no valid token count
+        if (totalTokens <= 0) {
+          console.warn('Invalid or zero token count, skipping credit consumption:', {
+            userId,
+            rawTotalTokens: usageData.totalTokens,
+            model: usedModel,
+            provider: usedProvider
+          })
+          return
         }
-      }).catch((error) => {
-        console.error('Error checking subscription status:', error)
-      })
-    }
+        
+        const creditsToConsume = calculateCreditConsumption({
+          totalTokens,
+          model: usedModel,
+          provider: usedProvider
+        })
+        
+        // Validate calculated credits
+        if (!isFinite(creditsToConsume) || creditsToConsume <= 0) {
+          console.warn('Invalid credits calculation, skipping consumption:', {
+            userId,
+            totalTokens,
+            creditsToConsume,
+            model: usedModel,
+            provider: usedProvider
+          })
+          return
+        }
+        
+        console.log('Credit consumption:', {
+          userId,
+          totalTokens,
+          creditsToConsume,
+          model: usedModel,
+          provider: usedProvider
+        })
+        
+        // Use type code for description (i18n at display time)
+        // All details are stored in metadata
+        const result = await creditService.consumeCredits({
+          userId,
+          amount: creditsToConsume,
+          description: TransactionTypeCode.AI_CHAT,
+          metadata: {
+            provider: usedProvider,
+            model: usedModel,
+            promptTokens,
+            completionTokens,
+            totalTokens
+          }
+        })
+        
+        if (!result.success) {
+          console.warn('Credit consumption failed:', result.error)
+        }
+      } catch (error) {
+        console.error('Error processing credit consumption:', error)
+      }
+    }).catch((error) => {
+      console.error('Error getting usage data:', error)
+    })
 
     return response
 
@@ -119,4 +152,4 @@ export default defineEventHandler(async (event) => {
       }
     })
   }
-}) 
+})

@@ -18,7 +18,7 @@ import { eq } from 'drizzle-orm';
 import { user } from '@libs/database/schema/user';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
-import { creditService } from '@libs/credits';
+import { creditService, TransactionTypeCode } from '@libs/credits';
 
 // Payment plan interface for type safety
 interface PaymentPlan {
@@ -203,7 +203,7 @@ export class StripeProvider implements PaymentProvider {
         amount: plan.credits,
         type: 'purchase',
         orderId: session.metadata.orderId,
-        description: `Purchased ${plan.credits} credits via Stripe`,
+        description: TransactionTypeCode.PURCHASE,
         metadata: {
           sessionId: session.id,
           planId: session.metadata.planId,

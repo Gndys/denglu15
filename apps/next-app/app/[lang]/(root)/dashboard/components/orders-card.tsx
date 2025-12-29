@@ -14,6 +14,14 @@ import {
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
 import { config } from "@config";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Order {
   id: string;
@@ -32,11 +40,14 @@ interface OrdersCardProps {
   // Props interface for orders data if needed
 }
 
+const PAGE_SIZE = 5;
+
 export function OrdersCard({}: OrdersCardProps) {
   const { t, locale: currentLocale } = useTranslation();
   const [ordersData, setOrdersData] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     async function fetchOrdersData() {
@@ -59,7 +70,20 @@ export function OrdersCard({}: OrdersCardProps) {
     fetchOrdersData();
   }, []);
 
-  // 格式化日期
+  // Pagination
+  const totalPages = Math.ceil(ordersData.length / PAGE_SIZE);
+  const paginatedOrders = ordersData.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Format date
   const formatDate = (dateString: string | Date) => {
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return date.toLocaleDateString(currentLocale === 'zh-CN' ? 'zh-CN' : 'en-US', {
@@ -69,19 +93,19 @@ export function OrdersCard({}: OrdersCardProps) {
     });
   };
 
-  // 格式化金额
+  // Format amount
   const formatAmount = (amount: string, currency: string) => {
     const numAmount = parseFloat(amount);
     return `${currency === 'CNY' ? '¥' : '$'}${numAmount.toLocaleString()}`;
   };
 
-  // 获取计划名称
+  // Get plan name
   const getPlanName = (planId: string) => {
     const plan = config.payment.plans[planId as keyof typeof config.payment.plans];
     return plan?.i18n[currentLocale]?.name || planId;
   };
 
-  // 获取订单状态显示
+  // Get order status display
   const getOrderStatusDisplay = (status: string) => {
     switch (status) {
       case 'paid':
@@ -123,7 +147,7 @@ export function OrdersCard({}: OrdersCardProps) {
     }
   };
 
-  // 获取支付方式显示
+  // Get payment provider display
   const getProviderDisplay = (provider: string) => {
     switch (provider) {
       case 'stripe':
@@ -164,8 +188,6 @@ export function OrdersCard({}: OrdersCardProps) {
     );
   }
 
-
-
   return (
     <div className="bg-card rounded-lg shadow-sm border border-border">
       <div className="p-6 border-b border-border flex items-center justify-between">
@@ -190,63 +212,117 @@ export function OrdersCard({}: OrdersCardProps) {
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px]">
-            <thead className="bg-muted">
-              <tr>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
-                  {t.dashboard.orders.orderDetails.orderId}
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[140px]">
-                  {t.dashboard.orders.orderDetails.plan}
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
-                  {t.dashboard.orders.orderDetails.amount}
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
-                  {t.dashboard.orders.orderDetails.provider}
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[140px]">
-                  {t.dashboard.orders.orderDetails.status}
-                </th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[120px]">
-                  {t.dashboard.orders.orderDetails.createdAt}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-card divide-y divide-border">
-              {ordersData.map((order) => {
-                const statusDisplay = getOrderStatusDisplay(order.status);
-                return (
-                  <tr key={order.id} className="hover:bg-muted/50">
-                    <td className="px-3 py-4 text-sm font-medium text-card-foreground">
-                      <div className="truncate">#{order.id.slice(-8)}</div>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-muted-foreground">
-                      <div className="truncate">{getPlanName(order.planId)}</div>
-                    </td>
-                    <td className="px-3 py-4 text-sm font-semibold text-card-foreground">
-                      <div className="truncate">{formatAmount(order.amount, order.currency)}</div>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-muted-foreground">
-                      <div className="truncate">{getProviderDisplay(order.provider)}</div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <Badge variant={statusDisplay.variant} className="text-xs">
-                        <statusDisplay.icon className="h-3 w-3 mr-1" />
-                        <span className="truncate">{statusDisplay.text}</span>
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-muted-foreground">
-                      <div className="truncate">{formatDate(order.createdAt)}</div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
+                    {t.dashboard.orders.orderDetails.orderId}
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[140px]">
+                    {t.dashboard.orders.orderDetails.plan}
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
+                    {t.dashboard.orders.orderDetails.amount}
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[100px]">
+                    {t.dashboard.orders.orderDetails.provider}
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[140px]">
+                    {t.dashboard.orders.orderDetails.status}
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-[120px]">
+                    {t.dashboard.orders.orderDetails.createdAt}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-card divide-y divide-border">
+                {paginatedOrders.map((order) => {
+                  const statusDisplay = getOrderStatusDisplay(order.status);
+                  return (
+                    <tr key={order.id} className="hover:bg-muted/50">
+                      <td className="px-3 py-4 text-sm font-medium text-card-foreground">
+                        <div className="truncate">#{order.id.slice(-8)}</div>
+                      </td>
+                      <td className="px-3 py-4 text-sm text-muted-foreground">
+                        <div className="truncate">{getPlanName(order.planId)}</div>
+                      </td>
+                      <td className="px-3 py-4 text-sm font-semibold text-card-foreground">
+                        <div className="truncate">{formatAmount(order.amount, order.currency)}</div>
+                      </td>
+                      <td className="px-3 py-4 text-sm text-muted-foreground">
+                        <div className="truncate">{getProviderDisplay(order.provider)}</div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <Badge variant={statusDisplay.variant} className="text-xs">
+                          <statusDisplay.icon className="h-3 w-3 mr-1" />
+                          <span className="truncate">{statusDisplay.text}</span>
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-4 text-sm text-muted-foreground">
+                        <div className="truncate">{formatDate(order.createdAt)}</div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-border">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }).map((_, index) => {
+                    const page = index + 1;
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            isActive={page === currentPage}
+                            onClick={() => handlePageChange(page)}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                    if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <PaginationItem key={page}>
+                          <span className="flex h-9 w-9 items-center justify-center">...</span>
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
-} 
+}

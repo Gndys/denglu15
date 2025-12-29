@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * Known Issue: Radix UI Hydration Mismatch
+ * 
+ * DropdownMenu components may cause hydration warnings due to Radix UI
+ * generating different IDs on server vs client with React 19.2's useId hook.
+ * This is a known upstream issue and does not affect functionality.
+ * 
+ * @see https://github.com/radix-ui/primitives/issues/3700
+ */
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "./ui/button";
@@ -75,7 +85,10 @@ export default function Header({ className }: HeaderProps) {
             {/* Demos Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  type="button"
+                  className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
                   {t.header.navigation.demos}
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -166,7 +179,10 @@ export default function Header({ className }: HeaderProps) {
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-2 focus:outline-none">
+                  <button 
+                    type="button"
+                    className="flex items-center space-x-2 focus:outline-none"
+                  >
                     <Avatar className="h-8 w-8 border border-border">
                       <AvatarImage src={user.image || ""} alt={user.name || user.email || "User"} />
                       <AvatarFallback className="bg-muted text-muted-foreground text-xs">
