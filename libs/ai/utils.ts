@@ -10,7 +10,24 @@ interface StreamOptions {
   model?: string;
 }
 
-export function streamResponse({ messages, provider, model }: StreamOptions) {
+interface UsageData {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
+interface StreamResponseWithUsage {
+  response: Response;
+  usage: Promise<UsageData>;
+  provider: string;
+  model: string;
+}
+
+/**
+ * Stream AI response with usage tracking capability
+ * Returns both the response and a promise for usage data
+ */
+export function streamResponseWithUsage({ messages, provider, model }: StreamOptions): StreamResponseWithUsage {
   // Validate messages
   if (!messages || !Array.isArray(messages)) {
     throw new Error('Invalid messages: messages must be an array');
@@ -26,16 +43,39 @@ export function streamResponse({ messages, provider, model }: StreamOptions) {
     }
   });
   
-  const config = getProviderConfig(provider || 'openai');
-  const aiProvider = createProvider(provider || 'openai', config);
+  const providerName = provider || 'openai';
+  const config = getProviderConfig(providerName);
+  const aiProvider = createProvider(providerName, config);
   
   const result = streamText({
     model: aiProvider(model as any),
     messages: convertToModelMessages(messages),
   });
   
-  return result.toUIMessageStreamResponse({
+  const response = result.toUIMessageStreamResponse({
     originalMessages: messages,
     generateMessageId: () => crypto.randomUUID(),
   });
+  
+  // Use SDK's usage data directly with safe defaults
+  const usagePromise: Promise<UsageData> = result.usage.then((usage) => ({
+    inputTokens: usage.inputTokens ?? 0,
+    outputTokens: usage.outputTokens ?? 0,
+    totalTokens: usage.totalTokens ?? 0
+  }));
+
+  return {
+    response,
+    usage: usagePromise,
+    provider: providerName,
+    model: model || 'default'
+  };
+}
+
+/**
+ * Simple stream response (backwards compatible)
+ * Use streamResponseWithUsage for credit consumption tracking
+ */
+export function streamResponse({ messages, provider, model }: StreamOptions): Response {
+  return streamResponseWithUsage({ messages, provider, model }).response;
 }

@@ -2,20 +2,44 @@
 
 ## 概述
 
-本文档详细描述了ShipEasy支付系统中Creem和Stripe两个支付提供商在接收到不同webhook事件后的订单和订阅处理逻辑。
+本文档详细描述了ShipEasy支付系统的技术实现，包括：
+- **传统订阅模式**：按时间计费（月付/年付/终身），支持循环订阅和一次性支付
+- **积分模式**：AI时代流行的按需付费模式，用户购买积分包后按实际使用量消耗
+
+系统支持 Stripe、Creem、微信支付 三个支付提供商，可灵活配置不同的计费模式。
 
 ## 架构设计
 
+### 双模式支付体系
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     ShipEasy Payment System                  │
+├─────────────────────────────┬───────────────────────────────┤
+│      订阅模式 (Subscription)  │       积分模式 (Credits)        │
+├─────────────────────────────┼───────────────────────────────┤
+│  • 月付/年付/终身             │  • 一次性购买积分包              │
+│  • 订阅期内无限使用           │  • 按实际使用量消费积分          │
+│  • 自动续费或手动续费         │  • 积分永不过期                 │
+│  • 适合高频用户               │  • 适合轻度/偶尔使用用户         │
+└─────────────────────────────┴───────────────────────────────┘
+```
+
 ### 统一接口设计
-两个支付提供商都实现了相同的接口：
+三个支付提供商都实现了相同的接口：
 - `createPayment()` - 创建支付会话
 - `handleWebhook()` - 处理webhook事件
 - `verifyPayment()` - 验证支付状态
 
 ### 数据模型
-系统使用两个主要数据表：
-- **Orders表** - 记录所有支付订单
-- **Subscriptions表** - 记录所有订阅关系
+系统使用三个主要数据表：
+- **Orders表** - 记录所有支付订单（订阅和积分购买）
+- **Subscriptions表** - 记录订阅关系和状态
+- **CreditTransactions表** - 记录积分变动明细（充值、消费、赠送等）
+
+### 用户余额管理
+- **User表** 新增 `creditBalance` 字段存储用户当前积分余额
+- 所有积分操作通过 `@libs/credits` 服务统一管理，确保事务安全
 
 ## Stripe Webhook事件处理
 
@@ -803,17 +827,309 @@ await db.insert(userSubscription).values({
 - 适配Creem不同事件的数据结构差异
 - 保证与Stripe处理逻辑的一致性
 
+## 积分系统 (Credits System)
+
+### 设计理念
+
+积分系统是 AI 时代流行的付费模式，相比传统订阅有以下特点：
+
+| 特性 | 订阅模式 | 积分模式 |
+|------|---------|---------|
+| 付费方式 | 按时间周期付费 | 一次性购买积分包 |
+| 使用限制 | 订阅期内无限使用 | 按实际使用量消费 |
+| 适合用户 | 高频用户 | 轻度/偶尔使用用户 |
+| 过期策略 | 到期后失效 | 积分永不过期 |
+| 续费方式 | 自动或手动续费 | 余额不足时充值 |
+
+### 数据模型
+
+#### User表扩展
+```typescript
+// libs/database/schema/user.ts
+creditBalance: numeric("credit_balance").default("0").notNull()
+```
+
+#### CreditTransaction表
+```typescript
+// libs/database/schema/credit-transaction.ts
+export const creditTransaction = pgTable("credit_transaction", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => user.id),
+  type: text("type").notNull(),        // purchase, consumption, bonus, refund, adjustment
+  amount: numeric("amount").notNull(), // 正数增加，负数减少
+  balanceAfter: numeric("balance_after").notNull(),
+  relatedOrderId: text("related_order_id"),
+  description: text("description"),    // 类型代码，如 'ai_chat'
+  metadata: text("metadata"),          // JSON: provider, model, tokens等
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+```
+
+### 积分计划配置
+
+```typescript
+// config.ts
+credits100: {
+  provider: 'stripe',
+  id: 'credits100',
+  amount: 9.99,
+  currency: 'USD',
+  duration: { type: 'credits' },  // 标识为积分包
+  credits: 100,                   // 购买后获得的积分数
+  i18n: { /* ... */ }
+},
+credits500: {
+  provider: 'wechat',
+  id: 'credits500',
+  amount: 49.99,
+  currency: 'CNY',
+  duration: { type: 'credits' },
+  credits: 550,  // 500 + 50 bonus，赠送部分不单独记录
+  i18n: { /* ... */ }
+}
+```
+
+### Webhook处理：积分包购买
+
+所有支付提供商在处理 `checkout.completed` 或 `TRANSACTION.SUCCESS` 事件时，会检测是否为积分包购买：
+
+```typescript
+// 通用处理逻辑（适用于Stripe/Creem/WeChat）
+if (plan.duration.type === 'credits' && plan.credits) {
+  console.log(`Credit pack purchase - Adding ${plan.credits} credits to user ${userId}`);
+  
+  await creditService.addCredits({
+    userId: userId,
+    amount: plan.credits,
+    type: 'purchase',
+    orderId: orderId,
+    description: TransactionTypeCode.PURCHASE,
+    metadata: {
+      planId: planId,
+      provider: 'stripe' // 或 'wechat', 'creem'
+    }
+  });
+  
+  return { success: true, orderId };
+}
+```
+
+**注意**：积分包购买不会创建订阅记录，只会：
+1. 更新订单状态为 `PAID`
+2. 增加用户 `creditBalance`
+3. 创建 `credit_transaction` 记录
+
+### 积分消费：AI Chat 示例
+
+#### 消费模式配置
+
+```typescript
+// config.ts
+credits: {
+  consumptionMode: 'dynamic',  // 或 'fixed'
+  
+  fixedConsumption: {
+    aiChat: 1,  // 固定模式：每次对话消耗1积分
+  },
+  
+  dynamicConsumption: {
+    tokensPerCredit: 1000,  // 动态模式：1000 tokens = 1积分
+    modelMultipliers: {
+      'gpt-4': 2.0,         // 高端模型倍率
+      'gpt-3.5-turbo': 1.0, // 标准模型
+      'qwen-turbo': 0.5,    // 经济模型
+      'default': 1.0
+    }
+  }
+}
+```
+
+#### 消费流程
+
+```typescript
+// apps/next-app/app/api/chat/route.ts
+export async function POST(req: Request) {
+  // 1. 认证检查（由middleware处理）
+  const userId = session?.user?.id!;
+  
+  // 2. 余额检查
+  const creditBalance = await creditService.getBalance(userId);
+  if (creditBalance <= 0) {
+    return new Response(JSON.stringify({ 
+      error: 'insufficient_credits' 
+    }), { status: 402 });
+  }
+  
+  // 3. 执行AI对话（流式响应）
+  const { response, usage, model } = streamResponseWithUsage({ messages, provider, model });
+  
+  // 4. 异步扣除积分（不阻塞响应）
+  usage.then(async (usageData) => {
+    const totalTokens = safeNumber(usageData.totalTokens);
+    
+    if (totalTokens <= 0) return;  // 无效token数跳过
+    
+    const creditsToConsume = calculateCreditConsumption({
+      totalTokens,
+      model: usedModel,
+      provider: usedProvider
+    });
+    
+    await creditService.consumeCredits({
+      userId,
+      amount: creditsToConsume,
+      description: TransactionTypeCode.AI_CHAT,  // 类型代码，前端i18n渲染
+      metadata: {
+        provider: usedProvider,
+        model: usedModel,
+        promptTokens,
+        completionTokens,
+        totalTokens
+      }
+    });
+  });
+  
+  return response;
+}
+```
+
+#### 消费计算公式
+
+**固定模式**：
+```
+消耗积分 = fixedConsumption.aiChat (例如1积分)
+```
+
+**动态模式**：
+```
+消耗积分 = ceil((totalTokens / tokensPerCredit) × modelMultiplier)
+最小消耗 = 1积分
+
+示例：
+- 1000 tokens × gpt-4(2.0) = 2积分
+- 1000 tokens × qwen-turbo(0.5) = 1积分（向上取整）
+- 500 tokens × gpt-3.5(1.0) = 1积分（最小1积分）
+```
+
+### 积分服务 API
+
+```typescript
+import { creditService, calculateCreditConsumption, safeNumber } from '@libs/credits';
+
+// 获取余额
+const balance = await creditService.getBalance(userId);
+
+// 检查是否有足够积分
+const hasEnough = await creditService.hasEnoughCredits(userId, 5);
+
+// 添加积分（购买/赠送/退款）
+await creditService.addCredits({
+  userId, amount, type: 'purchase', orderId, description, metadata
+});
+
+// 消费积分
+const result = await creditService.consumeCredits({
+  userId, amount, description, metadata
+});
+
+// 获取交易历史
+const transactions = await creditService.getTransactions(userId, {
+  limit: 20, offset: 0, type: 'consumption'
+});
+
+// 获取状态概览
+const status = await creditService.getStatus(userId);
+// { balance, totalPurchased, totalConsumed }
+```
+
+### 交易类型代码
+
+使用类型代码存储，前端根据用户语言渲染：
+
+```typescript
+// libs/credits/utils.ts
+export const TransactionTypeCode = {
+  AI_CHAT: 'ai_chat',
+  IMAGE_GENERATION: 'image_generation',
+  DOCUMENT_PROCESSING: 'document_processing',
+  PURCHASE: 'purchase',
+  BONUS: 'bonus',
+  REFUND: 'refund',
+  ADJUSTMENT: 'adjustment',
+} as const;
+
+// 前端i18n渲染
+// en: { ai_chat: 'AI Chat', purchase: 'Credit Purchase' }
+// zh-CN: { ai_chat: 'AI 对话', purchase: '积分充值' }
+```
+
+### 安全性考虑
+
+#### NaN防护
+```typescript
+// 使用safeNumber防止无效数据
+const totalTokens = safeNumber(usageData.totalTokens);  // NaN → 0
+const promptTokens = safeNumber(usageData.promptTokens);
+
+// 验证计算结果
+if (!isFinite(creditsToConsume) || creditsToConsume <= 0) {
+  console.warn('Invalid credits calculation, skipping');
+  return;
+}
+```
+
+#### 事务安全
+```typescript
+// creditService内部使用数据库事务
+// 确保余额更新和交易记录的原子性
+await db.transaction(async (tx) => {
+  // 1. 更新用户余额
+  await tx.update(user).set({ creditBalance: newBalance });
+  // 2. 创建交易记录
+  await tx.insert(creditTransaction).values({ ... });
+});
+```
+
+### 订阅 vs 积分的访问控制
+
+```typescript
+// AI Chat API的访问检查逻辑
+// 移除了订阅检查，只检查积分余额
+const creditBalance = await creditService.getBalance(userId);
+
+if (creditBalance <= 0) {
+  return new Response(JSON.stringify({ 
+    error: 'insufficient_credits',
+    message: 'No credits available. Please purchase credits to continue.'
+  }), { status: 402 });
+}
+
+// 如果需要同时支持订阅和积分：
+// const hasSubscription = await checkSubscriptionStatus(userId);
+// const hasCredits = creditBalance > 0;
+// if (!hasSubscription && !hasCredits) { return 402; }
+```
+
 ## 测试建议
 
 ### Stripe测试
 1. 使用Stripe CLI监听webhook事件
 2. 测试不同的subscription状态变化
 3. 验证计划升级/降级逻辑
+4. **测试积分包购买流程**
 
 ### Creem测试
 1. 配置Creem webhook URL
 2. 测试checkout.completed和subscription.paid的时序
 3. 验证一次性支付和循环订阅的处理差异
+4. **测试积分包购买和余额更新**
+
+### 积分系统测试
+1. 测试积分购买→余额增加→交易记录
+2. 测试AI对话→积分消费→余额减少
+3. 测试动态/固定消费模式切换
+4. 测试边界情况：零token、NaN处理、余额不足
+5. 运行单元测试：`pnpm test -- --run tests/unit/credits/`
 
 ## 监控和日志
 
@@ -821,8 +1137,11 @@ await db.insert(userSubscription).values({
 - Webhook处理成功率
 - 订单状态同步延迟
 - 订阅状态不一致检测
+- **积分余额异常（NaN、负数）**
+- **积分消费失败率**
 
 ### 日志记录
 - 每个webhook事件的处理结果
 - 状态变更的详细信息
 - 错误和异常的完整堆栈跟踪
+- **积分消费详情（tokens、model、credits）**

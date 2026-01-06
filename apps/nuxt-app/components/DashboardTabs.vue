@@ -7,13 +7,14 @@ import {
   CheckCircle,
   Edit,
   Save,
-  X
+  X,
+  Coins
 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 
 const { t } = useI18n()
 
-type TabType = 'profile' | 'subscription' | 'orders' | 'account'
+type TabType = 'profile' | 'subscription' | 'credits' | 'orders' | 'account'
 
 interface Props {
   user: any
@@ -55,6 +56,12 @@ const tabs = computed(() => [
     label: t('dashboard.subscription.title'),
     icon: CreditCard,
     description: t('dashboard.tabs.subscription.description')
+  },
+  {
+    id: 'credits' as TabType,
+    label: t('dashboard.tabs.credits.title'),
+    icon: Coins,
+    description: t('dashboard.tabs.credits.description')
   },
   {
     id: 'orders' as TabType,
@@ -141,7 +148,7 @@ const handleCancelEdit = () => {
                 <div class="flex items-center space-x-4">
                   <Avatar class="w-16 h-16">
                     <AvatarImage :src="user?.image" :alt="user?.name || t('dashboard.profile.noNameSet')" />
-                    <AvatarFallback class="bg-gradient-chart-warm text-white text-xl font-bold">
+                    <AvatarFallback class="bg-primary text-primary-foreground text-xl font-bold">
                       {{ user?.name?.charAt(0) || user?.email?.charAt(0) || 'U' }}
                     </AvatarFallback>
                   </Avatar>
@@ -278,7 +285,14 @@ const handleCancelEdit = () => {
             </div>
 
             <!-- Subscription Tab -->
-            <SubscriptionCard v-else-if="activeTab === 'subscription'" />
+            <div v-else-if="activeTab === 'subscription'" class="space-y-6">
+              <SubscriptionCard />
+            </div>
+
+            <!-- Credits Tab -->
+            <div v-else-if="activeTab === 'credits'" class="space-y-6">
+              <CreditsCard />
+            </div>
 
             <!-- Orders Tab -->
             <OrdersCard v-else-if="activeTab === 'orders'" />

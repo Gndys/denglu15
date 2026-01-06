@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { config } from '@config';
+import type { CreditPlan } from '@config';
 import { 
   PaymentProvider, 
   PaymentParams, 
@@ -13,18 +14,20 @@ import {
   paymentTypes 
 } from '@libs/database/schema/subscription';
 import { order, orderStatus } from '@libs/database/schema/order';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { user } from '@libs/database/schema/user';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
+import { creditService, TransactionTypeCode } from '@libs/credits';
 
-// 添加一个简单的支付计划接口，只包含我们需要的属性
+// Payment plan interface for type safety
 interface PaymentPlan {
   stripePriceId?: string;
   duration: {
-    type: 'recurring' | 'one_time';
-    months: number;
+    type: 'recurring' | 'one_time' | 'credits';
+    months?: number;
   };
+  credits?: number;  // For credit pack plans
 }
 
 export class StripeProvider implements PaymentProvider {
@@ -42,6 +45,7 @@ export class StripeProvider implements PaymentProvider {
     if (plan.duration.type === 'recurring') {
       return this.createSubscription(params, plan);
     } else {
+      // Both 'one_time' and 'credits' use the same payment mode
       return this.createOneTimePayment(params, plan);
     }
   }
@@ -185,24 +189,46 @@ export class StripeProvider implements PaymentProvider {
     const now = utcNow();
     const plan = config.payment.plans[session.metadata.planId as keyof typeof config.payment.plans] as PaymentPlan;
     
-    // 计算期末时间
-    const periodEnd = new Date(now);
-    if (plan.duration.months >= 9999) {
-      // 终身订阅：设置为100年后
-      periodEnd.setFullYear(periodEnd.getFullYear() + 100);
-    } else {
-      // 普通订阅：添加月数
-      periodEnd.setMonth(periodEnd.getMonth() + plan.duration.months);
-    }
-    
-    console.log(`Stripe one-time payment - Period: ${now.toISOString()} to ${periodEnd.toISOString()}`);
-
-    // 更新订单状态
+    // Update order status first
     await db.update(order)
       .set({ status: orderStatus.PAID })
       .where(eq(order.id, session.metadata.orderId));
 
-    // 创建订阅记录
+    // Handle credit pack purchase
+    if (plan.duration.type === 'credits' && plan.credits) {
+      console.log(`Stripe credit pack purchase - Adding ${plan.credits} credits to user ${session.metadata.userId}`);
+      
+      await creditService.addCredits({
+        userId: session.metadata.userId,
+        amount: plan.credits,
+        type: 'purchase',
+        orderId: session.metadata.orderId,
+        description: TransactionTypeCode.PURCHASE,
+        metadata: {
+          sessionId: session.id,
+          planId: session.metadata.planId,
+          provider: 'stripe'
+        }
+      });
+
+      return { success: true, orderId: session.metadata.orderId };
+    }
+    
+    // Handle regular one-time subscription payment
+    const periodEnd = new Date(now);
+    const months = plan.duration.months ?? 1;
+    
+    if (months >= 9999) {
+      // Lifetime subscription: set to 100 years
+      periodEnd.setFullYear(periodEnd.getFullYear() + 100);
+    } else {
+      // Regular subscription: add months
+      periodEnd.setMonth(periodEnd.getMonth() + months);
+    }
+    
+    console.log(`Stripe one-time payment - Period: ${now.toISOString()} to ${periodEnd.toISOString()}`);
+
+    // Create subscription record
     await db.insert(userSubscription).values({
       id: randomUUID(),
       userId: session.metadata.userId,
@@ -215,7 +241,7 @@ export class StripeProvider implements PaymentProvider {
       cancelAtPeriodEnd: true,
       metadata: JSON.stringify({
         sessionId: session.id,
-        isLifetime: plan.duration.months >= 9999
+        isLifetime: months >= 9999
       })
     });
 

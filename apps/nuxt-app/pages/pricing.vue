@@ -18,17 +18,17 @@
             :transition="{ duration: 0.8 }"
           >
             <motion.div
-              class="inline-flex items-center space-x-2 px-4 py-2 bg-chart-1-bg-15 rounded-full border border-chart-1/20 mb-8"
+              class="inline-flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-8"
               :initial="{ opacity: 0, scale: 0.9 }"
               :animate="{ opacity: 1, scale: 1 }"
               :transition="{ duration: 0.6, delay: 0.2 }"
             >
-              <Sparkles class="h-4 w-4 text-chart-1" />
-              <span class="text-xs font-medium text-chart-1">{{ t('pricing.title') }}</span>
+              <Sparkles class="h-4 w-4 text-primary" />
+              <span class="text-xs font-medium text-primary">{{ t('pricing.title') }}</span>
             </motion.div>
 
             <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
-              <span class="text-gradient-chart-warm">
+              <span class="text-primary">
                 {{ t('pricing.subtitle') }}
               </span>
             </h2>
@@ -43,14 +43,55 @@
       <!-- Pricing Cards -->
       <section class="py-24">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <!-- Tab Switcher -->
+          <motion.div 
+            v-if="creditPlans.length > 0"
+            class="flex justify-center mb-12"
+            :initial="{ opacity: 0, y: 10 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ duration: 0.5 }"
+          >
+            <div class="inline-flex p-1 bg-muted rounded-xl">
+              <button
+                @click="activeTab = 'subscription'"
+                :class="cn(
+                  'flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+                  activeTab === 'subscription'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )"
+              >
+                <CreditCard class="h-4 w-4" />
+                {{ t('pricing.tabs.subscription') || (locale === 'zh-CN' ? '订阅套餐' : 'Subscription') }}
+              </button>
+              <button
+                @click="activeTab = 'credits'"
+                :class="cn(
+                  'flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+                  activeTab === 'credits'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )"
+              >
+                <Coins class="h-4 w-4" />
+                {{ t('pricing.tabs.credits') || (locale === 'zh-CN' ? '积分充值' : 'Credits') }}
+              </button>
+            </div>
+          </motion.div>
+
+          <div :class="cn(
+            'grid gap-8 lg:gap-12',
+            plans.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+            plans.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
+            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          )">
             <motion.div
               v-for="(plan, index) in plans"
               :key="plan.id"
               :class="[
                 'relative rounded-xl p-6 shadow-lg transition-all duration-300 hover:scale-[1.02]',
                 isRecommended(plan) 
-                  ? 'bg-card border-2 border-chart-1 shadow-chart-1/20' 
+                  ? 'bg-card border-2 border-primary shadow-primary/20' 
                   : 'bg-card border border-border hover:border-border/80'
               ]"
               :initial="{ opacity: 0, y: 20 }"
@@ -60,9 +101,17 @@
             >
               <!-- Recommended Badge -->
               <div v-if="isRecommended(plan)" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-gradient-chart-warm text-white rounded-full shadow-md">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full shadow-md">
                   <Crown class="h-3.5 w-3.5" />
                   <span class="text-xs font-medium">{{ t('pricing.recommendedBadge') }}</span>
+                </div>
+              </div>
+              
+              <!-- Credit Pack Badge -->
+              <div v-if="isCreditPack(plan) && !isRecommended(plan)" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full shadow-md">
+                  <Coins class="h-3.5 w-3.5" />
+                  <span class="text-xs font-medium">{{ t('pricing.creditsBadge') }}</span>
                 </div>
               </div>
 
@@ -100,7 +149,7 @@
                   </span>
                 </div>
                 
-                <div v-if="isLifetime(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-chart-5-bg-15 text-chart-5 rounded-full text-xs font-medium">
+                <div v-if="isLifetime(plan)" class="mt-2 inline-flex items-center space-x-1 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                   <Heart class="h-3.5 w-3.5" />
                   <span>{{ t('pricing.lifetimeBadge') }}</span>
                 </div>
@@ -116,14 +165,14 @@
                   <div :class="[
                     'w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
                     isRecommended(plan) 
-                      ? 'bg-chart-1' 
-                      : 'bg-chart-2-bg-15'
+                      ? 'bg-primary' 
+                      : 'bg-muted'
                   ]">
                     <Check :class="[
                       'h-3 w-3',
                       isRecommended(plan) 
-                        ? 'text-white' 
-                        : 'text-chart-2'
+                        ? 'text-primary-foreground' 
+                        : 'text-foreground'
                     ]" />
                   </div>
                   <span :class="[
@@ -139,15 +188,11 @@
               <Button
                 @click="handleSubscribe(plan)"
                 :disabled="loading === plan.id || session.isPending"
-                :class="[
+                :class="cn(
                   'w-full py-3 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-[1.02]',
-                  isRecommended(plan)
-                    ? 'bg-gradient-chart-warm text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                    : isLifetime(plan)
-                    ? 'bg-gradient-chart-cool text-primary-foreground shadow-md hover:shadow-lg hover:opacity-90'
-                    : 'bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/90',
-                  'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
-                ]"
+                  'shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
+                  'bg-primary text-primary-foreground hover:bg-primary/90'
+                )"
               >
                 <div v-if="loading === plan.id" class="flex items-center justify-center space-x-2">
                   <Loader2 class="h-4 w-4 animate-spin" />
@@ -160,7 +205,7 @@
               </Button>
 
               <!-- Special Effects for Recommended Plan -->
-              <div v-if="isRecommended(plan)" class="absolute inset-0 bg-gradient-chart-warm opacity-5 rounded-xl pointer-events-none"></div>
+              <div v-if="isRecommended(plan)" class="absolute inset-0 bg-primary opacity-5 rounded-xl pointer-events-none"></div>
             </motion.div>
           </div>
 
@@ -174,24 +219,24 @@
           >
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-2-bg-15 rounded-xl flex items-center justify-center">
-                  <Shield class="h-6 w-6 text-chart-2" />
+                <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
+                  <Shield class="h-6 w-6 text-foreground" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.securePayment.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.securePayment.description') }}</p>
               </div>
               
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-1-bg-15 rounded-xl flex items-center justify-center">
-                  <Zap class="h-6 w-6 text-chart-1" />
+                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Zap class="h-6 w-6 text-primary" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.flexibleSubscription.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.flexibleSubscription.description') }}</p>
               </div>
               
               <div class="flex flex-col items-center space-y-3">
-                <div class="w-12 h-12 bg-chart-3-bg-15 rounded-xl flex items-center justify-center">
-                  <Star class="h-6 w-6 text-chart-3" />
+                <div class="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
+                  <Star class="h-6 w-6 text-foreground" />
                 </div>
                 <h4 class="font-semibold text-foreground">{{ t('pricing.features.globalCoverage.title') }}</h4>
                 <p class="text-sm text-muted-foreground text-center">{{ t('pricing.features.globalCoverage.description') }}</p>
@@ -271,13 +316,28 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
-import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap, Loader2 } from 'lucide-vue-next'
+import { Check, Star, Crown, Heart, ArrowRight, Shield, Sparkles, Zap, Loader2, Coins, CreditCard } from 'lucide-vue-next'
 import { motion } from 'motion-v'
 import type { Plan } from '@config'
+import { cn } from '@/lib/utils'
+
+type PricingTab = 'subscription' | 'credits'
 
 // Get config data
 const runtimeConfig = useRuntimeConfig()
-const plans = computed(() => Object.values(runtimeConfig.public.paymentPlans) as Plan[])
+const allPlans = computed(() => Object.values(runtimeConfig.public.paymentPlans) as Plan[])
+const activeTab = ref<PricingTab>('subscription')
+
+// Filter plans based on active tab
+const subscriptionPlans = computed(() => 
+  allPlans.value.filter(plan => (plan as any).duration?.type !== 'credits')
+)
+const creditPlans = computed(() => 
+  allPlans.value.filter(plan => (plan as any).duration?.type === 'credits')
+)
+const plans = computed(() => 
+  activeTab.value === 'subscription' ? subscriptionPlans.value : creditPlans.value
+)
 
 // Authentication - Use Better Auth composable
 const { user, isAuthenticated, session } = useAuth()
@@ -306,6 +366,8 @@ const steps = computed(() => [
 // Helper functions
 const isRecommended = (plan: Plan) => plan.recommended
 const isLifetime = (plan: Plan) => plan.id === 'lifetime'
+const isCreditPack = (plan: Plan) => (plan as any).duration?.type === 'credits'
+const getPlanCredits = (plan: Plan) => (plan as any).credits
 
 const getPlanName = (plan: Plan) => {
   return plan.i18n?.[locale.value]?.name || plan.i18n?.['zh-CN']?.name || 'Plan'

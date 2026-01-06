@@ -1,14 +1,14 @@
 import { auth } from '@libs/auth'
 import { db } from '@libs/database'
 import { order } from '@libs/database/schema/order'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, sql } from 'drizzle-orm'
 
 /**
- * Get user's order history
+ * Get user's order history with pagination
  */
 export default defineEventHandler(async (event) => {
   try {
-    // Get current user session (authMiddleware已验证用户已登录)
+    // Get current user session (authMiddleware verifies user is logged in)
     const user = event.context.user || await (async () => {
       const headers = new Headers()
       Object.entries(getHeaders(event)).forEach(([key, value]) => {
@@ -21,7 +21,21 @@ export default defineEventHandler(async (event) => {
     
     const userId = user!.id
     
-    // Get user's orders ordered by creation date (newest first)
+    // Parse pagination parameters
+    const query = getQuery(event)
+    const page = parseInt(query.page as string || '1', 10)
+    const limit = Math.min(parseInt(query.limit as string || '10', 10), 100)
+    const offset = (page - 1) * limit
+
+    // Get total count
+    const countResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(order)
+      .where(eq(order.userId, userId))
+    
+    const total = countResult[0]?.count || 0
+    
+    // Get paginated orders ordered by creation date (newest first)
     const userOrders = await db.select({
       id: order.id,
       amount: order.amount,
@@ -36,10 +50,15 @@ export default defineEventHandler(async (event) => {
     }).from(order)
       .where(eq(order.userId, userId))
       .orderBy(desc(order.createdAt))
+      .limit(limit)
+      .offset(offset)
     
     return {
       orders: userOrders,
-      total: userOrders.length
+      total,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil(total / limit)
     }
   } catch (error) {
     console.error('Failed to fetch user orders:', error)

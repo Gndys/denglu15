@@ -63,7 +63,9 @@ export const zhCN: Locale = {
     back: "返回",
     resendCode: "重新发送",
     resendVerificationEmail: "重新发送验证邮件",
-    upload: "上传"
+    upload: "上传",
+    previous: "上一页",
+    next: "下一页"
   },
   email: {
     verification: {
@@ -654,18 +656,24 @@ export const zhCN: Locale = {
     },
     title: "定价",
     subtitle: "选择最适合您的方案",
-    description: "选择最适合你的方案，开始你的 TinyShip 之旅。支持多种支付方式，灵活的计费模式，为全球用户提供安全便捷的支付体验。",
+    description: "支持传统按时间订阅（月付/年付/终身）与 AI 时代流行的积分模式。订阅无限畅享，或充值积分按需消费。",
     cta: "立即开始",
     recommendedBadge: "推荐选择",
     lifetimeBadge: "一次购买，终身使用",
+    creditsBadge: "积分包",
+    creditsUnit: "积分",
+    tabs: {
+      subscription: "订阅套餐",
+      credits: "积分充值"
+    },
     features: {
       securePayment: {
         title: "多渠道安全支付",
         description: "支持微信支付、Stripe、Creem 等多种企业级安全支付方式"
       },
       flexibleSubscription: {
-        title: "灵活计费模式",
-        description: "支持单次付费和订阅付费两种模式，满足不同需求"
+        title: "灵活付费模式",
+        description: "传统订阅或 AI 时代积分制，任你选择"
       },
       globalCoverage: {
         title: "全球支付覆盖",
@@ -833,6 +841,36 @@ export const zhCN: Locale = {
       manageSubscription: "管理订阅",
       viewPlans: "查看套餐"
     },
+    credits: {
+      title: "积分余额",
+      available: "可用积分",
+      totalPurchased: "累计获得",
+      totalConsumed: "累计消耗",
+      recentTransactions: "最近交易",
+      buyMore: "购买更多积分",
+      types: {
+        purchase: "充值",
+        bonus: "赠送",
+        consumption: "消耗",
+        refund: "退款",
+        adjustment: "调整"
+      },
+      descriptions: {
+        ai_chat: "AI 对话",
+        image_generation: "图片生成",
+        document_processing: "文档处理",
+        purchase: "积分充值",
+        bonus: "赠送积分",
+        refund: "积分退款",
+        adjustment: "管理员调整"
+      },
+      table: {
+        type: "类型",
+        description: "描述",
+        amount: "数量",
+        time: "时间"
+      }
+    },
     account: {
       title: "账户信息",
       memberSince: "注册时间",
@@ -905,6 +943,10 @@ export const zhCN: Locale = {
       },
       subscription: {
         description: "管理您的订阅计划和付费功能"
+      },
+      credits: {
+        title: "积分",
+        description: "查看积分余额和交易记录"
       },
       orders: {
         description: "查看您的订单历史和交易记录"
@@ -1092,7 +1134,9 @@ export const zhCN: Locale = {
         invalidResponse: "AI 响应无效，请重试。",
         rateLimited: "请求过于频繁，请稍后再试。",
         subscriptionRequired: "AI 功能需要有效订阅",
-        subscriptionRequiredDescription: "升级到付费计划以使用 AI 聊天功能"
+        subscriptionRequiredDescription: "升级到付费计划以使用 AI 聊天功能",
+        insufficientCredits: "积分不足",
+        insufficientCreditsDescription: "使用 AI 聊天需要积分或订阅，请购买积分以继续使用。"
       },
       history: {
         title: "聊天记录",
@@ -1412,11 +1456,11 @@ export const zhCN: Locale = {
     demos: {
       ai: {
         title: "AI 对话",
-        description: "大模型对话实现，可扩展设计，支持多个 Provider，需要登录访问"
+        description: "大模型对话实现，可扩展设计，支持多个 Provider，需要购买积分使用"
       },
       premium: {
         title: "高级会员功能",
-        description: "路由保护演示页面，只有付费用户才能访问此页面"
+        description: "路由保护演示页面，只有订阅付费用户才能访问此页面"
       },
       upload: {
         title: "文件上传",

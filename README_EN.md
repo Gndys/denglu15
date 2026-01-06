@@ -61,6 +61,8 @@ For detailed setup instructions and configuration guides, please refer to our [S
   - Stripe for global payments
   - WeChat Pay for Chinese market
   - Creem payment integration
+  - **Dual Payment Model**: Traditional subscriptions + AI-era credit system
+  - Complete credit consumption tracking and transaction history
 
 ### 📱 Communication Services
 - **Email Service**:
@@ -155,6 +157,7 @@ For detailed setup instructions and configuration guides, please refer to our [S
 - Email (Resend/SendGrid/SMTP)
 - SMS (Aliyun/Twilio)
 - Payments (Stripe/WeChat Pay/Creem)
+- Credits System (Fixed/Dynamic consumption modes)
 - Storage (Alibaba Cloud OSS/AWS S3/Cloudflare R2)
 - AI Integration
 

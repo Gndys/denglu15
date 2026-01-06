@@ -1,5 +1,6 @@
 import { PaymentProvider, PaymentParams, PaymentResult, WebhookVerification } from '../types';
 import { config } from '@config';
+import type { CreditPlan } from '@config';
 import { db } from '@libs/database';
 import { order, orderStatus } from '@libs/database/schema/order';
 import { subscription, subscriptionStatus, paymentTypes } from '@libs/database/schema/subscription';
@@ -9,6 +10,16 @@ import { utcNow } from '@libs/database/utils/utc';
 import crypto from 'crypto';
 import { X509Certificate } from '@peculiar/x509';
 import { ofetch } from 'ofetch';
+import { creditService, TransactionTypeCode } from '@libs/credits';
+
+// Payment plan interface for type safety
+interface PaymentPlan {
+  duration: {
+    type: 'recurring' | 'one_time' | 'credits';
+    months?: number;
+  };
+  credits?: number;
+}
 
 // 微信支付分为两大部分 ：https://pay.weixin.qq.com/doc/v3/merchant/4012365342 特别注意这个文档中的图
 // 1 发送请求 生成签名
@@ -548,10 +559,33 @@ export class WechatPayProvider implements PaymentProvider {
         });
         
         if (orderRecord) {
-          const plan = config.payment.plans[orderRecord.planId as keyof typeof config.payment.plans];
+          const plan = config.payment.plans[orderRecord.planId as keyof typeof config.payment.plans] as PaymentPlan;
           const now = utcNow();
           
-          // 检查用户是否已有有效订阅
+          // Handle credit pack purchase
+          if (plan.duration.type === 'credits' && plan.credits) {
+            console.log(`WeChat credit pack purchase - Adding ${plan.credits} credits to user ${orderRecord.userId}`);
+            
+            await creditService.addCredits({
+              userId: orderRecord.userId,
+              amount: plan.credits,
+              type: 'purchase',
+              orderId: orderId,
+              description: TransactionTypeCode.PURCHASE,
+              metadata: {
+                transactionId: decryptedData.transaction_id,
+                planId: orderRecord.planId,
+                provider: 'wechat'
+              }
+            });
+            
+            return { success: true, orderId };
+          }
+          
+          // Handle regular subscription payment
+          const months = plan.duration.months ?? 1;
+          
+          // Check if user already has active subscription
           const existingSubscription = await db.query.subscription.findFirst({
             where: and(
               eq(subscription.userId, orderRecord.userId),
@@ -561,30 +595,29 @@ export class WechatPayProvider implements PaymentProvider {
             orderBy: [desc(subscription.periodEnd)]
           });
           
-          // 计算新的期末时间
+          // Calculate new period end time
           const newPeriodEnd = new Date(now);
-          if (plan.duration.months >= 9999) {
-            // 终身订阅：设置为100年后
+          if (months >= 9999) {
+            // Lifetime subscription: set to 100 years
             newPeriodEnd.setFullYear(newPeriodEnd.getFullYear() + 100);
           } else {
-            // 普通订阅：添加月数
-            newPeriodEnd.setMonth(newPeriodEnd.getMonth() + plan.duration.months);
+            // Regular subscription: add months
+            newPeriodEnd.setMonth(newPeriodEnd.getMonth() + months);
           }
           
           if (existingSubscription) {
-            // 如果已有订阅，更新现有订阅的结束日期
-            // 如果现有订阅还未过期，则在其基础上延长时间
+            // If subscription exists, extend the end date
             const existingPeriodEnd = existingSubscription.periodEnd;
             const extensionStart = existingPeriodEnd > now 
               ? existingPeriodEnd 
               : now;
             
-            // 基于延长开始时间计算新的期末时间
+            // Calculate new end time based on extension start
             const extensionEnd = new Date(extensionStart);
-            if (plan.duration.months >= 9999) {
+            if (months >= 9999) {
               extensionEnd.setFullYear(extensionEnd.getFullYear() + 100);
             } else {
-              extensionEnd.setMonth(extensionEnd.getMonth() + plan.duration.months);
+              extensionEnd.setMonth(extensionEnd.getMonth() + months);
             }
             
             await db.update(subscription)
@@ -598,27 +631,27 @@ export class WechatPayProvider implements PaymentProvider {
                   lastTradeState: decryptedData.trade_state,
                   lastTradeStateDesc: decryptedData.trade_state_desc,
                   lastSuccessTime: decryptedData.success_time,
-                  isLifetime: plan.duration.months >= 9999
+                  isLifetime: months >= 9999
                 })
               })
               .where(eq(subscription.id, existingSubscription.id));
           } else {
-            // 如果没有现有订阅，创建新订阅
+            // Create new subscription if none exists
             await db.insert(subscription).values({
               id: randomUUID(),
               userId: orderRecord.userId,
               planId: orderRecord.planId,
               status: subscriptionStatus.ACTIVE,
               paymentType: paymentTypes.ONE_TIME,
-                periodStart: now,
-                periodEnd: newPeriodEnd,
+              periodStart: now,
+              periodEnd: newPeriodEnd,
               cancelAtPeriodEnd: false,
               metadata: JSON.stringify({
                 transactionId: decryptedData.transaction_id,
                 tradeState: decryptedData.trade_state,
                 tradeStateDesc: decryptedData.trade_state_desc,
                 successTime: decryptedData.success_time,
-                isLifetime: plan.duration.months >= 9999
+                isLifetime: months >= 9999
               })
             });
           }

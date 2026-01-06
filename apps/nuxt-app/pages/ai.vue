@@ -214,7 +214,8 @@ const selectedModel = computed({
     model.value = selectedModel as string
   }
 })
-const hasSubscription = ref(true) // 默认允许，避免闪烁
+const hasAccess = ref(true) // Default to allow, avoid flicker
+const creditBalance = ref<number | null>(null)
 const inputAreaHeight = ref(160) // Default height for fixed input area
 
 // Use StickToBottom composable for direct control
@@ -281,20 +282,24 @@ const reloadConversation = () => {
   messages.value.length = 0
 }
 
-// Check user subscription status once on page load
-const checkSubscriptionStatus = async () => {
+// Check user credit balance on page load
+const checkAccessStatus = async () => {
   try {
-    const response = await $fetch('/api/subscription/status', {
+    const response = await $fetch('/api/credits/status', {
       method: 'GET'
-    })
-    hasSubscription.value = response && response.hasSubscription
+    }) as any
+    // User has access if credit balance > 0
+    const balance = response?.credits?.balance || 0
+    hasAccess.value = balance > 0
+    creditBalance.value = balance
   } catch (error) {
-    console.error('Failed to check subscription status:', error)
-    hasSubscription.value = false
+    console.error('Failed to check credit status:', error)
+    hasAccess.value = false
+    creditBalance.value = 0
   }
 }
 
-// Enhanced form submission with subscription check
+// Enhanced form submission with access check (subscription OR credits)
 const handleSubmit = (event: Event) => {
   event.preventDefault()
   
@@ -305,13 +310,13 @@ const handleSubmit = (event: Event) => {
   
   if (!message?.trim() || status.value === 'streaming' || error.value != null) return
   
-  // Check subscription status (cached from page load)
-  if (!hasSubscription.value) {
-    // Show permission denied toast
-    toast.error($t('ai.chat.errors.subscriptionRequired'), {
-      description: $t('ai.chat.errors.subscriptionRequiredDescription'),
+  // Check access status (cached from page load)
+  if (!hasAccess.value) {
+    // Show no credits toast
+    toast.error($t('ai.chat.errors.insufficientCredits') || 'Insufficient Credits', {
+      description: $t('ai.chat.errors.insufficientCreditsDescription') || 'You need credits or a subscription to use AI chat.',
       action: {
-        label: $t('common.viewPlans'),
+        label: $t('dashboard.credits.buyMore') || $t('common.viewPlans'),
         onClick: () => {
           // Navigate to pricing page
           const localePath = useLocalePath()
@@ -337,6 +342,9 @@ const handleSubmit = (event: Event) => {
   }
   
   // Auto-scroll is handled by StickToBottom composable
+  
+  // Refresh credit balance after sending (async)
+  checkAccessStatus()
 }
 
 // Regenerate function
@@ -388,7 +396,7 @@ watch(status, () => {
 })
 
 onMounted(() => {
-  checkSubscriptionStatus()
+  checkAccessStatus()
   
   // Delay calculation to ensure DOM is fully rendered
   nextTick(() => {

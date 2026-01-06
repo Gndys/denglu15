@@ -16,17 +16,19 @@ import {
   CheckCircle,
   Edit,
   Save,
-  X
+  X,
+  Coins
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { SubscriptionCard } from "./subscription-card";
+import { CreditsCard } from "./credits-card";
 import { OrdersCard } from "./orders-card";
 import { LinkedAccountsCard } from "./linked-accounts-card";
 import { ChangePasswordDialog } from "./change-password-dialog";
 import { DeleteAccountDialog } from "./delete-account-dialog";
 import { cn } from "@/lib/utils";
 
-type TabType = 'profile' | 'subscription' | 'orders' | 'account';
+type TabType = 'profile' | 'subscription' | 'credits' | 'orders' | 'account';
 
 interface DashboardTabsProps {
   user: any;
@@ -74,6 +76,12 @@ export function DashboardTabs({
       description: t.dashboard.tabs.subscription.description
     },
     {
+      id: 'credits' as TabType,
+      label: t.dashboard.tabs.credits.title,
+      icon: Coins,
+      description: t.dashboard.tabs.credits.description
+    },
+    {
       id: 'orders' as TabType,
       label: t.dashboard.orders.title,
       icon: ShoppingCart,
@@ -96,7 +104,7 @@ export function DashboardTabs({
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user?.image} alt={user?.name || t.dashboard.profile.noNameSet} />
-                  <AvatarFallback className="bg-gradient-chart-warm text-white text-xl font-bold">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
                     {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -211,6 +219,8 @@ export function DashboardTabs({
         );
       case 'subscription':
         return <SubscriptionCard />;
+      case 'credits':
+        return <CreditsCard />;
       case 'orders':
         return <OrdersCard />;
       case 'account':

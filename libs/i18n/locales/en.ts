@@ -63,7 +63,9 @@ export const en: Locale = {
     back: "Back",
     resendCode: "Resend Code",
     resendVerificationEmail: "Resend Verification Email",
-    upload: "Upload"
+    upload: "Upload",
+    previous: "Previous",
+    next: "Next"
   },
   email: {
     verification: {
@@ -647,18 +649,24 @@ export const en: Locale = {
     },
     title: "Pricing",
     subtitle: "Choose the plan that's right for you",
-    description: "Choose the perfect plan for your TinyShip journey. Multiple payment methods, flexible billing models, providing secure and convenient payment experience for global users.",
+    description: "We offer both traditional time-based subscriptions (monthly/yearly/lifetime) and the AI-era popular credit system. Subscribe for unlimited access, or purchase credits and pay only for what you use.",
     cta: "Get started",
     recommendedBadge: "Recommended",
     lifetimeBadge: "One-time purchase, lifetime access",
+    creditsBadge: "Credits",
+    creditsUnit: "credits",
+    tabs: {
+      subscription: "Subscription",
+      credits: "Credits"
+    },
     features: {
       securePayment: {
         title: "Multi-Provider Security",
         description: "Support WeChat Pay, Stripe, Creem with enterprise-grade security"
       },
       flexibleSubscription: {
-        title: "Flexible Billing",
-        description: "Both one-time payments and recurring subscriptions supported"
+        title: "Flexible Payment Models",
+        description: "Time-based subscription or AI-era credit system — choose your style"
       },
       globalCoverage: {
         title: "Global Payment Coverage", 
@@ -826,6 +834,36 @@ export const en: Locale = {
       manageSubscription: "Manage Subscription",
       viewPlans: "View Plans"
     },
+    credits: {
+      title: "Credit Balance",
+      available: "Available Credits",
+      totalPurchased: "Total Purchased",
+      totalConsumed: "Total Used",
+      recentTransactions: "Recent Transactions",
+      buyMore: "Buy More Credits",
+      types: {
+        purchase: "Purchase",
+        bonus: "Bonus",
+        consumption: "Used",
+        refund: "Refund",
+        adjustment: "Adjustment"
+      },
+      descriptions: {
+        ai_chat: "AI Chat",
+        image_generation: "Image Generation",
+        document_processing: "Document Processing",
+        purchase: "Credit Purchase",
+        bonus: "Bonus Credits",
+        refund: "Credit Refund",
+        adjustment: "Admin Adjustment"
+      },
+      table: {
+        type: "Type",
+        description: "Description",
+        amount: "Amount",
+        time: "Time"
+      }
+    },
     account: {
       title: "Account Details",
       memberSince: "Member since",
@@ -898,6 +936,10 @@ export const en: Locale = {
       },
       subscription: {
         description: "Manage your subscription plan and features"
+      },
+      credits: {
+        title: "Credits",
+        description: "View your credit balance and transactions"
       },
       orders: {
         description: "View your order history and transactions"
@@ -1274,7 +1316,9 @@ export const en: Locale = {
         invalidResponse: "Invalid response from AI. Please try again.",
         rateLimited: "Too many requests. Please wait a moment.",
         subscriptionRequired: "AI features require an active subscription",
-        subscriptionRequiredDescription: "Upgrade to a premium plan to access AI chat features"
+        subscriptionRequiredDescription: "Upgrade to a premium plan to access AI chat features",
+        insufficientCredits: "Insufficient Credits",
+        insufficientCreditsDescription: "You need credits or a subscription to use AI chat. Purchase credits to continue."
       },
       history: {
         title: "Chat History",
