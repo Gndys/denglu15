@@ -43,6 +43,7 @@ export const zhCN: Locale = {
       users: "用户管理",
       subscriptions: "订阅管理",
       orders: "订单管理",
+      credits: "积分管理",
       application: "应用程序"
     }
   },
@@ -540,6 +541,45 @@ export const zhCN: Locale = {
         failed: "支付失败",
         refunded: "已退款",
         canceled: "已取消"
+      }
+    },
+    credits: {
+      title: "积分管理",
+      subtitle: "查看积分交易记录，手动调整用户积分",
+      adjustTitle: "手动调整积分",
+      form: {
+        userId: "用户 ID",
+        amount: "积分数",
+        action: "操作",
+        add: "增加",
+        deduct: "扣除",
+        type: "类型",
+        typePlaceholder: "选择类型",
+        reason: "备注",
+        submit: "提交",
+        success: "操作成功",
+        missingFields: "请填写用户ID和积分数"
+      },
+      table: {
+        columns: {
+          id: "交易ID",
+          user: "用户",
+          type: "类型",
+          amount: "变动",
+          balance: "余额",
+          description: "描述",
+          createdAt: "创建时间"
+        },
+        noResults: "暂无记录"
+      },
+      filters: {
+        searchPlaceholder: "按用户 Email/ID 搜索",
+        type: "类型",
+        allTypes: "全部类型"
+      },
+      messages: {
+        fetchError: "获取积分记录失败，请稍后重试",
+        adjustError: "积分调整失败"
       }
     },
     subscriptions: {
@@ -1150,240 +1190,237 @@ export const zhCN: Locale = {
   },
   home: {
     metadata: {
-      title: "TinyShip - 现代化全栈 SaaS 开发启动器",
-      description: "现代化、功能齐全的 monorepo 启动套件，用于构建支持国内外双市场的 SaaS 应用程序。基于 Next.js/Nuxt.js、TypeScript 和完整认证系统构建。",
-      keywords: "SaaS, monorepo, 启动套件, Next.js, Nuxt.js, TypeScript, 认证, 国际化, 中国市场, 国际市场"
+      title: "ManusAI - 团队级 AI 工作助手平台",
+      description: "用多代理协作和自动化流程，让 AI 直接帮团队完成真实工作。从需求到交付、从知识整理到执行，一站式落地。",
+      keywords: "ManusAI, AI 工作流, 多代理, 团队协作, 自动化, 知识库, 工具调用"
     },
     hero: {
-      title: "虽然是小船，也能载你远航",
-      titlePrefix: "虽然是",
-      titleHighlight: "小船",
-      titleSuffix: "，也能载你远航",
-      subtitle: "现代化全栈 SaaS 开发平台，支持国内外双市场。一次购买，终身使用，快速构建你的商业项目。",
+      title: "让 ManusAI 主动完成团队工作",
+      titlePrefix: "让 ",
+      titleHighlight: "ManusAI",
+      titleSuffix: " 主动完成团队工作",
+      subtitle: "多代理协作、自动化流程、跨应用执行，一体化的 AI 工作助手。连接你的知识和工具，让 AI 真正落地业务结果。",
       buttons: {
-        purchase: "立即购买",
-        demo: "查看演示"
+        purchase: "立即体验 Manus",
+        demo: "了解能力"
       },
       features: {
-        lifetime: "一次购买终身使用",
-        earlyBird: "早鸟价限时优惠"
+        lifetime: "团队版一次购买，持续更新",
+        earlyBird: "企业试用限时开放"
       }
     },
     features: {
-      title: "全栈 SaaS 开发平台",
-      subtitle: "从双框架支持到 AI 集成，从全球化到本土化，TinyShip 为你的商业项目提供完整的现代化技术解决方案。",
+      title: "ManusAI 能做什么",
+      subtitle: "围绕真实业务执行而设计，从规划、执行到反馈闭环，帮助团队把 AI 变成能干活的同事。",
       items: [
         {
-          title: "双框架支持",
-          description: "灵活选择 Next.js 或 Nuxt.js，React 和 Vue 开发者都能找到熟悉的技术栈，同时享受相同的强大后端能力。",
+          title: "多代理协作",
+          description: "规划、执行、校对分工明确，每个代理负责一类工作，自动协作完成任务。",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "全面身份认证",
-          description: "基于 Better-Auth 的企业级认证系统，支持邮箱/手机/OAuth 登录，2FA 多因子认证，会话管理等完整认证体系。",
+          title: "知识驱动执行",
+          description: "连接文档、Wiki、数据库，检索并结合上下文执行，产出可追溯结果。",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "全球化 + 本土化",
-          description: "既支持国际市场的 Stripe、OAuth 登录，也深度适配中国本土市场的微信登录、微信支付，双市场无缝覆盖。",
+          title: "跨系统操作",
+          description: "连接 GitHub、Jira、Slack、Notion 等工具，AI 可直接创建任务、推代码、发通知。",
           className: "col-span-2 row-span-1"
         },
         {
-          title: "现代化技术栈",
-          description: "采用最新技术：TailwindCSS v4、shadcn/ui、Magic UI、TypeScript、Zod 类型安全验证，开发体验极佳。",
+          title: "工作流编排",
+          description: "把常用流程抽象为节点式工作流，支持人工介入，标准化落地。",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "无厂商锁定架构",
-          description: "开放式 Monorepo 架构，libs 抽象接口设计，可自由选择任何云服务商、数据库、支付提供商，避免技术绑定。",
+          title: "安全与审核",
+          description: "权限控制、操作日志、可配置的人工审核节点，保证执行可控可审计。",
           className: "col-span-2 row-span-1"
         },
         {
-          title: "通信服务集成",
-          description: "多渠道通信支持：邮件服务（Resend/SendGrid）、短信服务（阿里云/Twilio），全球化通信无障碍。",
+          title: "实时洞察",
+          description: "执行进度、产出质量、任务风险实时可视化，便于团队跟进。",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "AI 开发就绪",
-          description: "集成 Vercel AI SDK，支持多 AI 提供商，内置 Cursor 开发规则，AI 辅助开发，智能化构建应用。",
+          title: "AI 模型灵活选择",
+          description: "同时支持多家大模型，按场景灵活切换，平衡质量与成本。",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "主题系统",
-          description: "基于 shadcn/ui 的现代化主题系统，支持暗黑模式，深度定制和品牌化，让应用拥有独特视觉体验。",
+          title: "品牌化界面",
+          description: "基于现代化 UI，可快速换肤并融入你的品牌体验。",
           className: "col-span-1 row-span-1"
         }
       ],
       techStack: {
-        title: "基于现代化技术栈构建",
+        title: "核心能力栈",
         items: [
-          "Next.js / Nuxt.js",
-          "TailwindCSS v4",
-          "Better-Auth",
-          "Vercel AI SDK",
-          "TypeScript + Zod",
-          "shadcn/ui + Magic UI",
-          "Drizzle ORM + PostgreSQL"
+          "Multi-Agent Orchestration",
+          "Retrieval + Tools",
+          "Workflow Engine",
+          "Human-in-the-loop",
+          "Observability & Audit",
+          "Next.js / Nuxt.js"
         ]
       }
     },
     applicationFeatures: {
       title: "核心应用特性",
-      subtitle: "从国内外双体系支持到 AI 集成，TinyShip 为你的商业项目提供完整的技术解决方案。",
+      subtitle: "让 ManusAI 读懂你的业务、遵守你的规范，并跨系统落地结果。",
       items: [
         {
-          title: "国内外双体系支持",
-          subtitle: "一套代码，双市场覆盖",
-          description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe 和 Creem 支付体系。一套代码，双市场覆盖。",
+          title: "自主协作的多代理",
+          subtitle: "把复杂任务拆解并分工",
+          description: "ManusAI 为需求匹配计划、执行、评审等角色，自动拆解任务并串联输出，确保每一步都有明确责任。",
           highlights: [
-            "微信登录 & 手机号登录",
-            "OAuth 登录（Google、GitHub、Apple）",
-            "微信支付 & Stripe & Creem",
-            "国内外无缝切换"
+            "自动拆解 + 分配角色",
+            "执行结果全链路可追踪",
+            "可插入人工确认节点"
           ],
-          imageTitle: "双体系架构"
+          imageTitle: "多代理协作"
         },
         {
-          title: "内置 Admin Panel",
-          subtitle: "企业级管理后台，开箱即用",
-          description: "开箱即用的管理后台，提供轻量级的用户管理、订阅管理、订单管理等功能。基于现代化 UI 组件库构建，支持角色权限控制、实时数据监控等功能。让你专注于业务逻辑，而非重复的管理界面开发。",
+          title: "团队知识与权限",
+          subtitle: "让 AI 读懂你的业务",
+          description: "连接 Wiki、PRD、代码库，按权限检索并引用上下文，减少幻觉，确保产出符合团队标准。",
           highlights: [
-            "用户管理",
-            "订阅管理",
-            "角色权限控制",
-            "订单管理"
+            "接入 Notion/Confluence/GitHub",
+            "按组织和角色做权限控制",
+            "上下文引用可追溯"
           ],
-          imageTitle: "管理后台"
+          imageTitle: "知识驱动执行"
         },
         {
-          title: "AI Ready 集成",
-          subtitle: "基于 Vercel AI SDK，即插即用",
-          description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。内置简易的 AI Chat 页面，支持多种 AI 模型切换（OpenAI、Claude、Gemini 等），让你的应用瞬间具备 AI 能力。",
+          title: "业务流程自动化",
+          subtitle: "跨工具落地结果",
+          description: "将排期、跟进、交付等流程编排成节点，AI 自动调用 Jira/Slack/CI/CD 完成动作，端到端可观测。",
           highlights: [
-            "Vercel AI SDK 集成",
-            "多模型支持（OpenAI、Claude、Gemini 等）",
-            "流式响应",
+            "节点式工作流编排",
+            "跨系统操作（Jira/Slack/CI）",
+            "异常兜底与重试"
           ],
-          imageTitle: "AI 集成"
+          imageTitle: "流程自动化"
         }
       ]
     },
     roadmap: {
       title: "产品路线图",
-      subtitle: "持续迭代，不断创新。我们致力于为开发者提供更强大、更灵活的 SaaS 开发解决方案。",
+      subtitle: "专注让 AI 真正能干活，持续打磨团队级的可靠性和可观测性。",
       items: [
         {
-          title: "核心平台搭建",
-          description: "完成 TinyShip 核心平台的开发，包括双框架支持、身份认证、支付集成、国际化等基础功能模块。",
-          timeline: "2025 Q3",
+          title: "多代理协作内核",
+          description: "完成 ManusAI 核心多代理链路，支持任务拆解、角色分工、结果校验与复述。",
+          timeline: "2025 Q1",
           status: "completed",
-          statusText: "已完成",
-          features: ["双框架支持", "身份认证系统", "支付集成", "国际化支持", "AI 开发就绪", "内置 Admin Panel"]
+          statusText: "已上线",
+          features: ["任务拆解", "角色分工", "结果复核", "自动总结"]
         },
         {
-          title: "主题系统升级",
-          description: "推出全新的主题系统，提供多种精美的 UI 主题和布局选择。支持深度定制和品牌化，让你的应用拥有独特的视觉体验。",
-          timeline: "2025 Q3",
+          title: "团队权限与审计",
+          description: "完善组织/项目/成员级权限体系，增加操作日志与审计报表，确保可控可追溯。",
+          timeline: "2025 Q2",
           status: "completed",
-          statusText: "已完成",
-          features: ["多套 UI 主题", "深色模式支持", "组件库扩展"]
+          statusText: "已上线",
+          features: ["权限分级", "操作审计", "日志留痕"]
         },
         {
-          title: "第三方服务扩展",
-          description: "大幅扩展第三方服务支持，覆盖更多云服务商和 SaaS 工具。通过统一的接口设计，让你轻松切换和集成各种服务提供商。",
-          timeline: "2025 Q4",
+          title: "跨系统动作库",
+          description: "扩展标准动作库，覆盖更多研发与协作工具，让 AI 能直接推动业务流程。",
+          timeline: "2025 Q3",
           status: "in-progress",
           statusText: "开发中",
-          features: ["更多支付网关", "云存储服务", "更多短信服务商"]
+          features: ["Jira/Linear 集成", "GitHub/GitLab 动作", "Slack/钉钉通知"]
         },
         {
-          title: "博客/文档系统",
-          description: "内置完整的博客和文档管理系统，支持 Markdown 编辑、SEO 优化、评论系统等功能。让你的 SaaS 产品拥有完整的内容营销能力。",
-          timeline: "2026 Q1",
+          title: "高级工作流编排",
+          description: "推出可视化工作流与人机协同节点，支持审批、兜底策略和回滚。",
+          timeline: "2025 Q4",
           status: "planned",
           statusText: "计划中",
-          features: ["博客系统", "文档系统", "知识库搜索"]
+          features: ["可视化编排", "人工审批节点", "自动兜底与回滚"]
         },
 
         {
-          title: "视频教程体系",
-          description: "制作完整的视频教程系列，从基础使用到高级定制，帮助开发者快速掌握 TinyShip 的各项功能和最佳实践。",
-          timeline: "2026 Q3",
+          title: "领域模板库",
+          description: "提供产品、研发、运营等场景的标准模板，一键复用最佳实践。",
+          timeline: "2026 Q1",
           status: "planned",
           statusText: "计划中",
-          features: ["入门教程", "进阶开发", "部署指南", "实战案例"]
+          features: ["产品迭代模板", "需求到交付模板", "运营分析模板"]
         },
         {
-          title: "行业模板库",
-          description: "针对不同行业和应用场景，提供开箱即用的项目模板。每个模板都包含完整的业务逻辑、UI 设计和最佳实践，让你快速启动项目。作为基础版本的扩展包，需要单独购买，但基础版本用户享受大力度优惠。",
-          timeline: "2026 Q4",
+          title: "私有化与合规",
+          description: "加强企业级部署选项，支持合规审计、数据隔离与本地化模型。",
+          timeline: "2026 Q2",
           status: "planned",
           statusText: "计划中",
-          features: ["SaaS 应用模板", "软件售卖模板", "AI 项目模板", "电商平台模板", "企业官网模板", "基础版用户专享优惠"]
+          features: ["私有化部署", "合规审计包", "可选本地模型"]
         }
       ],
-      footer: "持续更新中，敬请期待更多功能..."
+      footer: "路线图持续迭代，欢迎提出你的需求..."
     },
     stats: {
-      title: "值得信赖的选择",
+      title: "被团队信任",
       items: [
         {
           value: "10000",
           suffix: "+",
-          label: "用户选择"
+          label: "注册团队"
         },
         {
-          value: "2",
-          suffix: "",
-          label: "前端框架支持"
-        },
-        {
-          value: "50",
+          value: "120",
           suffix: "+",
-          label: "内置功能模块"
+          label: "自动化流程"
         },
         {
-          value: "99",
+          value: "80",
+          suffix: "+",
+          label: "预置集成动作"
+        },
+        {
+          value: "98",
           suffix: "%",
-          label: "用户满意度"
+          label: "交付满意度"
         }
       ]
     },
     testimonials: {
-      title: "用户真实反馈",
+      title: "用户反馈",
       items: [
         {
-          quote: "早鸟价太值了！完整的源码和终身更新，帮我快速搭建了自己的 SaaS 项目，一个月就回本了。",
-          author: "张伟",
-          role: "独立开发者"
+          quote: "把需求同步到 ManusAI 后，自动生成计划、推 PR、发通知，团队节省了大量沟通时间。",
+          author: "陈曦",
+          role: "研发负责人"
         },
         {
-          quote: "技术支持很给力，遇到问题都能快速解决。双框架支持让团队可以选择熟悉的技术栈。",
-          author: "李小明",
-          role: "创业公司 CTO"
+          quote: "多代理分工很聪明，能对照我们的规范执行，必要时还会请人确认，落地很稳。",
+          author: "刘珂",
+          role: "产品总监"
         },
         {
-          quote: "出海功能特别实用，国际化和支付都配置好了，省了我们大量的开发时间。",
-          author: "王芳",
-          role: "产品经理"
+          quote: "接入 Slack 和 Jira 之后，周报、提醒、排期都自动化了，AI 真正在做事。",
+          author: "王宁",
+          role: "运营经理"
         }
       ]
     },
     finalCta: {
-      title: "准备好开始你的远航了吗？",
-      subtitle: "加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！",
+      title: "让 ManusAI 加入你的团队",
+      subtitle: "把重复且耗时的工作交给 AI，专注决策与创新。立即预约演示，看看 ManusAI 如何落地到你的流程里。",
       buttons: {
-        purchase: "立即抢购 ¥299",
+        purchase: "预约体验",
         demo: "查看演示"
       }
     },
     footer: {
-      copyright: "© {year} TinyShip. All rights reserved.",
-      description: "TinyShip"
+      copyright: "© {year} ManusAI. All rights reserved.",
+      description: "ManusAI"
     },
     common: {
       demoInterface: "功能演示界面",
-      techArchitecture: "企业级技术架构，生产环境验证",
+      techArchitecture: "团队级可靠性与安全设计",
       learnMore: "了解更多"
     }
   },

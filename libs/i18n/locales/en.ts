@@ -43,6 +43,7 @@ export const en: Locale = {
       users: "Users",
       subscriptions: "Subscriptions",
       orders: "Orders",
+      credits: "Credits",
       application: "Application"
     }
   },
@@ -533,6 +534,45 @@ export const en: Locale = {
         failed: "Failed",
         refunded: "Refunded",
         canceled: "Canceled"
+      }
+    },
+    credits: {
+      title: "Credits",
+      subtitle: "Review credit transactions and adjust balances manually",
+      adjustTitle: "Adjust Credits",
+      form: {
+        userId: "User ID",
+        amount: "Credits",
+        action: "Action",
+        add: "Add",
+        deduct: "Deduct",
+        type: "Type",
+        typePlaceholder: "Select type",
+        reason: "Note",
+        submit: "Submit",
+        success: "Operation successful",
+        missingFields: "Please fill user ID and credits"
+      },
+      table: {
+        columns: {
+          id: "Transaction ID",
+          user: "User",
+          type: "Type",
+          amount: "Change",
+          balance: "Balance",
+          description: "Description",
+          createdAt: "Created At"
+        },
+        noResults: "No records"
+      },
+      filters: {
+        searchPlaceholder: "Search by Email/ID",
+        type: "Type",
+        allTypes: "All types"
+      },
+      messages: {
+        fetchError: "Failed to fetch credit records, please retry",
+        adjustError: "Credit adjustment failed"
       }
     },
     subscriptions: {
@@ -1034,239 +1074,236 @@ export const en: Locale = {
   },
   home: {
     metadata: {
-      title: "TinyShip - Modern Full-Stack SaaS Development Starter",
-      description: "A modern, full-featured monorepo starter kit for building SaaS applications with support for both domestic (China) and international markets. Built with Next.js/Nuxt.js, TypeScript, and comprehensive authentication.",
-      keywords: "SaaS, monorepo, starter kit, Next.js, Nuxt.js, TypeScript, authentication, i18n, China market, international"
+      title: "ManusAI - Team AI Work Assistant Platform",
+      description: "Multi-agent collaboration and automation so AI actually ships work for your team. From intake to delivery, ManusAI connects your knowledge and tools to produce real outcomes.",
+      keywords: "ManusAI, AI workflows, multi-agent, automation, team collaboration, knowledge graph, tool calling"
     },
     hero: {
-      title: "Though it's a small boat, it can take you far",
-      titlePrefix: "Though it's a small ",
-      titleHighlight: "boat",
-      titleSuffix: ", it can take you far",
-      subtitle: "Modern full-stack SaaS development platform with dual-market support for both domestic and international markets. One purchase, lifetime use, quickly build your business project.",
+      title: "Let ManusAI get the work done",
+      titlePrefix: "Let ",
+      titleHighlight: "ManusAI",
+      titleSuffix: " get the work done",
+      subtitle: "Multi-agent collaboration, automated workflows, and cross-app execution in one AI teammate. Plug in your knowledge and tools so AI can deliver business results.",
       buttons: {
-        purchase: "Buy Now",
-        demo: "View Demo"
+        purchase: "Try Manus now",
+        demo: "See capabilities"
       },
       features: {
-        lifetime: "One purchase, lifetime use",
-        earlyBird: "Early bird pricing - limited time"
+        lifetime: "Team license with ongoing updates",
+        earlyBird: "Limited enterprise trial seats"
       }
     },
     features: {
-      title: "Full-Stack SaaS Development Platform",
-      subtitle: "From dual-framework support to AI integration, from globalization to localization, TinyShip provides complete modern technology solutions for your business projects.",
+      title: "What ManusAI does",
+      subtitle: "Built for real execution—plan, act, and close the loop so AI works like a teammate instead of a chatbot.",
       items: [
         {
-          title: "Dual Framework Support",
-          description: "Flexibly choose Next.js or Nuxt.js, both React and Vue developers can find familiar tech stacks while enjoying the same powerful backend capabilities.",
+          title: "Multi-agent collaboration",
+          description: "Clear roles for planning, execution, and review; agents coordinate to finish tasks together.",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "Comprehensive Authentication",
-          description: "Enterprise-grade authentication system based on Better-Auth, supporting email/phone/OAuth login, 2FA multi-factor authentication, session management and complete authentication system.",
+          title: "Knowledge-driven actions",
+          description: "Connect docs, wiki, and databases; retrieve context and act with traceable outputs.",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "Global + Localization",
-          description: "Supports international markets with Stripe and OAuth login, also deeply adapts to China's domestic market with WeChat login and WeChat Pay, seamlessly covering dual markets.",
+          title: "Cross-system actions",
+          description: "Ship work across GitHub, Jira, Slack, Notion and more—AI can open tasks, push code, and notify teams.",
           className: "col-span-2 row-span-1"
         },
         {
-          title: "Modern Technology Stack",
-          description: "Uses latest technologies: TailwindCSS v4, shadcn/ui, Magic UI, TypeScript, Zod type-safe validation, excellent development experience.",
+          title: "Workflow orchestration",
+          description: "Turn recurring processes into node-based workflows with optional human-in-the-loop checkpoints.",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "No Vendor Lock-in Architecture",
-          description: "Open Monorepo architecture with libs abstract interface design, freely choose any cloud service providers, databases, payment providers, avoid technology binding.",
+          title: "Safety & review",
+          description: "Permissions, audit logs, and configurable review gates keep execution controlled and auditable.",
           className: "col-span-2 row-span-1"
         },
         {
-          title: "Communication Service Integration",
-          description: "Multi-channel communication support: email services (Resend/SendGrid), SMS services (Alibaba Cloud/Twilio), global communication without barriers.",
+          title: "Live insights",
+          description: "Visualize progress, quality, and risk so teams can intervene early.",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "AI Development Ready",
-          description: "Integrated Vercel AI SDK, supports multiple AI providers, built-in Cursor development rules, AI-assisted development, intelligent application building.",
+          title: "Flexible AI models",
+          description: "Use multiple model providers and switch per scenario to balance quality and cost.",
           className: "col-span-1 row-span-1"
         },
         {
-          title: "Theme System",
-          description: "Modern theme system based on shadcn/ui with dark mode support, deep customization and branding, making applications have unique visual experience.",
+          title: "Branded UI",
+          description: "Modern UI with fast theming so ManusAI blends into your brand experience.",
           className: "col-span-1 row-span-1"
         }
       ],
       techStack: {
-        title: "Built on Modern Technology Stack",
+        title: "Core capability stack",
         items: [
-          "Next.js / Nuxt.js",
-          "TailwindCSS v4",
-          "Better-Auth",
-          "Vercel AI SDK",
-          "TypeScript + Zod",
-          "shadcn/ui + Magic UI",
-          "Drizzle ORM + PostgreSQL"
+          "Multi-Agent Orchestration",
+          "Retrieval + Tools",
+          "Workflow Engine",
+          "Human-in-the-loop",
+          "Observability & Audit",
+          "Next.js / Nuxt.js"
         ]
       }
     },
     applicationFeatures: {
-      title: "Core Application Features",
-      subtitle: "From dual-system support for domestic and international markets to AI integration, TinyShip provides complete technical solutions for your business projects.",
+      title: "Core product capabilities",
+      subtitle: "Make ManusAI understand your business, respect your guardrails, and ship results across systems.",
       items: [
         {
-          title: "Dual System Support",
-          subtitle: "One codebase, dual market coverage",
-          description: "Perfect adaptation to different market needs domestically and internationally. Domestic support for WeChat login, phone login, WeChat Pay and other localized features; International support for mainstream OAuth login (Google, GitHub, Apple), Stripe and Creem payment systems. One codebase, dual market coverage.",
+          title: "Self-coordinating multi-agents",
+          subtitle: "Break down complex work",
+          description: "ManusAI assigns planner, executor, and reviewer roles, auto-breaks tasks down, and stitches outputs together so every step has an accountable owner.",
           highlights: [
-            "WeChat login & phone login",
-            "OAuth login (Google, GitHub, Apple)",
-            "WeChat Pay & Stripe & Creem",
-            "Seamless domestic and international switching"
+            "Automatic breakdown + role assignment",
+            "Traceable execution trail",
+            "Optional human confirmation steps"
           ],
-          imageTitle: "Dual System Architecture"
+          imageTitle: "Multi-agent collaboration"
         },
         {
-          title: "Built-in Admin Panel",
-          subtitle: "Enterprise-grade management backend, ready to use",
-          description: "Ready-to-use management backend providing lightweight user management, subscription management, order management and other functions. Built on modern UI component library, supports role permission control, real-time data monitoring and other functions. Let you focus on business logic, not repetitive management interface development.",
+          title: "Team knowledge & permissions",
+          subtitle: "Make AI understand your business",
+          description: "Connect wiki, PRDs, and codebases; retrieve with permissions, cite context, and cut hallucinations so outputs follow your standards.",
           highlights: [
-            "User management",
-            "Subscription management",
-            "Role permission control",
-            "Order management"
+            "Notion/Confluence/GitHub connectors",
+            "Org- and role-based permissions",
+            "Traceable context citations"
           ],
-          imageTitle: "Management Backend"
+          imageTitle: "Knowledge-driven execution"
         },
         {
-          title: "AI Ready Integration",
-          subtitle: "Based on Vercel AI SDK, plug and play",
-          description: "Complete AI solution based on Vercel AI SDK. Built-in simple AI Chat page, supports multiple AI model switching (OpenAI, Claude, Gemini, etc.), making your application instantly AI-capable.",
+          title: "Business workflow automation",
+          subtitle: "Ship results across tools",
+          description: "Orchestrate scheduling, follow-up, and delivery into nodes; AI triggers Jira/Slack/CI/CD actions with end-to-end observability.",
           highlights: [
-            "Vercel AI SDK integration",
-            "Multi-model support (OpenAI, Claude, Gemini, etc.)",
-            "Streaming responses",
+            "Node-based workflow builder",
+            "Cross-system actions (Jira/Slack/CI)",
+            "Fallbacks and retries"
           ],
-          imageTitle: "AI Integration"
+          imageTitle: "Process automation"
         }
       ]
     },
     roadmap: {
-      title: "Product Roadmap",
-      subtitle: "Continuous iteration, constant innovation. We are committed to providing developers with more powerful and flexible SaaS development solutions.",
+      title: "Product roadmap",
+      subtitle: "Focused on making AI actually do the work, with reliability and observability for teams.",
       items: [
         {
-          title: "Core Platform Development",
-          description: "Complete TinyShip core platform development, including dual framework support, authentication, payment integration, internationalization and other basic functional modules.",
-          timeline: "2025 Q3",
+          title: "Multi-agent core",
+          description: "Shipped ManusAI's core multi-agent path with task breakdown, role assignment, validation, and summarization.",
+          timeline: "2025 Q1",
           status: "completed",
-          statusText: "Completed",
-          features: ["Dual framework support", "Authentication system", "Payment integration", "Internationalization support", "AI development ready", "Built-in Admin Panel"]
+          statusText: "Shipped",
+          features: ["Task breakdown", "Role assignment", "Result validation", "Auto summarization"]
         },
         {
-          title: "Theme System Upgrade",
-          description: "Launch new theme system providing multiple beautiful UI themes and layout choices. Support deep customization and branding, making your application have unique visual experience.",
-          timeline: "2025 Q3",
+          title: "Permissions & audit",
+          description: "Delivered org/project/member-level permissions, audit logs, and reporting so execution is controlled and traceable.",
+          timeline: "2025 Q2",
           status: "completed",
-          statusText: "Completed",
-          features: ["Multiple UI themes", "Dark mode support", "Component library expansion"]
+          statusText: "Shipped",
+          features: ["Permission tiers", "Action audit", "Log retention"]
         },
         {
-          title: "Third-party Service Expansion",
-          description: "Greatly expand third-party service support, covering more cloud service providers and SaaS tools. Through unified interface design, let you easily switch and integrate various service providers.",
-          timeline: "2025 Q4",
+          title: "Cross-system action library",
+          description: "Expanding standardized actions across more engineering and collaboration tools so AI can push work forward end-to-end.",
+          timeline: "2025 Q3",
           status: "in-progress",
           statusText: "In Development",
-          features: ["More payment gateways", "Cloud storage services", "More SMS service providers"]
+          features: ["Jira/Linear integrations", "GitHub/GitLab actions", "Slack/DingTalk notifications"]
         },
         {
-          title: "Blog/Documentation System",
-          description: "Built-in complete blog and documentation management system, supporting Markdown editing, SEO optimization, comment system and other functions. Let your SaaS product have complete content marketing capabilities.",
+          title: "Advanced workflow orchestration",
+          description: "Launch visual workflow builder with human-in-the-loop steps, approvals, safeguards, and rollback strategies.",
+          timeline: "2025 Q4",
+          status: "planned",
+          statusText: "Planned",
+          features: ["Visual builder", "Human approval nodes", "Auto fallback and rollback"]
+        },
+        {
+          title: "Domain templates",
+          description: "Ship ready-to-use templates for product, engineering, and operations scenarios to reuse best practices instantly.",
           timeline: "2026 Q1",
           status: "planned",
           statusText: "Planned",
-          features: ["Blog system", "Documentation system", "Knowledge base search"]
+          features: ["Product iteration template", "Spec-to-delivery template", "Ops analysis template"]
         },
         {
-          title: "Video Tutorial System",
-          description: "Create complete video tutorial series, from basic usage to advanced customization, helping developers quickly master TinyShip's various functions and best practices.",
-          timeline: "2026 Q3",
+          title: "Self-hosting & compliance",
+          description: "Strengthen enterprise deployment with compliance audit packs, data isolation, and optional local models.",
+          timeline: "2026 Q2",
           status: "planned",
           statusText: "Planned",
-          features: ["Getting started tutorials", "Advanced development", "Deployment guide", "Practical cases"]
-        },
-        {
-          title: "Industry Template Library",
-          description: "For different industries and application scenarios, provide ready-to-use project templates. Each template includes complete business logic, UI design and best practices, allowing you to quickly start projects. As an expansion pack for the basic version, it needs to be purchased separately, but basic version users enjoy significant discounts.",
-          timeline: "2026 Q4",
-          status: "planned",
-          statusText: "Planned",
-          features: ["SaaS application templates", "Software sales templates", "AI project templates", "E-commerce platform templates", "Enterprise website templates", "Exclusive discounts for basic version users"]
+          features: ["Self-hosted deployment", "Compliance audit kits", "Optional local models"]
         }
       ],
-      footer: "Continuously updating, stay tuned for more features..."
+      footer: "Roadmap evolves with your feedback—tell us what you need next."
     },
     stats: {
-      title: "Trusted Choice",
+      title: "Trusted by teams",
       items: [
         {
           value: "10000",
           suffix: "+",
-          label: "Users Choice"
+          label: "Teams onboarded"
         },
         {
-          value: "2",
-          suffix: "",
-          label: "Frontend Framework Support"
-        },
-        {
-          value: "50",
+          value: "120",
           suffix: "+",
-          label: "Built-in Feature Modules"
+          label: "Automated workflows"
         },
         {
-          value: "99",
+          value: "80",
+          suffix: "+",
+          label: "Prebuilt actions"
+        },
+        {
+          value: "98",
           suffix: "%",
-          label: "User Satisfaction"
+          label: "Delivery satisfaction"
         }
       ]
     },
     testimonials: {
-      title: "Real User Feedback",
+      title: "What teams say",
       items: [
         {
-          quote: "The early bird price was so worth it! Complete source code and lifetime updates helped me quickly build my own SaaS project, paid back in a month.",
-          author: "Zhang Wei",
-          role: "Independent Developer"
+          quote: "We drop a request into ManusAI and it plans, ships PRs, and posts updates. Coordination time is way down.",
+          author: "Chen Xi",
+          role: "Head of Engineering"
         },
         {
-          quote: "Technical support is great, problems are solved quickly. Dual framework support allows the team to choose familiar tech stacks.",
-          author: "Li Xiaoming",
-          role: "Startup CTO"
+          quote: "The agent roles follow our playbooks and ask for confirmation when needed—execution feels reliable, not risky.",
+          author: "Liu Ke",
+          role: "Director of Product"
         },
         {
-          quote: "International features are particularly useful, internationalization and payments are all configured, saving us a lot of development time.",
-          author: "Wang Fang",
-          role: "Product Manager"
+          quote: "Once Slack and Jira were connected, reminders, weekly summaries, and scheduling became hands-free. The AI is actually working.",
+          author: "Wang Ning",
+          role: "Operations Manager"
         }
       ]
     },
     finalCta: {
-      title: "Ready to start your voyage?",
-      subtitle: "Join thousands of users and use TinyShip to quickly build your next business project. Though it's a small boat, it's enough to take you to the shore of success. Early bird pricing only for first 100 users!",
+      title: "Bring ManusAI into your team",
+      subtitle: "Hand off repetitive, time-heavy work to AI so you can focus on decisions and innovation. Book a session to see ManusAI inside your workflow.",
       buttons: {
-        purchase: "Buy Now ¥299",
-        demo: "View Demo"
+        purchase: "Book a demo",
+        demo: "See Manus in action"
       }
     },
     footer: {
-      copyright: "© {year} TinyShip. All rights reserved.",
-      description: "TinyShip"
+      copyright: "© {year} ManusAI. All rights reserved.",
+      description: "ManusAI"
     },
     common: {
       demoInterface: "Feature Demo Interface",
-      techArchitecture: "Enterprise-grade technical architecture, production-verified",
+      techArchitecture: "Team-grade reliability and safety",
       learnMore: "Learn More"
     }
   },

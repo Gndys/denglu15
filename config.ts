@@ -106,7 +106,7 @@ export const config = {
      * Application Name
      * This will be used throughout the application for branding
      */
-    name: 'TinyShip',
+    name: 'ManusAI',
 
     /**
      * Base URL Configuration
@@ -134,9 +134,9 @@ export const config = {
       defaultColorScheme: 'claude' as const,
 
       /**
-       * Storage key for theme persistence
-       */
-      storageKey: 'tinyship-ui-theme'
+     * Storage key for theme persistence
+     */
+      storageKey: 'manusai-ui-theme'
     },
 
     /**
