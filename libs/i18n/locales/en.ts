@@ -44,6 +44,7 @@ export const en: Locale = {
       subscriptions: "Subscriptions",
       orders: "Orders",
       credits: "Credits",
+      feedbacks: "Feedback",
       application: "Application"
     }
   },
@@ -1086,7 +1087,8 @@ export const en: Locale = {
       subtitle: "Multi-agent collaboration, automated workflows, and cross-app execution in one AI teammate. Plug in your knowledge and tools so AI can deliver business results.",
       buttons: {
         purchase: "Try Manus now",
-        demo: "See capabilities"
+        demo: "See capabilities",
+        feedback: "Share your request"
       },
       features: {
         lifetime: "Team license with ongoing updates",
@@ -1540,6 +1542,53 @@ export const en: Locale = {
       nextPage: "Next →",
       back: "← Back to Blog",
       noPosts: "No posts yet"
+    }
+  },
+  feedback: {
+    title: "Tell us what you need",
+    subtitle: "Share your problem and email — we’ll review and follow up quickly.",
+    badge: "Early access",
+    fields: {
+      issue: "What problem should we solve?*",
+      issuePlaceholder: "Describe the situation, what you tried, and the ideal outcome.",
+      email: "Work email*",
+      emailPlaceholder: "name@company.com",
+      consent: "I agree to be contacted about this request."
+    },
+    helper: {
+      title: "What happens next",
+      bullets: [
+        "We triage every submission and group similar needs together.",
+        "We may reach out for a short call or send a tailored setup guide.",
+        "Your notes stay private; no marketing spam."
+      ],
+      timeline: "Typical reply time: within 24 hours on weekdays."
+    },
+    submit: {
+      button: "Submit request",
+      submitting: "Submitting...",
+      successTitle: "Received — thank you!",
+      successDescription: "We saved your note. We’ll get back to you soon with next steps.",
+      successCta: "Submit another",
+      errorTitle: "Something went wrong",
+      errorDescription: "Please try again in a moment."
+    },
+    validation: {
+      issue: "Please share at least 30 characters.",
+      email: "Enter a valid email address.",
+      consent: "Please agree to proceed."
+    }
+  },
+  adminFeedback: {
+    title: "Feedback",
+    table: {
+      email: "Email",
+      content: "Content",
+      createdAt: "Created",
+      status: "Status"
+    },
+    messages: {
+      fetchError: "Failed to fetch feedback. Please try again."
     }
   },
   upload: {

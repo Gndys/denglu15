@@ -44,6 +44,7 @@ export const zhCN: Locale = {
       subscriptions: "订阅管理",
       orders: "订单管理",
       credits: "积分管理",
+      feedbacks: "反馈收集",
       application: "应用程序"
     }
   },
@@ -1202,7 +1203,8 @@ export const zhCN: Locale = {
       subtitle: "多代理协作、自动化流程、跨应用执行，一体化的 AI 工作助手。连接你的知识和工具，让 AI 真正落地业务结果。",
       buttons: {
         purchase: "立即体验 Manus",
-        demo: "了解能力"
+        demo: "了解能力",
+        feedback: "提交需求"
       },
       features: {
         lifetime: "团队版一次购买，持续更新",
@@ -1548,6 +1550,53 @@ export const zhCN: Locale = {
       nextPage: "下一页 →",
       back: "← 返回博客",
       noPosts: "暂无文章"
+    }
+  },
+  feedback: {
+    title: "告诉我们你的需求",
+    subtitle: "留下你的问题和邮箱，我们会尽快跟进。",
+    badge: "提前体验",
+    fields: {
+      issue: "要解决什么问题？*",
+      issuePlaceholder: "描述场景、尝试过的方式、理想结果。",
+      email: "邮箱*",
+      emailPlaceholder: "name@company.com",
+      consent: "我同意被联系。"
+    },
+    helper: {
+      title: "接下来会做什么",
+      bullets: [
+        "我们会梳理每条提交，并合并相似需求。",
+        "可能与您约一个简短电话，或发送针对性的配置建议。",
+        "信息仅用于沟通，不会有营销骚扰。"
+      ],
+      timeline: "工作日通常 24 小时内回复。"
+    },
+    submit: {
+      button: "提交需求",
+      submitting: "提交中...",
+      successTitle: "已收到，感谢！",
+      successDescription: "我们已记录你的需求，稍后会给出下一步建议。",
+      successCta: "再提一条",
+      errorTitle: "提交出错",
+      errorDescription: "请稍后再试。"
+    },
+    validation: {
+      issue: "请至少填写 30 个字。",
+      email: "请输入有效的邮箱地址。",
+      consent: "请勾选同意后再提交。"
+    }
+  },
+  adminFeedback: {
+    title: "反馈收集",
+    table: {
+      email: "邮箱",
+      content: "内容",
+      createdAt: "创建时间",
+      status: "状态"
+    },
+    messages: {
+      fetchError: "获取反馈失败，请重试。"
     }
   },
   upload: {

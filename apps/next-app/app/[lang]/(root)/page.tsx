@@ -27,6 +27,7 @@ import {
   BookOpen 
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { FeedbackForm } from "@/components/feedback/feedback-form";
 import { translations } from "@libs/i18n";
 
 interface PageProps {
@@ -154,14 +155,17 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4 pt-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <Button 
+                asChild
+                size="lg" 
+                className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
               >
-                <Button 
-                  size="lg" 
-                  className="px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105"
-                >
+                <Link href="#feedback">
                   {t.home.hero.buttons.purchase}
-                </Button>
+                </Link>
+              </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
@@ -187,6 +191,13 @@ export default function Home() {
                 </div>
               </motion.div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Feedback Section */}
+        <section id="feedback" className="py-16 bg-muted/40">
+          <div className="container px-4 md:px-6">
+            <FeedbackForm />
           </div>
         </section>
 
